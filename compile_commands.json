@@ -1,0 +1,25 @@
+[
+ {
+  "directory": "/home/pedro/dev/learning/2dengine",
+  "arguments": [
+   "clang++",
+   "-o",
+   "bin/2dengine",
+   "src/main.cpp",
+   "-Wall",
+   "-Werror",
+   "-Wextra",
+   "-std=c++17",
+   "-I/usr/include/SDL2",
+   "-D_REENTRANT",
+   "-lSDL2",
+   "-llua",
+   "-lm",
+   "-Ilibs/glm",
+   "-Ilibs/imgui",
+   "-Ilibs/lua",
+   "-Ilibs/sol"
+  ],
+  "file": "src/main.cpp"
+ }
+]
