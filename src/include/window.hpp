@@ -21,9 +21,8 @@ public:
 private:
   bool        m_valid;
   SDL_Window *m_window = nullptr;
-
-  static const size_t WINDOW_WIDTH = 800;
-  static const size_t WINDOW_HEIGHT = 600;
+  static const size_t WINDOW_WIDTH = 1920;
+  static const size_t WINDOW_HEIGHT = 1080;
 };
 
 #endif

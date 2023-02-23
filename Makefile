@@ -8,13 +8,13 @@ TARGET=$(BIN)/2dengine
 $(shell mkdir -p obj bin)
 
 # Libs
-SDL=$(shell pkg-config --cflags --libs sdl2)
+SDL=$(shell pkg-config --cflags --libs SDL2_image)
 LUA=$(shell pkg-config --cflags --libs lua)
 
 INCLUDES= -Ilibs/glm -Ilibs/imgui -Ilibs/lua -Ilibs/sol -Isrc/include
 
 CFLAGS= -Wall -Werror -Wextra -std=c++17 -Wno-unknown-warning-option
-LIBFLAGS= $(SDL) $(LUA)
+LIBFLAGS= $(SDL) $(LUA) 
 
 SRCS=$(wildcard $(SRC)/*.cpp)
 OBJS=$(patsubst $(SRC)/%.c, $(OBJ)/%.o, $(SRCS))

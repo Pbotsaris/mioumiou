@@ -45,9 +45,7 @@ void Game::render() {
   m_renderer.setDrawColor(Gray());
   m_renderer.clear();
 
-  SDL_Rect player = {10, 10, 20, 20};
-  m_renderer.setDrawColor(White());
-  m_renderer.fillReact(&player);
+  m_renderer.drawImage("../assets/images/tank-tiger-right.png", {10 ,10, 32, 32}); // NOLINT
   m_renderer.present();
 }
 
