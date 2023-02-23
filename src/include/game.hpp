@@ -16,18 +16,23 @@ public:
 
   void setup();
   void run();
-  void update();
+  void update() const;
   void render();
   void processInput();
   
   [[nodiscard]] auto isValid() const -> bool;
 
 private:
-  bool          m_valid     = true;
   bool          m_isRunning = false; 
   Window        m_window;
   Renderer      m_renderer;
+  uint32_t      m_prevFrameTime = 0; 
 
+  void capFrameRate()const;
+
+  constexpr static const int8_t FPS = 60; 
+  constexpr static const int8_t MSECS_PER_FRAME = 1000/FPS; 
+  constexpr static const double MILLISECS =  1000.0;
 };
 
 #endif

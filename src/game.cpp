@@ -3,11 +3,11 @@
 #include "SDL_render.h"
 #include "SDL_video.h"
 #include "colors.hpp"
+#include <iostream>
 
 Game::Game() : m_renderer(m_window) {
-  m_valid = m_renderer.valid();
 
-  if (m_valid) {
+  if (m_renderer.valid()) {
     m_window.setFullScreen();
   }
 }
@@ -20,9 +20,24 @@ Game::~Game() {
 
 void Game::setup() {}
 
-void Game::update() {}
 
-auto Game::isValid() const -> bool { return m_valid; }
+void Game::capFrameRate() const {
+  uint32_t waitTime = MSECS_PER_FRAME - (m_prevFrameTime - SDL_GetTicks());
+
+  if (waitTime > 0 && waitTime < MSECS_PER_FRAME) {
+    SDL_Delay(waitTime);
+  }
+}
+
+void Game::update() const {
+  // removing this fuction will allow the game to run as fast as it can!
+  capFrameRate();
+
+  // variable delta time
+  //double delta = (SDL_GetTicks() - m_prevFrameTime) / MILLISECS;
+}
+
+
 
 void Game::processInput() {
   SDL_Event event;
@@ -45,18 +60,24 @@ void Game::render() {
   m_renderer.setDrawColor(Gray());
   m_renderer.clear();
 
-  m_renderer.drawImage("../assets/images/tank-tiger-right.png", {10 ,10, 32, 32}); // NOLINT
+  bool valid = m_renderer.drawImage("./assets/images/tank-tiger-right.png",
+                                    {10, 10, 32, 32}); // NOLINT
+
+  if (!valid) {
+    
+    std::cout << "error drawing image\n";
+  }
+
   m_renderer.present();
 }
 
 void Game::run() {
 
-  if (!isValid()) {
+  if (!m_renderer.valid()) {
     return;
   }
 
   setup();
-
   m_isRunning = true;
 
   while (m_isRunning) {

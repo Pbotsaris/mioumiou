@@ -10,11 +10,13 @@ $(shell mkdir -p obj bin)
 # Libs
 SDL=$(shell pkg-config --cflags --libs SDL2_image)
 LUA=$(shell pkg-config --cflags --libs lua)
+SPDLOG=$(shell pkg-config --cflags --libs spdlog)
 
-INCLUDES= -Ilibs/glm -Ilibs/imgui -Ilibs/lua -Ilibs/sol -Isrc/include
+INCLUDES=-Ilibs/glm -Ilibs/imgui -Ilibs/lua -Ilibs/sol -Isrc/include 
+
 
 CFLAGS= -Wall -Werror -Wextra -std=c++17 -Wno-unknown-warning-option
-LIBFLAGS= $(SDL) $(LUA) 
+LIBFLAGS= $(SDL) $(LUA) $(SPDLOG)
 
 SRCS=$(wildcard $(SRC)/*.cpp)
 OBJS=$(patsubst $(SRC)/%.c, $(OBJ)/%.o, $(SRCS))
@@ -31,6 +33,6 @@ run:
 	./$(BIN)$(TARGET)
 
 clean:
-	rm $(TARGET) $(OBJ)/*.o 
+	rm -f $(TARGET) $(OBJ)/*.o 
 
 

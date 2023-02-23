@@ -44,6 +44,7 @@ auto Renderer::drawImage(const char *path, Destination &&dest) -> bool {
 
   SDL_FreeSurface(surface);
   SDL_RenderCopy(m_renderer, tex, nullptr, &dest.react);
+  SDL_DestroyTexture(tex);
 
   return true;
 }

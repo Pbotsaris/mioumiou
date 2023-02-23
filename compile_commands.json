@@ -23,5 +23,45 @@
    "-Isrc/include"
   ],
   "file": "src/main.cpp"
+ },
+ {
+  "directory": "/home/pedro/dev/learning/2dengine",
+  "arguments": [
+   "clang++",
+   "-o",
+   "bin/2dengine",
+   "src/colors.cpp",
+   "src/errors.cpp",
+   "src/game.cpp",
+   "src/main.cpp",
+   "src/renderer.cpp",
+   "src/window.cpp",
+   "-Wall",
+   "-Werror",
+   "-Wextra",
+   "-std=c++17",
+   "-Wno-unknown-warning-option",
+   "-I/usr/include/SDL2",
+   "-D_REENTRANT",
+   "-I/usr/include/libpng16",
+   "-DHWY_SHARED_DEFINE",
+   "-I/usr/include/webp",
+   "-lSDL2_image",
+   "-lSDL2",
+   "-llua",
+   "-lm",
+   "-DSPDLOG_SHARED_LIB",
+   "-DSPDLOG_COMPILED_LIB",
+   "-DSPDLOG_FMT_EXTERNAL",
+   "-lspdlog",
+   "-pthread",
+   "-lfmt",
+   "-Ilibs/glm",
+   "-Ilibs/imgui",
+   "-Ilibs/lua",
+   "-Ilibs/sol",
+   "-Isrc/include"
+  ],
+  "file": "src/window.cpp"
  }
 ]

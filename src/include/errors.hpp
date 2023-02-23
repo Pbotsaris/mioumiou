@@ -3,6 +3,7 @@
 #include <string>
 #include <tuple>
 
+
 class Error { // NOLINT
 
 public:
@@ -19,5 +20,6 @@ public:
 private:
   std::string m_msg;
 };
+
 
 #endif
