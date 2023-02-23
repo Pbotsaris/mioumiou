@@ -11,7 +11,7 @@ $(shell mkdir -p obj bin)
 SDL=$(shell pkg-config --cflags --libs sdl2)
 LUA=$(shell pkg-config --cflags --libs lua)
 
-INCLUDES= -Ilibs/glm -Ilibs/imgui -Ilibs/lua -Ilibs/sol
+INCLUDES= -Ilibs/glm -Ilibs/imgui -Ilibs/lua -Ilibs/sol -Isrc/include
 
 CFLAGS= -Wall -Werror -Wextra -std=c++17 -Wno-unknown-warning-option
 LIBFLAGS= $(SDL) $(LUA)

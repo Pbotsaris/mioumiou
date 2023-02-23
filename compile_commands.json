@@ -10,6 +10,7 @@
    "-Werror",
    "-Wextra",
    "-std=c++17",
+   "-Wno-unknown-warning-option",
    "-I/usr/include/SDL2",
    "-D_REENTRANT",
    "-lSDL2",
@@ -18,7 +19,8 @@
    "-Ilibs/glm",
    "-Ilibs/imgui",
    "-Ilibs/lua",
-   "-Ilibs/sol"
+   "-Ilibs/sol",
+   "-Isrc/include"
   ],
   "file": "src/main.cpp"
  }
