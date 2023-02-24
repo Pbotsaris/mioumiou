@@ -1,6 +1,4 @@
 #include "renderer.hpp"
-#include "SDL_render.h"
-#include "SDL_surface.h"
 #include "errors.hpp"
 #include <SDL2/SDL_image.h>
 

@@ -1,7 +1,5 @@
-#include "include/game.hpp"
-#include "SDL_events.h"
-#include "SDL_render.h"
-#include "SDL_video.h"
+#include "game.hpp"
+#include <SDL2/SDL.h>
 #include "colors.hpp"
 #include <iostream>
 
