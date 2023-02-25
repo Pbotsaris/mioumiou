@@ -1,5 +1,4 @@
 #include "system.hpp"
-#include "component.hpp"
 #include "doctest.h"
 #include <iostream>
 #include <spdlog/spdlog.h>
@@ -31,11 +30,6 @@ auto System::gameObjects() const -> std::vector<GameObject> {
 
 auto System::componentSignature() const -> const Signature & {
   return m_componentSignature;
-}
-
-template <typename T> void System::requiredComponent() {
-  const auto componentId = Component<T>::getId();
-  m_componentSignature.set(componentId);
 }
 
 TEST_CASE("System") { // NOLINT: ignore warnings from external libs

@@ -2,6 +2,7 @@
 #define SYSTEM_H
 #include "signature.hpp"
 #include "game_object.hpp"
+#include "component.hpp"
 #include <vector>
 
 class System {
@@ -10,11 +11,10 @@ public:
   System() = default;
   virtual ~System() = default;
 
-  // no moving or copying
-  System(System &) = delete;
-  System(System &&) = delete;
-  void operator=(System &&) = delete;
-  void operator=(System &) = delete;
+  System(System &&) = default;
+  System(const System &) = default;
+  System& operator=(const System &) = default;
+  System& operator=(System &&) = default;
 
   void addGameObject(GameObject gameObject);
   void removeGameObject(GameObject gameObject);
@@ -28,5 +28,10 @@ private:
   Signature m_componentSignature;
   std::vector<GameObject> m_gameObjects;
 };
+
+template <typename T> void System::requiredComponent() {
+  const auto componentId = Component<T>::id();
+  m_componentSignature.set(componentId);
+}
 
 #endif

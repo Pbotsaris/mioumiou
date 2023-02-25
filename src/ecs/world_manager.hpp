@@ -242,8 +242,4 @@ auto GameObject::getComponent() const -> T&{
   return m_wm->getComponent<T>(*this);
 }
 
-
-
-
-
 #endif

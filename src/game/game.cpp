@@ -1,12 +1,14 @@
 #include "game.hpp"
 #include "colors.hpp"
 #include "components/transform_component.hpp"
+#include "components/rigid_body_component.hpp"
+#include "systems/movement_system.hpp"
 #include <SDL2/SDL.h>
 #include <iostream>
 #include <spdlog/spdlog.h>
 
 Game::Game()
-    : m_renderer(m_window), m_worldManager(std::make_unique<WorldManager>()) {
+    : m_renderer(m_window), m_wm(std::make_unique<WorldManager>()) {
   if (m_renderer.valid()) {
     m_window.setFullScreen();
   }
@@ -19,6 +21,13 @@ Game::~Game() {
 }
 
 void Game::setup() {
+
+  auto tank = m_wm->createGameObject();
+  tank.addComponent<TransformComponent>(glm::vec2(0,0), glm::vec2(1,1), 1);
+  tank.addComponent<RigidBodyComponent>(glm::vec2(1,1));
+
+  /* Registering systems on setup */
+  m_wm->createSystem<MovementSystem>();
 }
 
 void Game::capFrameRate() const {
@@ -33,8 +42,8 @@ void Game::update() const {
   // removing this fuction will allow the game to run as fast as it can!
   capFrameRate();
 
-  // variable delta time
-  // double delta = (SDL_GetTicks() - m_prevFrameTime) / MILLISECS;
+  m_wm->getSystem<MovementSystem>().update(); // will update the system at every iteration
+  m_wm->update();
 }
 
 void Game::processInput() {

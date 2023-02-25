@@ -3,17 +3,18 @@
 
 #include <cstdint>
 
-// forward declaring so GameObjs can hold a pointer to the manager
+/* forward declaring so GameObjs can hold a pointer to the manager */
 class WorldManager;
 
 class GameObject {
 public:
 
+  /* this contructor is called for tests only. m_wm will never be nullptr */
   explicit GameObject(uint32_t id); // NOLINT
+                                    
   explicit GameObject(uint32_t id, WorldManager *wm); // NOLINT
 
   [[nodiscard]] auto id() const -> uint32_t;
-  [[nodiscard]] auto wm() const -> WorldManager*;
 
   auto operator==(const GameObject &other) const -> bool;
   auto operator!=(const GameObject &other) const -> bool;
@@ -25,7 +26,6 @@ public:
   template<typename T>void removeComponent();
   template<typename T>[[nodiscard]] auto hasComponent() const -> bool;
   template<typename T>[[nodiscard]] auto getComponent() const -> T&;
-
 
 private:
   std::uint32_t m_id;

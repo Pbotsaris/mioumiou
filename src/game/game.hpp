@@ -29,7 +29,7 @@ private:
   uint32_t      m_prevFrameTime = 0; 
   Window        m_window;
   Renderer      m_renderer;
-  std::unique_ptr<WorldManager> m_worldManager;
+  std::unique_ptr<WorldManager> m_wm;
 
   void capFrameRate()const;
 
