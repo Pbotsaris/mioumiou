@@ -1,10 +1,12 @@
 #include "game.hpp"
-#include <SDL2/SDL.h>
 #include "colors.hpp"
+#include "components/transform_component.hpp"
+#include <SDL2/SDL.h>
 #include <iostream>
+#include <spdlog/spdlog.h>
 
-Game::Game() : m_renderer(m_window) {
-
+Game::Game()
+    : m_renderer(m_window), m_worldManager(std::make_unique<WorldManager>()) {
   if (m_renderer.valid()) {
     m_window.setFullScreen();
   }
@@ -16,8 +18,13 @@ Game::~Game() {
   SDL_Quit();
 }
 
-void Game::setup() {}
+void Game::setup() {
 
+  GameObject tank = m_worldManager->createGameObject();
+
+  spdlog::info(tank.id());
+   m_worldManager->addComponent<TransformComponent>(tank, glm::vec2(1, 1), glm::vec2(3, 3), 0.453);
+}
 
 void Game::capFrameRate() const {
   uint32_t waitTime = MSECS_PER_FRAME - (m_prevFrameTime - SDL_GetTicks());
@@ -32,10 +39,8 @@ void Game::update() const {
   capFrameRate();
 
   // variable delta time
-  //double delta = (SDL_GetTicks() - m_prevFrameTime) / MILLISECS;
+  // double delta = (SDL_GetTicks() - m_prevFrameTime) / MILLISECS;
 }
-
-
 
 void Game::processInput() {
   SDL_Event event;
@@ -62,7 +67,7 @@ void Game::render() {
                                     {10, 10, 32, 32}); // NOLINT
 
   if (!valid) {
-    
+
     std::cout << "error drawing image\n";
   }
 

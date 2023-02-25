@@ -3,6 +3,7 @@
 
 #include <bitset>
 #include <cstdint>
+#include <components/transform_component.hpp>
 
 struct baseComponent {
 protected:

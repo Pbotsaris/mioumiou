@@ -1,6 +1,8 @@
 #ifndef GAME_H
 #define GAME_H
+#include <memory>
 #include "renderer.hpp"
+#include "ecs/world_manager.hpp"
 
 class Game {
 
@@ -24,9 +26,10 @@ public:
 
 private:
   bool          m_isRunning = false; 
+  uint32_t      m_prevFrameTime = 0; 
   Window        m_window;
   Renderer      m_renderer;
-  uint32_t      m_prevFrameTime = 0; 
+  std::unique_ptr<WorldManager> m_worldManager;
 
   void capFrameRate()const;
 
