@@ -19,11 +19,6 @@ Game::~Game() {
 }
 
 void Game::setup() {
-
-  GameObject tank = m_worldManager->createGameObject();
-
-  spdlog::info(tank.id());
-   m_worldManager->addComponent<TransformComponent>(tank, glm::vec2(1, 1), glm::vec2(3, 3), 0.453);
 }
 
 void Game::capFrameRate() const {

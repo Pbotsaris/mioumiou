@@ -1,4 +1,5 @@
 #include "world_manager.hpp"
+#include "components/rigid_body_component.hpp"
 #include "components/transform_component.hpp"
 #include "doctest.h"
 #include "spdlog/spdlog.h"
@@ -18,7 +19,8 @@ auto WorldManager::createGameObject() -> GameObject {
     // resize component signature vec
     m_gameObjectcomponentSignatures.resize(m_gameObjectCount + 1);
   }
-  const GameObject gameObject(id); // give a sequential id
+  GameObject gameObject(
+      id, this); // give a sequential id and a reference to the worldManager
 
   // we queue the game object to be added by update
   m_gameObjectAddQueue.insert(gameObject);
@@ -43,7 +45,6 @@ void WorldManager::update() {
 
   m_gameObjectAddQueue.clear();
 }
-
 
 /**
  *  Get the current number of GameObjects in the world.
@@ -90,17 +91,60 @@ void WorldManager::gameObjectToSystems(GameObject gameObject) {
 
 // unit tests only
 
-TEST_CASE("World Manager") {
+TEST_CASE("World Manager") { // NOLINT
 
   WorldManager wm; // NOLINT: Short var
-
 
   SUBCASE("Create GameObject and add component") {
     auto obj = wm.createGameObject();
 
     CHECK(obj.id() == 0); // first obj must be 0
     CHECK(wm.gameObjectCount() == 1);
-  // wm.addComponent<TransformComponent>(obj, glm::vec2(1, 1), glm::vec2(3, 3),
-    //                                    0.453); // NOLINT: constants
+    wm.addComponent<TransformComponent>(obj, glm::vec2(1, 1), glm::vec2(3, 3),
+                                        0.453); // NOLINT: constants
+                                                //
+    wm.addComponent<RigidBodyComponent>(obj, glm::vec2(2.0, 2.0)); // NOLINT
+
+    CHECK(wm.hasComponent<TransformComponent>(obj) == true);
+    CHECK(wm.hasComponent<RigidBodyComponent>(obj) == true);
+
+    auto obj2 = wm.createGameObject();
+    CHECK(obj2.id() == 1); // first obj must be 0
+    CHECK(wm.gameObjectCount() == 2);
+
+    auto comp = wm.getComponent<RigidBodyComponent>(obj);
+
+    CHECK(comp.velocity == glm::vec2(2.0, 2.0)); // NOLINT
   }
+
+
+  SUBCASE("Remove component from obj") {
+
+    auto obj = wm.createGameObject();
+    wm.addComponent<RigidBodyComponent>(obj, glm::vec2(2.0, 2.0)); // NOLINT
+                                                                   //
+    CHECK(wm.hasComponent<RigidBodyComponent>(obj) == true);
+    wm.removeComponent<RigidBodyComponent>(obj);
+    CHECK(wm.hasComponent<RigidBodyComponent>(obj) == false);
+
+  }
+
+  SUBCASE("Add component via GameObject") {
+    auto obj = wm.createGameObject();
+    obj.addComponent<RigidBodyComponent>(glm::vec2(3.0, 3.0)); // NOLINT
+
+    auto c = obj.getComponent<RigidBodyComponent>(); // NOLINT
+    CHECK(c.velocity == glm::vec2(3.0, 3.0));         // NOLINT
+  }
+
+
+  SUBCASE("Remove component via GameObject") {
+    auto obj = wm.createGameObject();
+    obj.addComponent<RigidBodyComponent>(glm::vec2(3.0, 3.0)); // NOLINT
+
+    CHECK(obj.hasComponent<RigidBodyComponent>() == true);
+    obj.removeComponent<RigidBodyComponent>();
+    CHECK(obj.hasComponent<RigidBodyComponent>() == false);
+  }
+
 }

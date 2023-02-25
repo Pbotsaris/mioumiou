@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <set>
+#include <spdlog/spdlog.h>
 #include <unordered_map>
 #include <typeindex>
 #include <vector>
@@ -113,6 +114,8 @@ void WorldManager::addComponent(GameObject gameObject, TARGS &&...args) {
 
   // set the component signature for this gameObject with the added component
   m_gameObjectcomponentSignatures.at(gameObject.id()).set(componentId);
+
+  spdlog::info("Component id '{}' was added to GameObject id '{}'",  componentId, gameObject.id());
 }
 
 /**
@@ -156,15 +159,13 @@ auto WorldManager::hasComponent(GameObject gameObject) const -> bool {
  */
 
 template <typename T>
-auto WorldManager::getComponent(GameObject gameObject) const -> T & {
+auto WorldManager::getComponent(GameObject gameObject) const -> T& {
   const uint32_t componentId = Component<T>::id();
 
   std::shared_ptr<Pool<T>> pool =
       std::static_pointer_cast<Pool<T>>(m_componentPools.at(componentId));
 
-  if (hasComponent<T>(gameObject)) {
-    return *(std::static_pointer_cast<T>(pool->at(gameObject.id())));
-  }
+    return pool->at(gameObject.id());
 }
 
 /**
@@ -218,5 +219,31 @@ template <typename T> auto WorldManager::getSystem() const -> T & {
   return *(std::static_pointer_cast<T>(
       m_systems.find(std::type_index(typeid(T)))->second));
 }
+
+/** Same as the above but for callable directly by GameObject */
+
+template<typename T, typename ...TARGS>
+void GameObject::addComponent(TARGS&&...args){
+  m_wm->addComponent<T>(*this, args...);
+}
+
+template<typename T>
+void GameObject::removeComponent(){
+  m_wm->removeComponent<T>(*this);
+}
+
+template<typename T>
+auto GameObject::hasComponent() const -> bool{
+return m_wm->hasComponent<T>(*this);
+}
+
+template<typename T>
+auto GameObject::getComponent() const -> T&{
+  return m_wm->getComponent<T>(*this);
+}
+
+
+
+
 
 #endif

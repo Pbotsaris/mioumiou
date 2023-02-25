@@ -1,7 +1,7 @@
 #ifndef TRANSFORM_COMPONENT_H
 #define TRANSFORM_COMPONENT_H
 
-#include "fwd.hpp"
+#include <fwd.hpp>
 #include <glm.hpp>
 
 struct TransformComponent {
