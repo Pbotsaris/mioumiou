@@ -5,7 +5,7 @@
 // this is the max number of components a game object can have
   
 static const uint32_t MAX_NUMBER = 32;
-using Signature = const std::bitset<MAX_NUMBER>;
+using Signature = std::bitset<MAX_NUMBER>;
 
 #endif
 

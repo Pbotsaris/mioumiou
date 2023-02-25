@@ -4,15 +4,15 @@
 #include <cstdint>
 
 class GameObject {
-  public:
-    explicit GameObject(uint32_t id); //NOLINT  
+public:
+  explicit GameObject(uint32_t id); // NOLINT
 
-    [[nodiscard]] auto id() const -> uint32_t;
+  [[nodiscard]] auto id() const -> uint32_t;
 
-  private:
-    uint32_t m_id;
+  auto operator==(const GameObject &other) const -> bool;
 
+private:
+  std::uint32_t m_id;
 };
-
 
 #endif

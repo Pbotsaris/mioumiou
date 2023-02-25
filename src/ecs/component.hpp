@@ -14,7 +14,7 @@ protected:
 template <typename T> class Component : public baseComponent {
 public:
   [[nodiscard]] static auto id() -> uint32_t {
-    static auto uniqueId = baseComponent::nextId++;
+    static uint32_t uniqueId = baseComponent::nextId++;
     return uniqueId;
   }
 };

@@ -19,8 +19,8 @@ public:
   void addGameObject(GameObject gameObject);
   void removeGameObject(GameObject gameObject);
 
-  [[nodiscard]] auto getGameObjects() const -> std::vector<GameObject>;
-  [[nodiscard]] auto getComponentSignature() const -> const Signature&;
+  [[nodiscard]] auto gameObjects() const -> std::vector<GameObject>;
+  [[nodiscard]] auto componentSignature() const -> const Signature&;
 
   template<typename T> void requiredComponent();
 
