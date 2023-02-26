@@ -4,12 +4,12 @@
 
 Destination::Destination(int32_t x, int32_t y, int32_t w, int32_t h) : react({x, y, w, h}){} // NOLINT
 
-Renderer::Renderer(Window &window)
+Renderer::Renderer(std::unique_ptr<Window> &window)
     : m_valid(true),
-      m_renderer(SDL_CreateRenderer(window.sdlWindow(), -1,
+      m_renderer(SDL_CreateRenderer(window->sdlWindow(), -1,
                                     SDL_RENDERER_ACCELERATED |
                                         SDL_RENDERER_PRESENTVSYNC)) {
-  m_valid = m_renderer != nullptr && window.valid();
+  m_valid = m_renderer != nullptr && window->valid();
 }
 
 Renderer::~Renderer() { SDL_DestroyRenderer(m_renderer); }

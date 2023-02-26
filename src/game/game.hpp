@@ -28,7 +28,8 @@ public:
 private:
   bool          m_isRunning = false; 
   uint32_t      m_prevFrameTime = 0; 
-  Window        m_window;
+
+  std::unique_ptr<Window >      m_window;
   std::unique_ptr<Renderer>     m_renderer;
   std::unique_ptr<WorldManager> m_wm;
   std::unique_ptr<AssetStore>   m_store;

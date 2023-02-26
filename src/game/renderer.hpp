@@ -2,6 +2,7 @@
 #define RENDERER_H
 #include <SDL2/SDL.h>
 #include <string>
+#include <memory>
 #include "window.hpp"
 #include "colors.hpp"
 
@@ -15,7 +16,7 @@ struct Destination {
 class Renderer {
 
 public:
-  explicit Renderer(Window &window);
+  explicit Renderer(std::unique_ptr<Window> &window);
   ~Renderer();
 
   Renderer(Renderer &) = delete;

@@ -20,7 +20,7 @@ class AssetStore {
   AssetStore& operator=(AssetStore&&) = delete;
 
 
-  void loadTexture(std::unique_ptr<Renderer> &renderer, std::string key, const std::string &path);
+  void loadTexture(std::unique_ptr<Renderer> &renderer, std::string &&key, const std::string &path);
   auto getTexture(const std::string &key) -> SDL_Texture*;
 
   private:

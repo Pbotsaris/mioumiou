@@ -3,8 +3,7 @@
 #include <spdlog/logger.h>
 #include <spdlog/spdlog.h>
 
-void AssetStore::loadTexture(std::unique_ptr<Renderer> &renderer,
-                             std::string key, const std::string &path) {
+void AssetStore::loadTexture(std::unique_ptr<Renderer> &renderer, std::string &&key, const std::string &path) {
 
   SDL_Texture *tex = renderer->createTexture(path);
 
