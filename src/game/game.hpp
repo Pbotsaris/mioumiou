@@ -18,20 +18,21 @@ public:
 
   void setup();
   void run();
-  void update() const;
+  void update();
   void render();
   void processInput();
-  
+
   [[nodiscard]] auto isValid() const -> bool;
 
 private:
   bool          m_isRunning = false; 
   uint32_t      m_prevFrameTime = 0; 
   Window        m_window;
-  Renderer      m_renderer;
+  std::shared_ptr<Renderer>     m_renderer;
   std::unique_ptr<WorldManager> m_wm;
 
   void capFrameRate()const;
+  [[nodiscard]] auto deltatime() const -> double;
 
   constexpr static const int8_t FPS = 60; 
   constexpr static const int8_t MSECS_PER_FRAME = 1000/FPS; 

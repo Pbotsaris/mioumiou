@@ -2,6 +2,7 @@
 #define WORLD_MANAGER_H
 
 #include <cstdint>
+#include <iostream>
 #include <set>
 #include <spdlog/spdlog.h>
 #include <unordered_map>
@@ -95,12 +96,14 @@ void WorldManager::addComponent(GameObject gameObject, TARGS &&...args) {
     m_componentPools.resize(componentId + 1, nullptr);
   }
 
+
   if (m_componentPools.at(componentId) == nullptr) {
     m_componentPools[componentId] = std::make_shared<Pool<T>>();
   }
 
   std::shared_ptr<Pool<T>> pool =
       std::static_pointer_cast<Pool<T>>(m_componentPools.at(componentId));
+
 
   // grow pool to the current total number of objects in the world
   if (gameObject.id() >= pool->size()) {

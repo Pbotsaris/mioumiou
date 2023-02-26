@@ -16,21 +16,22 @@ INCLUDES=-Ilibs/glm -Ilibs/imgui -Ilibs/lua -Ilibs/sol -Isrc -Ilibs/doctest
 
 CFLAGS= -Wall -Werror -Wextra -std=c++17 -Wno-unknown-warning-option
 LIBFLAGS= $(SDL) $(LUA) $(SPDLOG)
+DEBUGFLAGS= -g3
 
 SRCS=$(wildcard $(SRC)/**/*.cpp) $(wildcard $(SRC)/*.cpp) 
 OBJS=$(patsubst $(SRC)%.cpp, $(OBJ)%.o, $(SRCS)) 
 
-test: all testing
-
-run: all exec
-
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CC) -o $(TARGET) $(OBJS) $(CFLAGS) $(LIBFLAGS) $(INCLUDES)
+	$(CC) -o $(TARGET) $(OBJS) $(CFLAGS) $(LIBFLAGS) $(INCLUDES) $(DEBUGFLAGS)
 
 $(OBJ)/%.o: $(SRC)/%.cpp
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+	$(CC) $(CFLAGS) $(DEBUGFLAGS) $(INCLUDES) -c $< -o $@
+
+test: all testing
+
+run: all exec
 
 exec:
 	./$(TARGET)

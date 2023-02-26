@@ -27,8 +27,8 @@ void Renderer::fillReact(SDL_Rect *rect) {
   SDL_RenderFillRect(m_renderer, rect);
 }
 
-auto Renderer::drawImage(const char *path, Destination &&dest) -> bool {
-  SDL_Surface *surface = IMG_Load(path);
+auto Renderer::drawImage(const std::string &path, Destination &&dest) -> bool {
+  SDL_Surface *surface = IMG_Load(path.c_str());
 
   if (surface == nullptr) {
     return false;

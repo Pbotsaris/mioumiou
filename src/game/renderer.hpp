@@ -1,6 +1,7 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 #include <SDL2/SDL.h>
+#include <string>
 #include "window.hpp"
 #include "colors.hpp"
 
@@ -27,7 +28,7 @@ public:
   void fillReact(SDL_Rect *rect);
   void clear();
   void present();
-  auto drawImage(const char* path, Destination &&dest) -> bool;
+  auto drawImage(const std::string &path, Destination &&dest) -> bool;
   [[nodiscard]] auto valid() const -> bool;
 
 
