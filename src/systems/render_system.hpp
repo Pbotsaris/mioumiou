@@ -33,12 +33,14 @@ public:
         return;
       }
 
-      renderer->drawImage( tex, {
+         SDL_Rect destDimensions ={
                    static_cast<int>( transform.position.x), // NOLINT: member of unions
-                   static_cast<int>( transform.position.y),     // NOLINT: member of unions
+                   static_cast<int>( transform.position.y), // NOLINT: member of unions
                    static_cast<int>(dimension.x), // NOLINT
                    static_cast<int>(dimension.y), // NOLINT
-               });
+              };
+
+      renderer->drawImage(tex, ImageDimensions(&sprite.crop, &destDimensions, transform.rotation));
     }
   }
 

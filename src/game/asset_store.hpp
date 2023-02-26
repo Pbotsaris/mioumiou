@@ -21,10 +21,14 @@ class AssetStore {
 
 
   void loadTexture(std::unique_ptr<Renderer> &renderer, std::string &&key, const std::string &path);
-  auto getTexture(const std::string &key) -> SDL_Texture*;
+  auto getTexture(const std::string &key) const -> SDL_Texture*;
+  void removeTexture(const std::string &key);
+  void clear();
 
   private:
     std::unordered_map<std::string, SDL_Texture*> m_textures;
+
+  void cleanup();
 };
 
 

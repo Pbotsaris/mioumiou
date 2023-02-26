@@ -1,9 +1,11 @@
-#include "asset_store.hpp"
 #include <SDL2/SDL_image.h>
 #include <spdlog/logger.h>
 #include <spdlog/spdlog.h>
 
-void AssetStore::loadTexture(std::unique_ptr<Renderer> &renderer, std::string &&key, const std::string &path) {
+#include "asset_store.hpp"
+
+void AssetStore::loadTexture(std::unique_ptr<Renderer> &renderer,
+                             std::string &&key, const std::string &path) {
 
   SDL_Texture *tex = renderer->createTexture(path);
 
@@ -19,20 +21,37 @@ void AssetStore::loadTexture(std::unique_ptr<Renderer> &renderer, std::string &&
   }
 }
 
+auto AssetStore::getTexture(const std::string &key) const -> SDL_Texture * {
 
-auto AssetStore::getTexture(const std::string &key) -> SDL_Texture* {
-
-   if (m_textures.contains(key)){
-     return m_textures[key];
-   }
+  if (m_textures.contains(key)) {
+    return m_textures.at(key);
+  }
 
   return nullptr;
 };
 
+void AssetStore::removeTexture(const std::string &key) {
 
-AssetStore::~AssetStore(){
-  // clean up!
-  for(auto &texture : m_textures){
+  if (m_textures.contains(key)) {
+    auto *tex = m_textures[key];
+    SDL_DestroyTexture(tex);
+    m_textures.erase(key);
+    return;
+  }
+  spdlog::error("Failed to remove texture id '{}' to Textures map", key);
+}
+
+void AssetStore::clear() {
+  cleanup();
+  m_textures.clear();
+}
+
+AssetStore::~AssetStore() { cleanup(); }
+
+/* Private */
+
+void AssetStore::cleanup() {
+  for (auto &texture : m_textures) {
     SDL_DestroyTexture(texture.second);
   }
 }

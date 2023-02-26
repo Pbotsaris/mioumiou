@@ -2,7 +2,8 @@
 #include "errors.hpp"
 #include <SDL2/SDL_image.h>
 
-Destination::Destination(int32_t x, int32_t y, int32_t w, int32_t h) : react({x, y, w, h}){} // NOLINT
+ImageDimensions::ImageDimensions(const SDL_Rect *crop, const SDL_Rect *dimension, const double rotation) //NOLINT
+  : sourceCrop(crop), destDimension(dimension), rotation(rotation){}; //NOLINT
 
 Renderer::Renderer(std::unique_ptr<Window> &window)
     : m_valid(true),
@@ -13,8 +14,8 @@ Renderer::Renderer(std::unique_ptr<Window> &window)
 }
 
 Renderer::~Renderer() { SDL_DestroyRenderer(m_renderer); }
-
 auto Renderer::valid() const -> bool { return m_valid; }
+
 
 void Renderer::setDrawColor(Colors &&color) {
   auto rgba = color.getColor();
@@ -27,8 +28,8 @@ void Renderer::fillReact(SDL_Rect *rect) {
   SDL_RenderFillRect(m_renderer, rect);
 }
 
-void Renderer::drawImage(SDL_Texture *tex, Destination &&dest){
-  SDL_RenderCopy(m_renderer, tex, nullptr, &dest.react);
+void Renderer::drawImage(SDL_Texture *tex, ImageDimensions &&dimensions){
+  SDL_RenderCopyEx(m_renderer, tex, dimensions.sourceCrop, dimensions.destDimension, dimensions.rotation, nullptr, SDL_FLIP_NONE);
 }
 
 

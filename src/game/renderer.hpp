@@ -3,14 +3,16 @@
 #include <SDL2/SDL.h>
 #include <string>
 #include <memory>
+#include <glm.hpp>
 #include "window.hpp"
 #include "colors.hpp"
 
-struct Destination {
+struct ImageDimensions {
+  const SDL_Rect *sourceCrop;
+  const SDL_Rect *destDimension;
+  const double rotation;
+  ImageDimensions(const SDL_Rect *crop, const SDL_Rect *dimension, const double rotation);
 
-  Destination(int32_t x, int32_t y, int32_t w, int32_t h); // NOLINT
-
-  SDL_Rect react;
 };
 
 class Renderer {
@@ -29,7 +31,7 @@ public:
   void fillReact(SDL_Rect *rect);
   void clear();
   void present();
-  void drawImage(SDL_Texture *tex, Destination &&dest);
+  void drawImage(SDL_Texture *tex, ImageDimensions &&dimensions);
   auto createTexture(const std::string &path)-> SDL_Texture*;
 
   [[nodiscard]] auto valid() const -> bool;

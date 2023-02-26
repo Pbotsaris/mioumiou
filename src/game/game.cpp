@@ -32,12 +32,13 @@ void Game::setup() {
   auto tank = m_wm->createGameObject();
   tank.addComponent<TransformComponent>(glm::vec2(0, 0), glm::vec2(1, 1), 0.0);
   tank.addComponent<RigidBodyComponent>(glm::vec2(1, 1));
-  tank.addComponent<SpriteComponent>("tank-right", glm::vec2(32, 32)); // NOLINT
+  tank.addComponent<SpriteComponent>("tank-right", glm::vec2(32, 32), SpriteComponent::makeCrop(0, 0, 32, 32)); // NOLINT
 
   auto tank2 = m_wm->createGameObject();
   tank2.addComponent<TransformComponent>(glm::vec2(0, 40), glm::vec2(1, 1), 0.0); // NOLINT
   tank2.addComponent<RigidBodyComponent>(glm::vec2(1, 0));
-  tank2.addComponent<SpriteComponent>("tree", glm::vec2(23, 23)); // NOLINT
+
+  tank2.addComponent<SpriteComponent>("tree", glm::vec2(23, 23), SpriteComponent::makeCrop(0, 0, 32, 32)); // NOLINT
 
   /* Registering systems in the world on setup */
   m_wm->createSystem<MovementSystem>();
@@ -59,7 +60,6 @@ void Game::update() {
 
 void Game::processInput() {
   SDL_Event event;
-
   while (SDL_PollEvent(&event) != 0) {
 
     switch (event.type) {
