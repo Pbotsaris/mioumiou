@@ -1,6 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 #include <memory>
+#include "game/asset_store.hpp"
 #include "renderer.hpp"
 #include "ecs/world_manager.hpp"
 
@@ -30,6 +31,7 @@ private:
   Window        m_window;
   std::unique_ptr<Renderer>     m_renderer;
   std::unique_ptr<WorldManager> m_wm;
+  std::unique_ptr<AssetStore>   m_store;
 
   void capFrameRate()const;
   [[nodiscard]] auto deltatime() const -> double;

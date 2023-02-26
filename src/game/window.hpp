@@ -11,8 +11,8 @@ public:
   Window(Window &) = delete;
   Window(Window &&) = delete;
 
-  void operator=(Window &) = delete;
-  void operator=(Window &&) = delete;
+  Window& operator=(const Window &) = delete;
+  Window& operator=(Window &&) = delete;
 
   auto sdlWindow()-> SDL_Window*;
   [[nodiscard]] auto valid() const -> bool;

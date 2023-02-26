@@ -84,7 +84,6 @@ class WorldManager {
  * @tparam TARGS: Component<T> constructor parameter types
  * @param gameObject: GameObject to add a component to
  * @param args: Component<T> constructor parameters
- * @return void
  */
 
 template <typename T, typename... TARGS>
@@ -184,7 +183,11 @@ void WorldManager::createSystem(TARGS &&...args) {
 
   std::shared_ptr<T> sys = std::make_shared<T>(std::forward<TARGS>(args)...);
   // TODO: check if std::type_index(*sys) would also work to simplify the syntax
-  m_systems.insert(std::make_pair(std::type_index(typeid(T)), sys));
+  bool ok = m_systems.insert(std::make_pair(std::type_index(typeid(T)), sys)).second;//NOLINT: short var
+
+  if (!ok){
+    spdlog::warn("failed to insert system id '{}' to Systems map.");
+  }
 }
 
 /**
@@ -194,7 +197,14 @@ void WorldManager::createSystem(TARGS &&...args) {
  */
 
 template <typename T> void WorldManager::removeSystem() {
-  m_systems.erase(std::type_index(typeid(T)));
+  auto key = std::type_index(typeid(T));
+
+  if(m_systems.contains(key)){
+  m_systems.erase(key);
+  return;
+  }
+
+  spdlog::warn("Unable to remove a System from m_systems.");
 }
 
 /**
@@ -205,7 +215,7 @@ template <typename T> void WorldManager::removeSystem() {
  */
 
 template <typename T> auto WorldManager::hasSystem() const -> bool {
-  return m_systems.find(std::type_index(typeid(T))) != m_systems.end();
+  return m_systems.contains(std::type_index(typeid(T)));
 }
 
 /**
@@ -219,8 +229,13 @@ template <typename T> auto WorldManager::getSystem() const -> T & {
   // 1. find the map iterator pointer by the key.
   // 2. get value from pair(iter pair)  with ->second
   // 3. cast to T* and dereference for return.
-  return *(std::static_pointer_cast<T>(
-      m_systems.find(std::type_index(typeid(T)))->second));
+   auto key = std::type_index(typeid(T));
+
+  if(! m_systems.contains(key)){
+    spdlog::critical("Failed to get System from Systems map.");
+  }
+
+  return *(std::static_pointer_cast<T>( m_systems.find(key)->second));
 }
 
 /** Same as the above but for callable directly by GameObject */

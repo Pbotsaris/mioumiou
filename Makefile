@@ -14,7 +14,7 @@ SPDLOG=$(shell pkg-config --cflags --libs spdlog)
 
 INCLUDES=-Ilibs/glm -Ilibs/imgui -Ilibs/lua -Ilibs/sol -Isrc -Ilibs/doctest
 
-CFLAGS= -Wall -Werror -Wextra -std=c++17 -Wno-unknown-warning-option
+CFLAGS= -Wall -Werror -Wextra -std=c++20 -Wno-unknown-warning-option 
 LIBFLAGS= $(SDL) $(LUA) $(SPDLOG)
 DEBUGFLAGS= -g3
 

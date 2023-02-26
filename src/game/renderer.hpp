@@ -21,14 +21,16 @@ public:
   Renderer(Renderer &) = delete;
   Renderer(Renderer &&) = delete;
 
-  void operator=(Renderer &) = delete;
-  void operator=(Renderer &&) = delete;
+  Renderer& operator=(const Renderer&) = delete;
+  Renderer& operator=(Renderer &&) = delete;
 
   void setDrawColor(Colors &&color);
   void fillReact(SDL_Rect *rect);
   void clear();
   void present();
-  auto drawImage(const std::string &path, Destination &&dest) -> bool;
+  void drawImage(SDL_Texture *tex, Destination &&dest);
+  auto createTexture(const std::string &path)-> SDL_Texture*;
+
   [[nodiscard]] auto valid() const -> bool;
 
 

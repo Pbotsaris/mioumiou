@@ -8,7 +8,10 @@
 #include "systems/all.hpp"
 
 Game::Game()
-    : m_renderer(std::make_unique<Renderer>(m_window)), m_wm(std::make_unique<WorldManager>()) {
+    : m_renderer(std::make_unique<Renderer>(m_window)),
+    m_wm(std::make_unique<WorldManager>()),
+    m_store(std::make_unique<AssetStore>())
+{
   if (m_renderer->valid()) {
     m_window.setFullScreen();
   }
@@ -22,10 +25,19 @@ Game::~Game() {
 
 
 void Game::setup() {
+
+  m_store->loadTexture(m_renderer, "tank-right", "./assets/images/tank-panther-right.png");
+  m_store->loadTexture(m_renderer, "tree", "./assets/images/tree.png");
+
   auto tank = m_wm->createGameObject();
-  tank.addComponent<TransformComponent>(glm::vec2(0,0), glm::vec2(1,1), 1);
+  tank.addComponent<TransformComponent>(glm::vec2(0,0), glm::vec2(1,1), 0.0);
   tank.addComponent<RigidBodyComponent>(glm::vec2(1,1));
-  tank.addComponent<SpriteComponent>("./assets/images/tank-panther-right.png", glm::vec2(32, 32));  //NOLINT
+  tank.addComponent<SpriteComponent>("tank-right", glm::vec2(32, 32));  //NOLINT
+                                                                           
+  auto tank2 = m_wm->createGameObject();
+  tank2.addComponent<TransformComponent>(glm::vec2(0,40), glm::vec2(1, 1),0.0); //NOLINT
+  tank2.addComponent<RigidBodyComponent>(glm::vec2(1,0));
+  tank2.addComponent<SpriteComponent>("tree", glm::vec2(23, 23));  //NOLINT
 
   /* Registering systems in the world on setup */
   m_wm->createSystem<MovementSystem>();
@@ -63,7 +75,7 @@ void Game::processInput() {
 void Game::render() {
     m_renderer->setDrawColor(Gray());
     m_renderer->clear();
-    m_wm->getSystem<RenderSystem>().update(m_renderer);
+    m_wm->getSystem<RenderSystem>().update(m_renderer, m_store);
     m_renderer->present();
 }
 

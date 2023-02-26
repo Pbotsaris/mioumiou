@@ -4,9 +4,11 @@
 #include <glm.hpp>
 
 struct RigidBodyComponent {
-  glm::vec2 velocity;
+  glm::vec2 velocity = glm::vec2(0.0, 0.0);
 
-  explicit RigidBodyComponent(glm::vec2 vel = glm::vec2(0.0, 0.0))
+  RigidBodyComponent() = default;
+
+  explicit RigidBodyComponent(glm::vec2 vel )
       : velocity(vel) {}
 };
 

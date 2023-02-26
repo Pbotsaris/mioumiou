@@ -6,36 +6,39 @@
 #include "components/sprite_component.hpp"
 #include "components/transform_component.hpp"
 #include "ecs/system.hpp"
+#include "game/asset_store.hpp"
 #include "game/renderer.hpp"
 
 class RenderSystem : public System {
 
 public:
-   RenderSystem(){
+  RenderSystem() {
     requiredComponent<TransformComponent>();
     requiredComponent<SpriteComponent>();
   }
 
-  void update(std::unique_ptr<Renderer> &renderer) {
+  void update(std::unique_ptr<Renderer> &renderer,
+              std::unique_ptr<AssetStore> &store) {
 
     for (auto &gameObject : gameObjects()) {
 
       const auto transform = gameObject.getComponent<TransformComponent>();
       const auto sprite = gameObject.getComponent<SpriteComponent>();
-
       const glm::vec2 dimension = sprite.dimensions * transform.scale;
 
-      bool valid = renderer->drawImage( sprite.path, {
-              static_cast<int>(transform.position.x), // NOLINT: member of unions
-              static_cast<int>(transform.position.y), // NOLINT: member of unions
-              static_cast<int>(dimension.x), // NOLINT
-              static_cast<int>(dimension.y), // NOLINT
-          });
+      SDL_Texture *tex = store->getTexture(sprite.key);
 
-      if (!valid) {
-         spdlog::warn("Failed to render GameObject id '{1}' sprite path: '{2}'",
-                     gameObject.id(), sprite.path);
+      if (tex == nullptr) {
+        spdlog::warn("Failed to render GameObject id '{}' sprite path: '{}'. " "Texture does not exist.", gameObject.id(), sprite.key);
+        return;
       }
+
+      renderer->drawImage( tex, {
+                   static_cast<int>( transform.position.x), // NOLINT: member of unions
+                   static_cast<int>( transform.position.y),     // NOLINT: member of unions
+                   static_cast<int>(dimension.x), // NOLINT
+                   static_cast<int>(dimension.y), // NOLINT
+               });
     }
   }
 

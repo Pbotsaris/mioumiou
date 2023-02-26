@@ -27,22 +27,20 @@ void Renderer::fillReact(SDL_Rect *rect) {
   SDL_RenderFillRect(m_renderer, rect);
 }
 
-auto Renderer::drawImage(const std::string &path, Destination &&dest) -> bool {
+void Renderer::drawImage(SDL_Texture *tex, Destination &&dest){
+  SDL_RenderCopy(m_renderer, tex, nullptr, &dest.react);
+}
+
+
+auto Renderer::createTexture(const std::string &path)-> SDL_Texture*{
   SDL_Surface *surface = IMG_Load(path.c_str());
 
   if (surface == nullptr) {
-    return false;
+    return nullptr;
   }
 
   SDL_Texture *tex = SDL_CreateTextureFromSurface(m_renderer, surface);
-
-  if(tex == nullptr){
-    return false;
-  }
-
   SDL_FreeSurface(surface);
-  SDL_RenderCopy(m_renderer, tex, nullptr, &dest.react);
-  SDL_DestroyTexture(tex);
 
-  return true;
+  return tex;
 }
