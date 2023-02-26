@@ -8,7 +8,7 @@
 #include "systems/all.hpp"
 
 Game::Game()
-    : m_renderer(std::make_shared<Renderer>(m_window)), m_wm(std::make_unique<WorldManager>()) {
+    : m_renderer(std::make_unique<Renderer>(m_window)), m_wm(std::make_unique<WorldManager>()) {
   if (m_renderer->valid()) {
     m_window.setFullScreen();
   }
@@ -20,8 +20,8 @@ Game::~Game() {
   SDL_Quit();
 }
 
-void Game::setup() {
 
+void Game::setup() {
   auto tank = m_wm->createGameObject();
   tank.addComponent<TransformComponent>(glm::vec2(0,0), glm::vec2(1,1), 1);
   tank.addComponent<RigidBodyComponent>(glm::vec2(1,1));
@@ -29,7 +29,7 @@ void Game::setup() {
 
   /* Registering systems in the world on setup */
   m_wm->createSystem<MovementSystem>();
-  m_wm->createSystem<RenderSystem>(m_renderer);
+  m_wm->createSystem<RenderSystem>();
 }
 
 void Game::update() {
@@ -63,7 +63,7 @@ void Game::processInput() {
 void Game::render() {
     m_renderer->setDrawColor(Gray());
     m_renderer->clear();
-    m_wm->getSystem<RenderSystem>().update();
+    m_wm->getSystem<RenderSystem>().update(m_renderer);
     m_renderer->present();
 }
 

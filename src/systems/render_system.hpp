@@ -11,13 +11,12 @@
 class RenderSystem : public System {
 
 public:
-  explicit RenderSystem(std::shared_ptr<Renderer> &renderer)
-      : m_renderer(renderer) {
+   RenderSystem(){
     requiredComponent<TransformComponent>();
     requiredComponent<SpriteComponent>();
   }
 
-  void update() {
+  void update(std::unique_ptr<Renderer> &renderer) {
 
     for (auto &gameObject : gameObjects()) {
 
@@ -26,15 +25,12 @@ public:
 
       const glm::vec2 dimension = sprite.dimensions * transform.scale;
 
-      bool valid = m_renderer->drawImage( sprite.path, {
+      bool valid = renderer->drawImage( sprite.path, {
               static_cast<int>(transform.position.x), // NOLINT: member of unions
               static_cast<int>(transform.position.y), // NOLINT: member of unions
               static_cast<int>(dimension.x), // NOLINT
               static_cast<int>(dimension.y), // NOLINT
           });
-
-         spdlog::info("position -> x: {}, y: {}, size -> w: {}, h: 3", 
-                     transform.position.x, transform.position.y,  dimension.x, dimension.y); //NOLINT
 
       if (!valid) {
          spdlog::warn("Failed to render GameObject id '{1}' sprite path: '{2}'",
@@ -44,7 +40,6 @@ public:
   }
 
 private:
-  std::shared_ptr<Renderer> m_renderer;
 };
 
 #endif

@@ -28,7 +28,7 @@ private:
   bool          m_isRunning = false; 
   uint32_t      m_prevFrameTime = 0; 
   Window        m_window;
-  std::shared_ptr<Renderer>     m_renderer;
+  std::unique_ptr<Renderer>     m_renderer;
   std::unique_ptr<WorldManager> m_wm;
 
   void capFrameRate()const;
