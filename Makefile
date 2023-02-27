@@ -2,7 +2,7 @@
 CC=clang++
 OBJ=obj
 BIN=bin
-TARGET=$(BIN)/2dengine
+TARGET=$(BIN)/mioumiou
 SRC=src
 
 $(shell mkdir -p obj obj/game obj/components obj/ecs obj/systems bin)

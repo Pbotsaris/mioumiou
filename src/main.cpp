@@ -1,4 +1,4 @@
-#define DOCTEST_CONFIG_IMPLEMENT 
+#define DOCTEST_CONFIG_IMPLEMENT
 #include "ecs/component.hpp"
 #include "ecs/game_object.hpp"
 #include "ecs/system.hpp"
@@ -9,13 +9,17 @@ int main(int argc, char *argv[]) {
   /* Tests with --test */
   int res = Tester::test(argc, argv);
 
-  if (res > 0){
+  if (res > 0) {
     return res;
   }
 
- Game game;
- game.run();
-  
+  /* return early on tests */
+  if (Tester::didTest(argc, argv)) {
+    return 0;
+  }
+
+  Game game;
+  game.run();
 
   return 0;
 }

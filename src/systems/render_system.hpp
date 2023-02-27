@@ -17,16 +17,14 @@ public:
     requiredComponent<SpriteComponent>();
   }
 
-  void update(std::unique_ptr<Renderer> &renderer,
-              std::unique_ptr<AssetStore> &store) {
+  void update(std::unique_ptr<Renderer> &renderer, std::unique_ptr<AssetStore> &store) {
 
     for (auto &gameObject : gameObjects()) {
 
-      const auto transform = gameObject.getComponent<TransformComponent>();
-      const auto sprite = gameObject.getComponent<SpriteComponent>();
-      const glm::vec2 dimension = sprite.dimensions * transform.scale;
-
-      SDL_Texture *tex = store->getTexture(sprite.key);
+      const auto transform       = gameObject.getComponent<TransformComponent>();
+      const auto sprite          = gameObject.getComponent<SpriteComponent>();
+      const glm::vec2 dimension  = sprite.dimensions * transform.scale;
+      SDL_Texture *tex           = store->getTexture(sprite.key);
 
       if (tex == nullptr) {
         spdlog::warn("Failed to render GameObject id '{}' sprite path: '{}'. " "Texture does not exist.", gameObject.id(), sprite.key);

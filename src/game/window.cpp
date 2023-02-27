@@ -1,11 +1,11 @@
 #include "window.hpp"
 
-Window::Window()
+Window::Window(size_t width, size_t height)
     : m_valid(true), m_window(SDL_CreateWindow(nullptr,
                                                SDL_WINDOWPOS_CENTERED, // NOLINT
                                                SDL_WINDOWPOS_CENTERED, // NOLINT
-                                               static_cast<int>(WINDOW_WIDTH),
-                                               static_cast<int>(WINDOW_HEIGHT),
+                                               static_cast<int>(width),
+                                               static_cast<int>(height),
                                                SDL_WINDOW_BORDERLESS)) {
   m_valid = m_window != nullptr;
 }
