@@ -7,10 +7,11 @@
 #include <string>
 
 #include "colors.hpp"
-#include "components/all.hpp"
 #include "game.hpp"
-#include "systems/all.hpp"
 #include "utils//numbers.hpp"
+#include "components/all.hpp"
+#include "systems/all.hpp"
+#include "map_builder.hpp"
 
 Game::Game()
     : m_window(std::make_unique<Window>(WINDOW_WIDTH, WINDOW_HEIGHT)),
@@ -24,58 +25,6 @@ Game::~Game() {
   SDL_Quit();
 }
 
-void Game::loadMap(const std::string &path, const std::string &delim = ",") { // NOLINT
-
-  std::string line;
-  std::ifstream mapFile(path);
-
-  int32_t rowCount = 0; 
-
-  while (std::getline(mapFile, line)) {
-    
-    size_t linePos = 0;
-    int32_t colCount  = 0;
-                   
-    while ((linePos = line.find(delim)) != std::string::npos) {
-      std::string val = line.substr(0, linePos);
-
-      if (val.size() < 2) {
-        spdlog::error("map value {} should have 2 digits. Failed to load map.", val);
-        return;
-      }
-
-      loadTile(val, {colCount * TILE_SIZE, rowCount * TILE_SIZE});
-
-      line.erase(0, linePos + delim.length());
-      colCount++;
-    }
-
-    loadTile(line, {colCount * TILE_SIZE, rowCount * TILE_SIZE});
-
-    rowCount++;
-  }
-
-  mapFile.close();
-}
-
-void Game::loadTile(const std::string &value, glm::vec2 position, double tileScale) {
-
-  auto [cropY, okY] = Numbers::fromChar<int32_t>(value[0]);
-  auto [cropX, okX] = Numbers::fromChar<int32_t>(value[1]);
-
-  if (!okX || !okY) {
-    spdlog::error( "Unable converted map values '{},{}' to integer. Failed to load map.", value[0], value[1]);
-    return;
-  }
-
-  auto mapTile = m_wm->createGameObject();
-  glm::vec2 scale(tileScale, tileScale);
-
-  mapTile.addComponent<TransformComponent>( position * scale, scale, 0.0);
-  mapTile.addComponent<SpriteComponent>( "map", glm::vec2(TILE_SIZE, TILE_SIZE),
-      SpriteComponent::makeCrop(TILE_SIZE * cropX, TILE_SIZE * cropY, TILE_SIZE, TILE_SIZE));
-}
-
 void Game::loadLevel(uint32_t level) {
 
   spdlog::info("loading level {}", level);
@@ -84,7 +33,8 @@ void Game::loadLevel(uint32_t level) {
   m_store->loadTexture(m_renderer, "tree", "./assets/images/tree.png");
   m_store->loadTexture(m_renderer, "map", "./assets/tilemaps/jungle.png");
 
-  loadMap("./assets/tilemaps/jungle.map");
+  MapBuilder mapBuilder("./assets/tilemaps/jungle.map", "map");
+  mapBuilder.build(m_wm);
 
   auto tank = m_wm->createGameObject();
   tank.addComponent<TransformComponent>(glm::vec2(0, 0), glm::vec2(1, 1), 45);  // NOLINT
@@ -92,22 +42,22 @@ void Game::loadLevel(uint32_t level) {
                                                               //
   tank.addComponent<SpriteComponent>( "tank-right",
       glm::vec2(TILE_SIZE, TILE_SIZE),
-      SpriteComponent::makeCrop(0, 0, TILE_SIZE, TILE_SIZE)); // NOLINT
+      SpriteComponent::makeCrop(0, 0, TILE_SIZE, TILE_SIZE), 1); // NOLINT
 
   auto tank2 = m_wm->createGameObject();
   tank2.addComponent<TransformComponent>(glm::vec2(0, 0), glm::vec2(1, 1), 0.0);       
-  tank2.addComponent<RigidBodyComponent>(glm::vec2(0.4, 0)); // NOLINT
+  tank2.addComponent<RigidBodyComponent>(glm::vec2(0.4, 0.4)); // NOLINT
                                                             
   tank2.addComponent<SpriteComponent>( "tree",
       glm::vec2(TILE_SIZE, TILE_SIZE),
-      SpriteComponent::makeCrop(0, 0, TILE_SIZE, TILE_SIZE)); // NOLINT
+      SpriteComponent::makeCrop(0, 0, TILE_SIZE, TILE_SIZE), 2); // NOLINT
 }
 
 void Game::setup() {
 
   /* Registering systems in the world on setup */
-
   loadLevel(1);
+
   m_wm->createSystem<MovementSystem>();
   m_wm->createSystem<RenderSystem>();
 }
@@ -180,10 +130,3 @@ auto Game::deltatime() const -> double {
   return (SDL_GetTicks(), m_prevFrameTime) / MILLISECS;
 }
 
-TEST_CASE("Game") {
-
-  SUBCASE("Loading a map") {
-    Game game;
-    game.loadMap("./assets/tilemaps/jungle.map", "this");
-  }
-}

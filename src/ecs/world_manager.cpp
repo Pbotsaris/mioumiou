@@ -80,8 +80,7 @@ void WorldManager::gameObjectToSystems(GameObject gameObject) {
      * System does not support.
      */
 
-    bool satisfied =
-        (sys->componentSignature() & gameObjSig) == sys->componentSignature();
+    bool satisfied = (sys->componentSignature() & gameObjSig) == sys->componentSignature();
 
     if (satisfied) {
       sys->addGameObject(gameObject);
