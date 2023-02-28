@@ -1,22 +1,22 @@
 #include <SDL2/SDL.h>
 #include <cstdlib>
-#include <iostream>
-#include <spdlog/spdlog.h>
 #include <doctest.h>
 #include <fstream>
+#include <iostream>
+#include <spdlog/spdlog.h>
 #include <string>
 
 #include "colors.hpp"
 #include "components/all.hpp"
 #include "game.hpp"
 #include "systems/all.hpp"
+#include "utils//numbers.hpp"
 
 Game::Game()
     : m_window(std::make_unique<Window>(WINDOW_WIDTH, WINDOW_HEIGHT)),
       m_renderer(std::make_unique<Renderer>(m_window)),
       m_wm(std::make_unique<WorldManager>()),
-      m_store(std::make_unique<AssetStore>()) {
-}
+      m_store(std::make_unique<AssetStore>()) {}
 
 Game::~Game() {
   m_window->~Window(); // destroy window first
@@ -24,66 +24,90 @@ Game::~Game() {
   SDL_Quit();
 }
 
-//TODO: work on this
-void Game::loadMap(const std::string &path, const std::string &key, const std::string &delim = ",") { //NOLINT
+void Game::loadMap(const std::string &path, const std::string &delim = ",") { // NOLINT
 
-//  std::string line;
-//  std::ifstream mapFile(path);
-//  std::cout << key << "\n";
-//  size_t tileSize = TILE_SIZE;
-//
-//  auto map = m_wm->createGameObject();
-//  // w: 12px
-//  // h: 4px
-//
-//  while(std::getline(mapFile, line)) {
-//    size_t pos = 0;
-//
-//    while((pos = line.find(delim)) != std::string::npos ){
-//      std::string val = line.substr(0, pos);
-//      if(val.size() < 2){
-//        spdlog::error("map value {} should have 2 digits.", val);
-//        return;
-//      }
-//
-//     // std::atoi(&val[0])
-//
-//       map.addComponent<SpriteComponent>
-//         ("tank-right",
-//          glm::vec2(32.0, 32.0), // NOLINT
-//          SpriteComponent::makeCrop(0, 0, 32.0, 32.0)); // NOLINT
-//      
-//       line.erase(0, pos + delim.length());
-//    }
-//    std::cout << line << "\n";
-//  }
+  std::string line;
+  std::ifstream mapFile(path);
 
- // mapFile.close();
+  int32_t rowCount = 0; 
+
+  while (std::getline(mapFile, line)) {
+    
+    size_t linePos = 0;
+    int32_t colCount  = 0;
+                   
+    while ((linePos = line.find(delim)) != std::string::npos) {
+      std::string val = line.substr(0, linePos);
+
+      if (val.size() < 2) {
+        spdlog::error("map value {} should have 2 digits. Failed to load map.", val);
+        return;
+      }
+
+      loadTile(val, {colCount * TILE_SIZE, rowCount * TILE_SIZE});
+
+      line.erase(0, linePos + delim.length());
+      colCount++;
+    }
+
+    loadTile(line, {colCount * TILE_SIZE, rowCount * TILE_SIZE});
+
+    rowCount++;
+  }
+
+  mapFile.close();
 }
 
-void Game::loadLevel(uint32_t level){
+void Game::loadTile(const std::string &value, glm::vec2 position, double tileScale) {
+
+  auto [cropY, okY] = Numbers::fromChar<int32_t>(value[0]);
+  auto [cropX, okX] = Numbers::fromChar<int32_t>(value[1]);
+
+  if (!okX || !okY) {
+    spdlog::error( "Unable converted map values '{},{}' to integer. Failed to load map.", value[0], value[1]);
+    return;
+  }
+
+  auto mapTile = m_wm->createGameObject();
+  glm::vec2 scale(tileScale, tileScale);
+
+  mapTile.addComponent<TransformComponent>( position * scale, scale, 0.0);
+  mapTile.addComponent<SpriteComponent>( "map", glm::vec2(TILE_SIZE, TILE_SIZE),
+      SpriteComponent::makeCrop(TILE_SIZE * cropX, TILE_SIZE * cropY, TILE_SIZE, TILE_SIZE));
+}
+
+void Game::loadLevel(uint32_t level) {
 
   spdlog::info("loading level {}", level);
-  
+
   m_store->loadTexture(m_renderer, "tank-right", "./assets/images/tank-panther-right.png");
   m_store->loadTexture(m_renderer, "tree", "./assets/images/tree.png");
   m_store->loadTexture(m_renderer, "map", "./assets/tilemaps/jungle.png");
 
+  loadMap("./assets/tilemaps/jungle.map");
+
   auto tank = m_wm->createGameObject();
-  tank.addComponent<TransformComponent>(glm::vec2(0, 0), glm::vec2(3, 3), 45);//NOLINT
-  tank.addComponent<RigidBodyComponent>(glm::vec2(0.3, 0.3)); //NOLINT
-  tank.addComponent<SpriteComponent>("tank-right", glm::vec2(TILE_SIZE, TILE_SIZE), SpriteComponent::makeCrop(0, 0, 32.0, 32.0)); // NOLINT
+  tank.addComponent<TransformComponent>(glm::vec2(0, 0), glm::vec2(1, 1), 45);  // NOLINT
+  tank.addComponent<RigidBodyComponent>(glm::vec2(0.3, 0.3)); // NOLINT
+                                                              //
+  tank.addComponent<SpriteComponent>( "tank-right",
+      glm::vec2(TILE_SIZE, TILE_SIZE),
+      SpriteComponent::makeCrop(0, 0, TILE_SIZE, TILE_SIZE)); // NOLINT
 
   auto tank2 = m_wm->createGameObject();
-  tank2.addComponent<TransformComponent>(glm::vec2(0, 40), glm::vec2(1, 1), 0.0); // NOLINT
-  tank2.addComponent<RigidBodyComponent>(glm::vec2(0.4, 0)); //NOLINT
-
-  tank2.addComponent<SpriteComponent>("tree", glm::vec2(TILE_SIZE, TILE_SIZE), SpriteComponent::makeCrop(0, 0, 32, 32)); // NOLINT
+  tank2.addComponent<TransformComponent>(glm::vec2(0, 0), glm::vec2(1, 1), 0.0);       
+  tank2.addComponent<RigidBodyComponent>(glm::vec2(0.4, 0)); // NOLINT
+                                                            
+  tank2.addComponent<SpriteComponent>( "tree",
+      glm::vec2(TILE_SIZE, TILE_SIZE),
+      SpriteComponent::makeCrop(0, 0, TILE_SIZE, TILE_SIZE)); // NOLINT
 }
 
 void Game::setup() {
 
   /* Registering systems in the world on setup */
+
+  loadLevel(1);
   m_wm->createSystem<MovementSystem>();
   m_wm->createSystem<RenderSystem>();
 }
@@ -94,7 +118,8 @@ void Game::update() {
   capFrameRate();
 
   double delta = deltatime();
-  m_wm->getSystem<MovementSystem>().update( delta); // will update the system at every iteration
+  m_wm->getSystem<MovementSystem>().update(
+      delta); // will update the system at every iteration
   m_wm->update();
 
   m_prevFrameTime = SDL_GetTicks();
@@ -155,14 +180,10 @@ auto Game::deltatime() const -> double {
   return (SDL_GetTicks(), m_prevFrameTime) / MILLISECS;
 }
 
+TEST_CASE("Game") {
 
-TEST_CASE("Game"){
-
-
-  SUBCASE("Loading a map"){
+  SUBCASE("Loading a map") {
     Game game;
     game.loadMap("./assets/tilemaps/jungle.map", "this");
-
   }
-
 }

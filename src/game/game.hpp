@@ -23,7 +23,9 @@ public:
   void render();
   void processInput();
   void loadLevel(uint32_t level);
-  void loadMap(const std::string &path, const std::string &key, const std::string &delim);
+
+  void loadMap(const std::string &path, const std::string &delim);
+  void loadTile(const std::string &value, glm::vec2 position, double tileScale = 1.0);
 
   [[nodiscard]] auto isValid() const -> bool;
 
@@ -41,8 +43,8 @@ private:
 
   constexpr static const int8_t FPS = 60; 
   constexpr static const int8_t MSECS_PER_FRAME = 1000/FPS; 
+  constexpr static const int32_t TILE_SIZE = 32;
   constexpr static const double MILLISECS =  1000.0;
-  constexpr static const size_t TILE_SIZE = 32;
   constexpr static const size_t WINDOW_WIDTH = 1920;
   constexpr static const size_t WINDOW_HEIGHT = 1080;
 
