@@ -19,9 +19,7 @@ void System::removeGameObject(GameObject gameObject) {
     i++;
   }
 
-  spdlog::warn("Could not remove GameObject::id '{}' from "
-               "System::m_gameObjects. it Does not exist.",
-               gameObject.id());
+  spdlog::warn("Could not remove GameObject::id '{}' from " "System::m_gameObjects. it Does not exist.", gameObject.id());
 }
 
 auto System::gameObjects() const -> std::vector<GameObject> {

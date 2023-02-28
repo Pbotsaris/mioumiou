@@ -10,12 +10,12 @@ struct SpriteComponent {
   std::string key;
   glm::vec2   dimensions;
   SDL_Rect    crop;
-  uint32_t    zPosition;
+  int32_t    zPosition;
 
-  explicit SpriteComponent(std::string key,
+   explicit SpriteComponent(std::string key = "", // NOLINT
                            glm::vec2   spriteDimensions = {0, 0},
                            SDL_Rect    rect = {0, 0, 0, 0},
-                           uint32_t    zPosition = 0)
+                           int32_t    zPosition = 0)
       : key(std::move(key)),
       dimensions(spriteDimensions),
       crop(rect),

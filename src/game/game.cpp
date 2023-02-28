@@ -42,15 +42,15 @@ void Game::loadLevel(uint32_t level) {
                                                               //
   tank.addComponent<SpriteComponent>( "tank-right",
       glm::vec2(TILE_SIZE, TILE_SIZE),
-      SpriteComponent::makeCrop(0, 0, TILE_SIZE, TILE_SIZE), 1); // NOLINT
+      SpriteComponent::makeCrop(0, 0, TILE_SIZE, TILE_SIZE), 2); // NOLINT
 
   auto tank2 = m_wm->createGameObject();
   tank2.addComponent<TransformComponent>(glm::vec2(0, 0), glm::vec2(1, 1), 0.0);       
-  tank2.addComponent<RigidBodyComponent>(glm::vec2(0.4, 0.4)); // NOLINT
+  tank2.addComponent<RigidBodyComponent>(glm::vec2(0.3, 0.3)); // NOLINT
                                                             
   tank2.addComponent<SpriteComponent>( "tree",
       glm::vec2(TILE_SIZE, TILE_SIZE),
-      SpriteComponent::makeCrop(0, 0, TILE_SIZE, TILE_SIZE), 2); // NOLINT
+      SpriteComponent::makeCrop(0, 0, TILE_SIZE, TILE_SIZE), 1); // NOLINT
 }
 
 void Game::setup() {

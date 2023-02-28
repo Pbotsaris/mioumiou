@@ -19,7 +19,7 @@ public:
 
   void update(std::unique_ptr<Renderer> &renderer, std::unique_ptr<AssetStore> &store) {
 
-    for (auto &gameObject : gameObjects()) {
+    for (auto &gameObject : sortedGameObjects()) {
 
       const auto transform       = gameObject.getComponent<TransformComponent>();
       const auto sprite          = gameObject.getComponent<SpriteComponent>();
@@ -43,6 +43,7 @@ public:
   }
 
 private:
+[[nodiscard]] auto sortedGameObjects() const -> std::vector<GameObject> ;
 };
 
 #endif

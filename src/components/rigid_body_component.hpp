@@ -6,7 +6,7 @@
 struct RigidBodyComponent {
   glm::vec2 velocity ;
 
-  explicit RigidBodyComponent(glm::vec2 vel ={0.0, 0.0})
+   explicit RigidBodyComponent(glm::vec2 vel ={0.0, 0.0}) // NOLINT
       : velocity(vel) {}
 };
 
