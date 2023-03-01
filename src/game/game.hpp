@@ -4,6 +4,12 @@
 #include "game/asset_store.hpp"
 #include "renderer.hpp"
 #include "ecs/world_manager.hpp"
+#include "map_builder.hpp"
+
+struct MapDimension {
+   int32_t width;
+   int32_t height;
+};
 
 class Game {
 
@@ -38,13 +44,21 @@ private:
   void capFrameRate()const;
   [[nodiscard]] auto deltatime() const -> double;
 
-  constexpr static const int8_t FPS = 60; 
-  constexpr static const int8_t MSECS_PER_FRAME = 1000/FPS; 
-  constexpr static const double MILLISECS =  1000.0;
-  constexpr static const int32_t TILE_SIZE = 32;
-  constexpr static const size_t WINDOW_WIDTH = 1920;
-  constexpr static const size_t WINDOW_HEIGHT = 1080;
+  constexpr static const int8_t       FPS = 60; 
+  constexpr static const int8_t       MSECS_PER_FRAME = 1000/FPS; 
+  constexpr static const double       MILLISECS =  1000.0;
 
+  constexpr static const size_t       WINDOW_WIDTH = 800;
+  constexpr static const size_t       WINDOW_HEIGHT = 640;
+  constexpr static const MapDimension NB_TILES = {.width = 25, .height = 20};
+
+  /* the size of tiles are defined by resolution and number number of tiles
+   * in the map files (i.e. ./assets/tilemaps/jungle.map)
+   * */
+  constexpr static const TileDimension TILE = {
+                                                .width =  WINDOW_WIDTH / NB_TILES.width,
+                                                .height =  WINDOW_HEIGHT / NB_TILES.height,
+  };
 };
 
 #endif
@@ -63,7 +77,6 @@ or applying layer-specific effects and behaviors.
 Use a spatial partitioning algorithm: A spatial partitioning algorithm such as quadtree or octree can be used to divide the game world into separate layers or regions. Each layer or
 region can be represented by a separate partition, and entities can be assigned to the partition that corresponds to their position. This approach can help improve performance by reducing the
 number of entities that need to be processed or rendered at once.
-
 
 Use a combination of the above approaches: Depending on the complexity of your ECS and the specific requirements of your game or application, you may need to use a combination
 of the above approaches to implement layers effectively. For example, you can use a layer component to tag entities with their layer index, use a layer manager system to handle

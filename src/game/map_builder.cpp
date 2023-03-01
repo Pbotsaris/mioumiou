@@ -6,12 +6,7 @@
 #include "utils/numbers.hpp"
 
 MapBuilder::MapBuilder(std::string mapPath, std::string imageStoreKey,
-                       std::string delim)
-    : m_mapPath(std::move(mapPath)), m_storeKey(std::move(imageStoreKey)),
-      m_delim(std::move(delim)){}
-
-MapBuilder::MapBuilder(std::string mapPath, std::string imageStoreKey,
-                       TitleDimensions tile, std::string delim)
+                       const TileDimension &tile, std::string delim)
     : m_mapPath(std::move(mapPath)), m_storeKey(std::move(imageStoreKey)),
       m_tile(tile), m_delim(std::move(delim)) {}
 
@@ -40,21 +35,21 @@ void MapBuilder::build(std::unique_ptr<WorldManager> &wm) { // NOLINT
         return;
       }
 
-      loadTile(wm, val, {colCount * m_tile.size, rowCount * m_tile.size});
+      loadTile(wm, val, {colCount * m_tile.width, rowCount * m_tile.height});
 
       line.erase(0, linePos + m_delim.length());
       colCount++;
     }
 
-    loadTile(wm, line, {colCount * m_tile.size, rowCount * m_tile.size});
+    loadTile(wm, line, {colCount * m_tile.width, rowCount * m_tile.height});
 
     rowCount++;
   }
 
   mapFile.close();
 }
-
 void MapBuilder::loadTile(std::unique_ptr<WorldManager> &wm, // NOLINT
+
                           const std::string &value, glm::vec2 position) const {
 
   auto [cropY, okY] = Numbers::fromChar<int32_t>(value[0]);
@@ -69,6 +64,6 @@ void MapBuilder::loadTile(std::unique_ptr<WorldManager> &wm, // NOLINT
   glm::vec2 scale(m_tile.scale, m_tile.scale);
 
   mapTile.addComponent<TransformComponent>(position * scale, scale, 0.0);
-  mapTile.addComponent<SpriteComponent>( m_storeKey, glm::vec2(m_tile.size, m_tile.size),
-      SpriteComponent::makeCrop(m_tile.size * cropX, m_tile.size * cropY, m_tile.size, m_tile.size), 0);
+  mapTile.addComponent<SpriteComponent>( m_storeKey, glm::vec2(m_tile.width, m_tile.height),
+      SpriteComponent::makeCrop(m_tile.width * cropX, m_tile.height * cropY, m_tile.width, m_tile.height), 0);
 }
