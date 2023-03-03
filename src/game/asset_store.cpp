@@ -8,6 +8,7 @@ void AssetStore::loadTexture(std::unique_ptr<Renderer> &renderer,
                              std::string &&key, const std::string &path) {
 
   SDL_Texture *tex = renderer->createTexture(path);
+  spdlog::debug("attempting to add textue key {} to AssetStore", key);
 
   if (tex == nullptr) {
     spdlog::error("Failed to load texture id '{}' from '{}'", key, path);
@@ -16,7 +17,7 @@ void AssetStore::loadTexture(std::unique_ptr<Renderer> &renderer,
   bool ok = m_textures.insert({key, tex}).second; // NOLINT: short var
 
   if (!ok) {
-    spdlog::error( "Failed insert texture id '{}' to Textures map. Destroying texture...", key);
+    spdlog::warn( "Failed insert texture id '{}' to AssetStore. Texture already exist", key);
     SDL_DestroyTexture(tex);
   }
 }

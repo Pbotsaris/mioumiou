@@ -12,3 +12,8 @@ auto RenderSystem::sortedGameObjects() const -> std::vector<GameObject>{
 
   return objs;
 }
+
+
+auto RenderSystem::name() const -> std::string {
+  return "RenderSystem";
+}

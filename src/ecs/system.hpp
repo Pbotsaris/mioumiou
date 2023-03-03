@@ -16,6 +16,8 @@ public:
   System& operator=(const System &) = default;
   System& operator=(System &&) = default;
 
+  [[nodiscard]] virtual auto name() const -> std::string;
+
   void addGameObject(GameObject gameObject);
   void removeGameObject(GameObject gameObject);
 

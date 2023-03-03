@@ -42,8 +42,10 @@ public:
     }
   }
 
+  [[nodiscard]] auto name() const -> std::string override;
+
 private:
-[[nodiscard]] auto sortedGameObjects() const -> std::vector<GameObject> ;
+  [[nodiscard]] auto sortedGameObjects() const -> std::vector<GameObject> ;
 };
 
 #endif

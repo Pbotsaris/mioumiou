@@ -23,7 +23,7 @@ void update(double deltatime){
     transform.position += (rigidBody.velocity * glm::vec2(deltatime, deltatime));
   }
 }
-
+  [[nodiscard]] auto name() const -> std::string override;
 };
 
 #endif

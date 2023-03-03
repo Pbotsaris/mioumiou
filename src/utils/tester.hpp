@@ -3,28 +3,42 @@
 
 #include "doctest.h"
 #include <iostream>
+#include <spdlog/spdlog.h>
 #include <string>
 
 struct Tester {
 
   static auto test(int argc, char **argv) -> int {
     return doTest(argc > 1 &&
-                  (std::string(argv[1]) == "--test")); // NOLINT: raw strings
+                  (std::string(argv[1]) == "-test")); // NOLINT: raw strings
   }
 
   static auto didTest(int argc, char **argv) -> bool {
     return argc > 1 && willTest(std::string(argv[1])); // NOLINT: raw string
   }
 
+  static void logDebug(int argc, char **argv) {
+    if (argc <= 1) {
+      return;
+    }
+
+    for (int i = 0; i < argc; i++) {
+      if (std::string(argv[i]) == "-log=debug") { // NOLINT
+        spdlog::info("Setting log level to DEBUG.");
+        spdlog::set_level(spdlog::level::debug); // Debug logs on testing
+      }
+    }
+  }
 
 private:
-
   static auto willTest(std::string &&argv) -> bool { return argv == "--test"; }
 
   static auto doTest(bool t_will_test) -> int {
     if (!t_will_test) {
       return 0;
     }
+
+    spdlog::set_level(spdlog::level::debug); // Debug logs on testing
 
     doctest::Context ctx;
     ctx.setOption("abort-after", 5); // NOLINT: Num Constant

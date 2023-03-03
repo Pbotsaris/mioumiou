@@ -1,6 +1,6 @@
 #include "world_manager.hpp"
-#include "components/rigid_body_component.hpp"
-#include "components/transform_component.hpp"
+#include "components/all.hpp"
+#include "systems/all.hpp"
 #include "doctest.h"
 #include "spdlog/spdlog.h"
 
@@ -25,8 +25,7 @@ auto WorldManager::createGameObject() -> GameObject {
   // we queue the game object to be added by update
   m_gameObjectAddQueue.insert(gameObject);
 
-  spdlog::info("GameObject id '{}' created and queued for insert.",
-               gameObject.id());
+  spdlog::info("GameObject id '{}' created and queued for insert.", gameObject.id());
 
   return gameObject;
 }
@@ -66,8 +65,7 @@ auto WorldManager::gameObjectCount() const -> std::uint32_t {
  */
 
 void WorldManager::gameObjectToSystems(GameObject gameObject) {
-  const Signature &gameObjSig =
-      m_gameObjectcomponentSignatures.at(gameObject.id());
+  const Signature &gameObjSig = m_gameObjectcomponentSignatures.at(gameObject.id());
 
   for (auto &keypair : m_systems) {
     std::shared_ptr<System> sys = keypair.second;
@@ -82,7 +80,10 @@ void WorldManager::gameObjectToSystems(GameObject gameObject) {
 
     bool satisfied = (sys->componentSignature() & gameObjSig) == sys->componentSignature();
 
+      //spdlog::debug("GameObject id '{}' added to {}.", gameObject.id(), sys->name());
+
     if (satisfied) {
+      spdlog::info("GameObject id '{}' added to {}.", gameObject.id(), sys->name());
       sys->addGameObject(gameObject);
     }
   }
@@ -144,6 +145,27 @@ TEST_CASE("World Manager") { // NOLINT
     CHECK(obj.hasComponent<RigidBodyComponent>() == true);
     obj.removeComponent<RigidBodyComponent>();
     CHECK(obj.hasComponent<RigidBodyComponent>() == false);
+  }
+
+
+  SUBCASE("create component and add its respective system"){
+
+    auto obj = wm.createGameObject();
+
+    obj.addComponent<SpriteComponent>();
+    obj.addComponent<AnimationComponent>();
+    obj.addComponent<RigidBodyComponent>();
+    obj.addComponent<TransformComponent>();
+    
+    wm.createSystem<AnimationSystem>();
+
+    // update must come before we get the system
+    wm.update();
+
+    auto sys = wm.getSystem<AnimationSystem>();
+    CHECK(sys.gameObjects().size() != 0);
+    CHECK(sys.gameObjects()[0] == obj);
+
   }
 
 }

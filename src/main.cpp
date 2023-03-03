@@ -6,8 +6,11 @@
 #include "utils/tester.hpp"
 
 int main(int argc, char *argv[]) {
-  /* Tests with --test */
+  /* Tests with -test */
   int res = Tester::test(argc, argv);
+
+  /* set log level -log=debug etc */
+  Tester::logDebug(argc, argv);
 
   if (res > 0) {
     return res;

@@ -33,11 +33,17 @@ test: all testing
 
 run: all exec
 
+run_debug: all exec_debug
+
 exec:
 	./$(TARGET)
 
+exec_debug:
+	./$(TARGET) -log=debug
+
+
 testing:
-	./$(TARGET) --test
+	./$(TARGET) -test
 
 clean:
 	rm -f $(TARGET) $(OBJ)/*.o $(OBJ)/game/*.o $(OBJ)/ecs/*.o $(OBJ)/components/*.o $(OBJ)/systems/*.o 

@@ -32,7 +32,7 @@ auto System::componentSignature() const -> const Signature & {
 
 TEST_CASE("System") { // NOLINT: ignore warnings from external libs
 
-  System system;
+  System system; 
   uint32_t id1 = 1;
   uint32_t id2 = 2;
   uint32_t id3 = 3;
