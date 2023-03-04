@@ -1,6 +1,7 @@
 #include "renderer.hpp"
 #include "errors.hpp"
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_render.h>
 
 ImageDimensions::ImageDimensions(const SDL_Rect *crop, const SDL_Rect *dimension, const double rotation) //NOLINT
   : sourceCrop(crop), destDimension(dimension), rotation(rotation){}; //NOLINT
@@ -19,14 +20,14 @@ auto Renderer::valid() const -> bool { return m_valid; }
 
 void Renderer::setDrawColor(Colors &&color) {
   auto rgba = color.getColor();
-  SDL_SetRenderDrawColor(m_renderer, rgba.r, rgba.g, rgba.b, rgba.a); // black
+  SDL_SetRenderDrawColor(m_renderer, rgba.r, rgba.g, rgba.b, rgba.a); 
 }
 
 void Renderer::clear() { SDL_RenderClear(m_renderer); }
 void Renderer::present() { SDL_RenderPresent(m_renderer); }
-void Renderer::fillReact(SDL_Rect *rect) {
-  SDL_RenderFillRect(m_renderer, rect);
-}
+void Renderer::fillRect(SDL_Rect *rect) { SDL_RenderFillRect(m_renderer, rect); }
+
+void Renderer::drawRect(SDL_Rect *rect) { SDL_RenderDrawRect(m_renderer, rect); }
 
 void Renderer::drawImage(SDL_Texture *tex, ImageDimensions &&dimensions){
   SDL_RenderCopyEx(m_renderer, tex, dimensions.sourceCrop, dimensions.destDimension, dimensions.rotation, nullptr, SDL_FLIP_NONE);

@@ -1,7 +1,6 @@
 #include "component.hpp"
 #include "doctest.h"
 
-
 TEST_CASE("Components"){ // NOLINT: Lib emits errors
   SUBCASE("Components returns unique id depending on template type"){
 

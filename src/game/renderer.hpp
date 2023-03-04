@@ -28,7 +28,8 @@ public:
   Renderer& operator=(Renderer &&) = delete;
 
   void setDrawColor(Colors &&color);
-  void fillReact(SDL_Rect *rect);
+  void fillRect(SDL_Rect *rect);
+  void drawRect(SDL_Rect *rect);
   void clear();
   void present();
   void drawImage(SDL_Texture *tex, ImageDimensions &&dimensions);

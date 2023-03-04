@@ -1,8 +1,7 @@
 #ifndef COLLISION_SYSTEM_H
 #define COLLISION_SYSTEM_H
 
-#include "components/boxcollider_component.hpp"
-#include "components/transform_component.hpp"
+#include "components/all.hpp"
 #include "ecs/system.hpp"
 #include <functional>
 #include <spdlog/spdlog.h>
@@ -19,6 +18,7 @@ public:
   CollisionSystem() {
     requiredComponent<BoxColliderComponent>();
     requiredComponent<TransformComponent>();
+    requiredComponent<DebugComponent>();
   }
 
   void update() {
@@ -29,7 +29,7 @@ public:
       auto transform = current->getComponent<TransformComponent>();
       auto collider = current->getComponent<BoxColliderComponent>();
 
-     Position currentPos(transform.position + collider.offset,
+      Position currentPos(transform.position + collider.offset,
                           transform.position + collider.size + collider.offset);
 
       verifyCollision(objs.end(), currentPos, current);
@@ -40,31 +40,32 @@ public:
 
 private:
   void verifyCollision(const std::vector<GameObject>::iterator end,
-                        Position &currentPos,
+                       Position &currentPos,
                        std::vector<GameObject>::iterator current) const {
 
     for (auto next = current + 1; next < end; next++) {
 
-      auto transform = next->getComponent<TransformComponent>();
-      auto collider = next->getComponent<BoxColliderComponent>();
+      const auto transform = next->getComponent<TransformComponent>();
+      const auto collider = next->getComponent<BoxColliderComponent>();
+
+      auto &currentDebug = current->getComponent<DebugComponent>();
+      auto &nextDebug = next->getComponent<DebugComponent>();
 
       Position nextPos(transform.position + collider.offset,
                        transform.position + collider.size + collider.offset);
 
-      if (hasCollidedLeftBottom(currentPos, nextPos)) {
-        spdlog::warn("has collided left bottom.");
-      }
+      // TODO: progragate collision
+      if (hasCollidedLeftBottom(currentPos, nextPos) ||
+          hasCollidedLeftTop(currentPos, nextPos) ||
+          hasCollidedRightBottom(currentPos, nextPos) ||
+          hasCollidedRightTop(currentPos, nextPos)) {
 
-      if (hasCollidedLeftTop(currentPos, nextPos)) {
-        spdlog::warn("has collided left top.");
-      }
+        // TODO: emmit event instead
+        nextDebug.collision.hasCollided = true;
+        currentDebug.collision.hasCollided = true;
 
-      if (hasCollidedRightBottom(currentPos, nextPos)) {
-        spdlog::warn("has collided right bottom.");
-      }
-
-      if (hasCollidedRightTop(currentPos, nextPos)) {
-        spdlog::warn("has collided right top.");
+        current->remove();
+        next->remove();
       }
     }
   }

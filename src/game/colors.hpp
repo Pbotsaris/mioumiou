@@ -11,7 +11,6 @@ struct RGBA {
 };
 
 class Colors { // NOLINT
-
   public:
   virtual ~Colors() = default;
 
@@ -40,6 +39,24 @@ class Gray : public Colors {
 class White : public Colors {
   public:
   White() noexcept;
+  [[nodiscard]] auto getColor() const -> RGBA override;
+
+  private:
+  RGBA m_color;
+};
+
+class Red : public Colors {
+  public:
+  Red() noexcept;
+  [[nodiscard]] auto getColor() const -> RGBA override;
+
+  private:
+  RGBA m_color;
+};
+
+class Yellow : public Colors {
+  public:
+  Yellow() noexcept;
   [[nodiscard]] auto getColor() const -> RGBA override;
 
   private:

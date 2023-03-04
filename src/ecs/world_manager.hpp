@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <iostream>
 #include <set>
+#include <deque>
 #include <spdlog/spdlog.h>
 #include <unordered_map>
 #include <typeindex>
@@ -68,8 +69,13 @@ class WorldManager {
     std::set<GameObject> m_gameObjectAddQueue;
     std::set<GameObject> m_gameObjectRemoveQueue;
 
+    /* destroyed objects ids availale for resuse */
+    std::deque<uint32_t> m_freedGameObjectIds;
 
     void gameObjectToSystems(GameObject gameObject);
+    void removeGameObjectFromSystems(GameObject gameObject);
+
+    auto makeId() -> uint32_t;
 };
 
 /** Templated method implementation from here **/

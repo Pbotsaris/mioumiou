@@ -1,8 +1,8 @@
 #include "world_manager.hpp"
 #include "components/all.hpp"
-#include "systems/all.hpp"
 #include "doctest.h"
 #include "spdlog/spdlog.h"
+#include "systems/all.hpp"
 
 /**
  * Creates a new GameObject in the World.
@@ -13,21 +13,29 @@
  */
 
 auto WorldManager::createGameObject() -> GameObject {
-  uint32_t id = m_gameObjectCount++; // NOLINT: id is too short
 
-  if (m_gameObjectCount >= m_gameObjectcomponentSignatures.size()) {
-    // resize component signature vec
-    m_gameObjectcomponentSignatures.resize(m_gameObjectCount + 1);
-  }
-  GameObject gameObject(
-      id, this); // give a sequential id and a reference to the worldManager
+  uint32_t id = makeId(); // NOLINT: short variable
 
-  // we queue the game object to be added by update
+  GameObject gameObject(id, this); // give objs reference to the WorldManager
+
   m_gameObjectAddQueue.insert(gameObject);
-
-  spdlog::info("GameObject id '{}' created and queued for insert.", gameObject.id());
+  spdlog::info("GameObject id '{}' created and queued for insert.",
+               gameObject.id());
 
   return gameObject;
+}
+
+/**
+ *  Removes a new GameObject in the World.
+ *  This method only queues GameObject for removal
+ *  GameObject will be removed upon calling the WordManager::update method by
+ * the game loop ids of removed GameObjects are stored in m_freedGameObjectIds
+ * for later reuse
+ * @param  the Game object to remove
+ */
+
+void WorldManager::removeGameObject(GameObject gameObject) {
+  m_gameObjectRemoveQueue.insert(gameObject);
 }
 
 /**
@@ -42,7 +50,14 @@ void WorldManager::update() {
     gameObjectToSystems(gameObject);
   }
 
+  for (const auto gameObject : m_gameObjectRemoveQueue) {
+    removeGameObjectFromSystems(gameObject);
+    m_gameObjectcomponentSignatures.at(gameObject.id()).reset();
+    m_freedGameObjectIds.push_back(gameObject.id()); // avail for reuse
+  }
+
   m_gameObjectAddQueue.clear();
+  m_gameObjectRemoveQueue.clear();
 }
 
 /**
@@ -65,7 +80,8 @@ auto WorldManager::gameObjectCount() const -> std::uint32_t {
  */
 
 void WorldManager::gameObjectToSystems(GameObject gameObject) {
-  const Signature &gameObjSig = m_gameObjectcomponentSignatures.at(gameObject.id());
+  const Signature &gameObjSig =
+      m_gameObjectcomponentSignatures.at(gameObject.id());
 
   for (auto &keypair : m_systems) {
     std::shared_ptr<System> sys = keypair.second;
@@ -78,18 +94,68 @@ void WorldManager::gameObjectToSystems(GameObject gameObject) {
      * System does not support.
      */
 
-    bool satisfied = (sys->componentSignature() & gameObjSig) == sys->componentSignature();
+    bool satisfied =
+        (sys->componentSignature() & gameObjSig) == sys->componentSignature();
 
-      //spdlog::debug("GameObject id '{}' added to {}.", gameObject.id(), sys->name());
+    // spdlog::debug("GameObject id '{}' added to {}.", gameObject.id(),
+    // sys->name());
 
     if (satisfied) {
-      spdlog::info("GameObject id '{}' added to {}.", gameObject.id(), sys->name());
+      spdlog::info("GameObject id '{}' added to {}.", gameObject.id(),
+                   sys->name());
       sys->addGameObject(gameObject);
     }
   }
 }
 
-// unit tests only
+/**
+ * Removes a GameObject from all systems that is has been registered to.
+ * @param gameObject: A GameObject
+ */
+
+void WorldManager::removeGameObjectFromSystems(GameObject gameObject) {
+  const Signature &gameObjSig =
+      m_gameObjectcomponentSignatures.at(gameObject.id());
+
+  for (auto &keypair : m_systems) {
+    std::shared_ptr<System> sys = keypair.second;
+
+    bool satisfied =
+        (sys->componentSignature() & gameObjSig) == sys->componentSignature();
+
+    /* we only removed object exists in system */
+    if (satisfied) {
+      sys->removeGameObject(gameObject);
+    }
+  }
+}
+
+/**
+ * Makes an ID from a newly created GameObject
+ * Method will check m_freedGameObjectIds from available ids to be reused
+ * otherwise creates a new one.
+ *
+ * @return uint32_t GameObject ID
+ */
+
+auto WorldManager::makeId() -> uint32_t {
+
+  if (!m_freedGameObjectIds.empty()) {
+    uint32_t id = m_freedGameObjectIds.front(); // NOLINT: short variable
+    m_freedGameObjectIds.pop_front();
+    return id;
+  }
+
+  uint32_t id = m_gameObjectCount++; // NOLINT: short variable
+
+  // resize component signature vec
+  if (m_gameObjectCount >= m_gameObjectcomponentSignatures.size()) {
+    m_gameObjectcomponentSignatures.resize(m_gameObjectCount + 1);
+  }
+  return id;
+}
+
+/* UNIT TESTS */
 
 TEST_CASE("World Manager") { // NOLINT
 
@@ -117,7 +183,6 @@ TEST_CASE("World Manager") { // NOLINT
     CHECK(comp.velocity == glm::vec2(2.0, 2.0)); // NOLINT
   }
 
-
   SUBCASE("Remove component from obj") {
 
     auto obj = wm.createGameObject();
@@ -126,7 +191,6 @@ TEST_CASE("World Manager") { // NOLINT
     CHECK(wm.hasComponent<RigidBodyComponent>(obj) == true);
     wm.removeComponent<RigidBodyComponent>(obj);
     CHECK(wm.hasComponent<RigidBodyComponent>(obj) == false);
-
   }
 
   SUBCASE("Add component via GameObject") {
@@ -134,9 +198,8 @@ TEST_CASE("World Manager") { // NOLINT
     obj.addComponent<RigidBodyComponent>(glm::vec2(3.0, 3.0)); // NOLINT
 
     auto c = obj.getComponent<RigidBodyComponent>(); // NOLINT
-    CHECK(c.velocity == glm::vec2(3.0, 3.0));         // NOLINT
+    CHECK(c.velocity == glm::vec2(3.0, 3.0));        // NOLINT
   }
-
 
   SUBCASE("Remove component via GameObject") {
     auto obj = wm.createGameObject();
@@ -147,8 +210,7 @@ TEST_CASE("World Manager") { // NOLINT
     CHECK(obj.hasComponent<RigidBodyComponent>() == false);
   }
 
-
-  SUBCASE("create component and add its respective system"){
+  SUBCASE("create component and add its respective system") {
 
     auto obj = wm.createGameObject();
 
@@ -156,7 +218,7 @@ TEST_CASE("World Manager") { // NOLINT
     obj.addComponent<AnimationComponent>();
     obj.addComponent<RigidBodyComponent>();
     obj.addComponent<TransformComponent>();
-    
+
     wm.createSystem<AnimationSystem>();
 
     // update must come before we get the system
@@ -165,7 +227,5 @@ TEST_CASE("World Manager") { // NOLINT
     auto sys = wm.getSystem<AnimationSystem>();
     CHECK(sys.gameObjects().size() != 0);
     CHECK(sys.gameObjects()[0] == obj);
-
   }
-
 }

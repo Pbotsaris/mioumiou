@@ -16,6 +16,8 @@ public:
 
   [[nodiscard]] auto id() const -> uint32_t;
 
+  void remove();
+
   auto operator==(const GameObject &other) const -> bool;
   auto operator!=(const GameObject &other) const -> bool;
   auto operator>(const GameObject &other) const -> bool;
@@ -26,6 +28,7 @@ public:
   template<typename T>void removeComponent();
   template<typename T>[[nodiscard]] auto hasComponent() const -> bool;
   template<typename T>[[nodiscard]] auto getComponent() const -> T&;
+
 
 private:
   std::uint32_t m_id;
