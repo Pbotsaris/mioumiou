@@ -3,6 +3,8 @@
 
 #include "components/all.hpp"
 #include "ecs/system.hpp"
+#include "event_system/event_bus.hpp"
+#include "events/collision_event.hpp"
 #include <functional>
 #include <spdlog/spdlog.h>
 
@@ -21,7 +23,7 @@ public:
     requiredComponent<DebugComponent>();
   }
 
-  void update() {
+  void update(std::unique_ptr<EventBus> &eventBus) {
     auto objs = gameObjects();
 
     for (auto current = objs.begin(); current < objs.end(); current++) {
@@ -32,15 +34,17 @@ public:
       Position currentPos(transform.position + collider.offset,
                           transform.position + collider.size + collider.offset);
 
-      verifyCollision(objs.end(), currentPos, current);
+      verifyCollision(eventBus, objs.end(), currentPos, current);
     };
   };
 
   [[nodiscard]] auto name() const -> std::string override;
 
 private:
-  void verifyCollision(const std::vector<GameObject>::iterator end,
-                       Position &currentPos,
+  void verifyCollision(
+                      std::unique_ptr<EventBus> &eventBus,
+                      const std::vector<GameObject>::iterator end,
+                      Position &currentPos,
                        std::vector<GameObject>::iterator current) const {
 
     for (auto next = current + 1; next < end; next++) {
@@ -64,8 +68,7 @@ private:
         nextDebug.collision.hasCollided = true;
         currentDebug.collision.hasCollided = true;
 
-        current->remove();
-        next->remove();
+        eventBus->dispatchEvent<CollisionEvent>(current, next);
       }
     }
   }

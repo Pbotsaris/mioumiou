@@ -5,6 +5,7 @@
 #include "renderer.hpp"
 #include "ecs/world_manager.hpp"
 #include "map_builder.hpp"
+#include "event_system/event_bus.hpp"
 
 struct MapDimension {
    int32_t width;
@@ -40,6 +41,7 @@ private:
   std::unique_ptr<Renderer>     m_renderer;
   std::unique_ptr<WorldManager> m_wm;
   std::unique_ptr<AssetStore>   m_store;
+  std::unique_ptr<EventBus>      m_eventBus;
 
   void capFrameRate()const;
   [[nodiscard]] auto deltatime() const -> double;

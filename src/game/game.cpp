@@ -17,7 +17,9 @@ Game::Game()
     : m_window(std::make_unique<Window>(WINDOW_WIDTH, WINDOW_HEIGHT)),
       m_renderer(std::make_unique<Renderer>(m_window)),
       m_wm(std::make_unique<WorldManager>()),
-      m_store(std::make_unique<AssetStore>()) {}
+      m_store(std::make_unique<AssetStore>()),
+      m_eventBus(std::make_unique<EventBus>())
+{}
 
 Game::~Game() {
   m_window->~Window(); // destroy window first
@@ -108,7 +110,7 @@ void Game::update() {
   double delta = deltatime();
   m_wm->getSystem<MovementSystem>().update(delta);
   m_wm->getSystem<AnimationSystem>().update();
-  m_wm->getSystem<CollisionSystem>().update();
+  m_wm->getSystem<CollisionSystem>().update(m_eventBus);
 
   m_prevFrameTime = SDL_GetTicks();
 }
