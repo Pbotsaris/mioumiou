@@ -5,7 +5,7 @@
 #include "components/rigid_body_component.hpp"
 #include <spdlog/spdlog.h>
 
-class  MovementSystem : public System {
+class  MovementSystem : public System { //NOLINT
 
   public:
   MovementSystem(){

@@ -95,6 +95,7 @@ void Game::setup() {
   m_wm->createSystem<AnimationSystem>();
   m_wm->createSystem<CollisionSystem>();
   m_wm->createSystem<RenderDebugSystem>();
+  m_wm->createSystem<DamageSystem>();
 }
 
 /** **/
@@ -103,6 +104,9 @@ void Game::update() {
 
   /* removing this fuction will allow the game to run as fast as it can! */
   capFrameRate();
+
+  /* subscribe event listeners */
+  handleEvents();
 
   /* add newly created GameObjects to system */
   m_wm->update();
@@ -165,6 +169,17 @@ void Game::run() {
 }
 
 /* Private */
+
+void Game::handleEvents(){
+
+  //TODO: Do we need to subscribe & clear bus at every frame?
+  // We could improve this with a smarter data structure.
+  // A buffer of subscriptions that are only added and removed at certain "events" or for a certain object ID.
+  // For example, when an entity is removed, then we go ahead and remove all the events
+  // associated with that entity.
+  m_eventBus->clear();
+  m_wm->getSystem<DamageSystem>().addEventListeners(m_eventBus);
+}
 
 void Game::capFrameRate() const {
   uint32_t waitTime = MSECS_PER_FRAME - (m_prevFrameTime - SDL_GetTicks());

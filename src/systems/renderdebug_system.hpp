@@ -9,7 +9,7 @@
 #include "game/colors.hpp"
 #include "game/renderer.hpp"
 
-class RenderDebugSystem : public System {
+class RenderDebugSystem : public System { //NOLINT
 
 public:
   RenderDebugSystem() {

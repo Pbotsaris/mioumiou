@@ -9,7 +9,7 @@ class System {
 
 public:
   System() = default;
-  virtual ~System() = default;
+  virtual ~System(){};
 
   System(System &&) = default;
   System(const System &) = default;

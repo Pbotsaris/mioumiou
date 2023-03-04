@@ -43,6 +43,8 @@ private:
   std::unique_ptr<AssetStore>   m_store;
   std::unique_ptr<EventBus>      m_eventBus;
 
+  void handleEvents();
+
   void capFrameRate()const;
   [[nodiscard]] auto deltatime() const -> double;
 

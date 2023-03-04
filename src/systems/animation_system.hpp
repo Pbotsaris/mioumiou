@@ -10,12 +10,14 @@
 #include "ecs/system.hpp"
 #include "utils/constants.hpp"
 
-class AnimationSystem : public System {
+class AnimationSystem : public System { //NOLINT
   public:
   AnimationSystem() {
     requiredComponent<SpriteComponent>();
     requiredComponent<AnimationComponent>();
   }
+
+
 
   //TODO: Improve using string/names to identify animation steps instead of numbers
 

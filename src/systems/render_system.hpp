@@ -9,7 +9,7 @@
 #include "game/asset_store.hpp"
 #include "game/renderer.hpp"
 
-class RenderSystem : public System {
+class RenderSystem : public System { // NOLINT
 
 public:
   RenderSystem() {

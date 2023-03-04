@@ -8,7 +8,7 @@
 #include <functional>
 #include <spdlog/spdlog.h>
 
-class CollisionSystem : public System {
+class CollisionSystem : public System { //NOLINT
 
   struct Position {
     glm::vec2 origin;
@@ -16,12 +16,14 @@ class CollisionSystem : public System {
     Position(glm::vec2 origin, glm::vec2 size) : origin(origin), end(size){}; // NOLINT
   };
 
+
 public:
   CollisionSystem() {
     requiredComponent<BoxColliderComponent>();
     requiredComponent<TransformComponent>();
     requiredComponent<DebugComponent>();
   }
+
 
   void update(std::unique_ptr<EventBus> &eventBus) {
     auto objs = gameObjects();
@@ -68,7 +70,7 @@ private:
         nextDebug.collision.hasCollided = true;
         currentDebug.collision.hasCollided = true;
 
-        eventBus->dispatchEvent<CollisionEvent>(current, next);
+        eventBus->dispatchEvent<CollisionEvent>(*current, *next);
       }
     }
   }
