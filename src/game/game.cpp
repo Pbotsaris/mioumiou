@@ -55,6 +55,7 @@ void Game::loadLevel(uint32_t level) {
   tank.addComponent<BoxColliderComponent>(glm::vec2(TILE_SIZE.width, TILE_SIZE.height));
   tank.addComponent<DebugComponent>();
   tank.addComponent<ProjectileEmiterComponent>("bullet", glm::vec2(4, 4), glm::vec2(40, 40)); // NOLINT
+  tank.addComponent<HealthComponent>();                                                                                             
 
   auto truck = m_wm->createGameObject();
   truck.addComponent<SpriteComponent>("truck-left", glm::vec2(TILE_SIZE.width, TILE_SIZE.height), 1); // NOLINT
@@ -62,6 +63,7 @@ void Game::loadLevel(uint32_t level) {
   truck.addComponent<RigidBodyComponent>(glm::vec2(20, 0.0)); // NOLINT
   truck.addComponent<BoxColliderComponent>(glm::vec2(TILE_SIZE.width, TILE_SIZE.height));
   truck.addComponent<DebugComponent>();
+  truck.addComponent<HealthComponent>();
   // ** //
 
   auto chopper = m_wm->createGameObject();
@@ -71,6 +73,7 @@ void Game::loadLevel(uint32_t level) {
   chopper.addComponent<AnimationComponent>(2, 8); // NOLINT
   chopper.addComponent<KeyboardControlComponent>(80, 80, 80, 80); // NOLINT
   chopper.addComponent<CameraFollowerComponent>();
+  chopper.addComponent<HealthComponent>(); 
 
   // ** //
   auto radar = m_wm->createGameObject();

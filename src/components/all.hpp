@@ -8,4 +8,5 @@
 #include "debug_component.hpp"
 #include "keyboard_control_component.hpp"
 #include "projectile_emiter_component.hpp"
+#include "health_component.hpp"
 #endif
