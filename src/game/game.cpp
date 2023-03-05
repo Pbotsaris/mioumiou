@@ -96,6 +96,7 @@ void Game::setup() {
   m_wm->createSystem<CollisionSystem>();
   m_wm->createSystem<RenderDebugSystem>();
   m_wm->createSystem<DamageSystem>();
+  m_wm->createSystem<KeyboardMovementSystem>();
 }
 
 /** **/
@@ -128,6 +129,8 @@ void Game::processInput() {
       m_isRunning = false;
 
     case SDL_KEYDOWN:
+      m_eventBus->dispatchEvent<KeyPressEvent>(event.key.keysym.sym, event.key.keysym.mod);
+
       if (event.key.keysym.sym == SDLK_ESCAPE) {
         m_isRunning = false;
       }
@@ -179,6 +182,7 @@ void Game::handleEvents(){
   // associated with that entity.
   m_eventBus->clear();
   m_wm->getSystem<DamageSystem>().addEventListeners(m_eventBus);
+  m_wm->getSystem<KeyboardMovementSystem>().addEventListeners(m_eventBus);
 }
 
 void Game::capFrameRate() const {
