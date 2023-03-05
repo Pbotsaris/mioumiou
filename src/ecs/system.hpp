@@ -9,14 +9,14 @@ class System {
 
 public:
   System() = default;
-  virtual ~System(){};
+  virtual ~System() = default;
 
   System(System &&) = default;
   System(const System &) = default;
   System& operator=(const System &) = default;
   System& operator=(System &&) = default;
 
-  [[nodiscard]] virtual auto name() const -> std::string;
+  [[nodiscard]] virtual auto name() const -> std::string = 0;
 
   void addGameObject(GameObject gameObject);
   void removeGameObject(GameObject gameObject);

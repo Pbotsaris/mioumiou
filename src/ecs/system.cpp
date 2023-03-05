@@ -2,6 +2,7 @@
 #include "doctest.h"
 #include <iostream>
 #include <spdlog/spdlog.h>
+#include "systems/animation_system.hpp"
 
 void System::addGameObject(GameObject gameObject) {
   m_gameObjects.push_back(gameObject);
@@ -32,7 +33,7 @@ auto System::componentSignature() const -> const Signature & {
 
 TEST_CASE("System") { // NOLINT: ignore warnings from external libs
 
-  System system; 
+  AnimationSystem system; // using animation system to test cause System is abstract 
   uint32_t id1 = 1;
   uint32_t id2 = 2;
   uint32_t id3 = 3;
