@@ -10,6 +10,7 @@
 #include "game/renderer.hpp"
 #include "events/collision_event.hpp"
 #include "event_system/event_bus.hpp"
+#include "game/camera.hpp"
 
 class RenderDebugSystem : public System { //NOLINT
 
@@ -24,7 +25,7 @@ public:
     eventBus->addEventListner<RenderDebugSystem, CollisionEvent>(this, &RenderDebugSystem::onCollision);
   }
 
-  void update(std::unique_ptr<Renderer> &renderer) {
+  void update(std::unique_ptr<Renderer> &renderer, Camera &camera) {
     for (auto &gameObject : gameObjects()) {
 
       auto &debug = gameObject.getComponent<DebugComponent>();
@@ -36,11 +37,12 @@ public:
       const auto transform = gameObject.getComponent<TransformComponent>();
       const auto collider = gameObject.getComponent<BoxColliderComponent>();
 
+
       SDL_Rect debugBorder{
-          .x = static_cast<int>(transform.position.x + collider.offset.x), // NOLINT
-          .y = static_cast<int>(transform.position.y + collider.offset.y), // NOLINT
-          .w = static_cast<int>(collider.size.x),      // NOLINT
-          .h = static_cast<int>(collider.size.y),      // NOLINT
+          .x = static_cast<int>(transform.position.x + collider.offset.x - camera.x()), // NOLINT
+          .y = static_cast<int>(transform.position.y + collider.offset.y - camera.y()), // NOLINT
+          .w = static_cast<int>(collider.size.x * transform.scale.x),      // NOLINT
+          .h = static_cast<int>(collider.size.y * transform.scale.y),      // NOLINT
       };
 
       if (debug.collision.hasCollided) {

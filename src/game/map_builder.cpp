@@ -67,7 +67,11 @@ void MapBuilder::loadTile(std::unique_ptr<WorldManager> &wm, // NOLINT
   glm::vec2 scale(m_tile.scale, m_tile.scale);
 
   mapTile.addComponent<TransformComponent>(position * scale, scale, 0.0);
+
   mapTile.addComponent<SpriteComponent>(
-      m_storeKey, glm::vec2(m_tile.width, m_tile.height),
-      SpriteComponent::makeCrop(m_tile.width * cropX, m_tile.height * cropY, m_tile.width, m_tile.height), 0);
+      m_storeKey,
+      glm::vec2(m_tile.width, m_tile.height),
+      0, // zPosition
+      false, // isFixed
+      SpriteComponent::makeCrop(m_tile.width * cropX, m_tile.height * cropY, m_tile.width, m_tile.height));
 }

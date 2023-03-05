@@ -7,5 +7,5 @@
 #include "components/sprite_component.hpp"
 #include "debug_component.hpp"
 #include "keyboard_control_component.hpp"
-
+#include "projectile_emiter_component.hpp"
 #endif

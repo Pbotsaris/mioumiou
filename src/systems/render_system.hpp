@@ -36,12 +36,16 @@ public:
         return;
       }
 
-      /* NOTE: must render objects relative to camera position */
+      /* NOTE : must render objects relative to camera position 
+       *        if fixed, ignore relative camera position
+       * */
 
+          uint32_t offsetX = sprite.isFixed ? 0 : camera.x();
+          uint32_t offsetY = sprite.isFixed ? 0 : camera.y();
 
          SDL_Rect destDimensions ={
-             .x = static_cast<int>( transform.position.x - camera.x()), // NOLINT: member of unions
-             .y = static_cast<int>( transform.position.y - camera.y()), // NOLINT: member of unions
+             .x = static_cast<int>( transform.position.x - offsetX), // NOLINT: member of unions
+             .y = static_cast<int>( transform.position.y - offsetY), // NOLINT: member of unions
              .w = static_cast<int>(dimension.x), // NOLINT
              .h = static_cast<int>(dimension.y), // NOLINT
           };

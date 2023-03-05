@@ -24,7 +24,6 @@ public:
 
       const auto transform = gameObject.getComponent<TransformComponent>();
 
-
       if (transform.position.x + (camera.width() / 2) < Game::MAP_DIMENSION.width) { // NOLINT
         camera.setX( static_cast<int32_t>(transform.position.x - (Game::WINDOW_WIDTH / 2))); // NOLINT
       }
