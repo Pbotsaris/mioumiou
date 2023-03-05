@@ -76,7 +76,7 @@ void Game::loadLevel(uint32_t level) {
   // we only hav2 two frames, with a 5 fps
   chopper.addComponent<AnimationComponent>(2, 8); // NOLINT
 
-  chopper.addComponent<KeyboardControlComponent>(40, 40, 40, 40); // NOLINT
+  chopper.addComponent<KeyboardControlComponent>(80, 80, 80, 80); // NOLINT
   chopper.addComponent<CameraFollowerComponent>();
 
   // ** //

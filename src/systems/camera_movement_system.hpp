@@ -25,13 +25,13 @@ public:
       const auto transform = gameObject.getComponent<TransformComponent>();
 
 
-      if (transform.position.x < Game::MAP_DIMENSION.width) { // NOLINT
-        camera.setX( static_cast<int32_t>(transform.position.x)); // NOLINT
+      if (transform.position.x + (camera.width() / 2) < Game::MAP_DIMENSION.width) { // NOLINT
+        camera.setX( static_cast<int32_t>(transform.position.x - (Game::WINDOW_WIDTH / 2))); // NOLINT
       }
 
 
-     if (transform.position.y < Game::MAP_DIMENSION.height) { //NOLINT
-        camera.setY( static_cast<int32_t>(transform.position.y)); // NOLINT
+     if (transform.position.y + (camera.height() / 2) < Game::MAP_DIMENSION.height) { //NOLINT
+        camera.setY( static_cast<int32_t>(transform.position.y - (Game::WINDOW_HEIGHT / 2))); // NOLINT
       }
         /* keep camera within limits */
         camera.setX(camera.x()  < 0 ? 0 : camera.x());
