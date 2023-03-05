@@ -21,7 +21,6 @@ public:
   CollisionSystem() {
     requiredComponent<BoxColliderComponent>();
     requiredComponent<TransformComponent>();
-    requiredComponent<DebugComponent>();
   }
 
 
@@ -54,21 +53,13 @@ private:
       const auto transform = next->getComponent<TransformComponent>();
       const auto collider = next->getComponent<BoxColliderComponent>();
 
-      auto &currentDebug = current->getComponent<DebugComponent>();
-      auto &nextDebug = next->getComponent<DebugComponent>();
-
       Position nextPos(transform.position + collider.offset,
                        transform.position + collider.size + collider.offset);
 
-      // TODO: progragate collision
       if (hasCollidedLeftBottom(currentPos, nextPos) ||
           hasCollidedLeftTop(currentPos, nextPos) ||
           hasCollidedRightBottom(currentPos, nextPos) ||
           hasCollidedRightTop(currentPos, nextPos)) {
-
-        // TODO: emmit event instead
-        nextDebug.collision.hasCollided = true;
-        currentDebug.collision.hasCollided = true;
 
         eventBus->dispatchEvent<CollisionEvent>(*current, *next);
       }

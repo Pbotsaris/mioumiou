@@ -8,6 +8,8 @@
 #include "ecs/system.hpp"
 #include "game/colors.hpp"
 #include "game/renderer.hpp"
+#include "events/collision_event.hpp"
+#include "event_system/event_bus.hpp"
 
 class RenderDebugSystem : public System { //NOLINT
 
@@ -16,6 +18,10 @@ public:
     requiredComponent<DebugComponent>();
     requiredComponent<BoxColliderComponent>();
     requiredComponent<TransformComponent>();
+  }
+
+  void addEventListeners(std::unique_ptr<EventBus> &eventBus){
+    eventBus->addEventListner<RenderDebugSystem, CollisionEvent>(this, &RenderDebugSystem::onCollision);
   }
 
   void update(std::unique_ptr<Renderer> &renderer) {
@@ -50,6 +56,9 @@ public:
   }
 
   [[nodiscard]] auto name() const -> std::string override;
+
+private:
+   void onCollision(CollisionEvent &event);
 };
 
 #endif

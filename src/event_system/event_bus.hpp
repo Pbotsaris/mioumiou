@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include "event_system/event_callback.hpp"
 
-using EventHandlerList = std::list<std::unique_ptr<EventCallbackInterface>>;
+using EventHandlerList = std::list<std::unique_ptr<EventCallbackWrapperInterface>>;
 using SubscriberMap = std::unordered_map<std::type_index, std::unique_ptr<EventHandlerList> >;
 
 class EventBus {
@@ -42,7 +42,7 @@ void EventBus::addEventListner(TLISTENER *listener, void(TLISTENER::*callback)(T
   }
 
   /* push subscribers to the list */
-  auto callbackWrapper = std::make_unique<EventCallback<TLISTENER, TEVENT>>(listener, callback);
+  auto callbackWrapper = std::make_unique<EventCallbackWrapper<TLISTENER, TEVENT>>(listener, callback);
 
   /* move the ownership of the unique pointer to the list */
   m_listerners[typeid(TEVENT)]->push_back(std::move(callbackWrapper));

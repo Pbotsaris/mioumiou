@@ -3,14 +3,10 @@
 #include "event_system/event.hpp"
 #include <functional>
 
-/* Interface to make the templated EventCallback class generic
- * and be stored in an in-common data structure
- * */
-
-class EventCallbackInterface { // NOLINT: no constructor for interfaces
+class EventCallbackWrapperInterface { // NOLINT: no constructor for interfaces
 
 public:
-  virtual ~EventCallbackInterface() = default;
+  virtual ~EventCallbackWrapperInterface() = default;
   void execute(Event &event) { call(event); };
 
 private:
@@ -28,14 +24,14 @@ private:
  * */
 
 template <typename TLISTENER, typename TEVENT>
-class EventCallback : public EventCallbackInterface { // NOLINT
+class EventCallbackWrapper : public EventCallbackWrapperInterface { // NOLINT
 
 public:
   using CallbackFunc = void (TLISTENER::*)(TEVENT &);
 
-  EventCallback(TLISTENER *listener, CallbackFunc callback)
+  EventCallbackWrapper(TLISTENER *listener, CallbackFunc callback)
       : m_listener(listener), m_callback(callback) {}
-  ~EventCallbackInterface() override = default;
+  ~EventCallbackWrapper() override = default;
 
 private:
   TLISTENER *m_listener;

@@ -19,8 +19,7 @@ auto WorldManager::createGameObject() -> GameObject {
   GameObject gameObject(id, this); // give objs reference to the WorldManager
 
   m_gameObjectAddQueue.insert(gameObject);
-  spdlog::info("GameObject id '{}' created and queued for insert.",
-               gameObject.id());
+  spdlog::debug("GameObject id '{}' created and queued for insert.", gameObject.id());
 
   return gameObject;
 }
@@ -101,7 +100,7 @@ void WorldManager::gameObjectToSystems(GameObject gameObject) {
     // sys->name());
 
     if (satisfied) {
-      spdlog::info("GameObject id '{}' added to {}.", gameObject.id(),
+      spdlog::debug("GameObject id '{}' added to {}.", gameObject.id(),
                    sys->name());
       sys->addGameObject(gameObject);
     }

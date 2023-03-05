@@ -123,7 +123,7 @@ void WorldManager::addComponent(GameObject gameObject, TARGS &&...args) {
   // set the component signature for this gameObject with the added component
   m_gameObjectcomponentSignatures.at(gameObject.id()).set(componentId);
 
-  spdlog::info("Component id '{}' was added to GameObject id '{}'",  componentId, gameObject.id());
+  spdlog::debug("Component id '{}' was added to GameObject id '{}'",  componentId, gameObject.id());
 }
 
 /**
