@@ -7,6 +7,7 @@
 #include "systems/collision_system.hpp"
 #include "systems/renderdebug_system.hpp"
 #include "systems/damage_system.hpp"
-#include "systems/keyboard_movement_system.hpp"
+#include "systems/keyboard_control_system.hpp"
+#include "systems/camera_movement_system.hpp"
 
 #endif

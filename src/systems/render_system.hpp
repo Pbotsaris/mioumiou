@@ -8,6 +8,7 @@
 #include "ecs/system.hpp"
 #include "game/asset_store.hpp"
 #include "game/renderer.hpp"
+#include "game/camera.hpp"
 
 class RenderSystem : public System { // NOLINT
 
@@ -17,7 +18,10 @@ public:
     requiredComponent<SpriteComponent>();
   }
 
-  void update(std::unique_ptr<Renderer> &renderer, std::unique_ptr<AssetStore> &store) {
+  void update(std::unique_ptr<Renderer> &renderer,
+      Camera &camera,
+      std::unique_ptr<AssetStore> &store
+      ) {
 
     for (auto &gameObject : sortedGameObjects()) {
 
@@ -26,14 +30,18 @@ public:
       const glm::vec2 dimension  = sprite.dimensions * transform.scale;
       SDL_Texture *tex           = store->getTexture(sprite.key);
 
+
       if (tex == nullptr) {
         spdlog::warn("Failed to render GameObject id '{}' sprite path: '{}'. " "Texture does not exist.", gameObject.id(), sprite.key);
         return;
       }
 
+      /* NOTE: must render objects relative to camera position */
+
+
          SDL_Rect destDimensions ={
-             .x = static_cast<int>( transform.position.x), // NOLINT: member of unions
-             .y = static_cast<int>( transform.position.y), // NOLINT: member of unions
+             .x = static_cast<int>( transform.position.x - camera.x()), // NOLINT: member of unions
+             .y = static_cast<int>( transform.position.y - camera.y()), // NOLINT: member of unions
              .w = static_cast<int>(dimension.x), // NOLINT
              .h = static_cast<int>(dimension.y), // NOLINT
           };

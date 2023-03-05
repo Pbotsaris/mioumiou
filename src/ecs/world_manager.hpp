@@ -112,9 +112,9 @@ void WorldManager::addComponent(GameObject gameObject, TARGS &&...args) {
 
   // grow pool to the current total number of objects in the world
   if (gameObject.id() >= pool->size()) {
+
     pool->resize(m_gameObjectCount);
   }
-
   T newComponent(std::forward<TARGS>(args)...);
   // or T newComponent = std::move(T(std::forward<TARGS>(args)...));
 

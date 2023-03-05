@@ -16,7 +16,8 @@ void MapBuilder::build(std::unique_ptr<WorldManager> &wm) { // NOLINT
   std::ifstream mapFile(m_mapPath);
 
   if (!mapFile) {
-    spdlog::error("Failed to build map.Could not find provided path: '{}'.", m_mapPath);
+    spdlog::error("Failed to build map.Could not find provided path: '{}'.",
+                  m_mapPath);
     return;
   }
 
@@ -31,7 +32,8 @@ void MapBuilder::build(std::unique_ptr<WorldManager> &wm) { // NOLINT
       std::string val = line.substr(0, linePos);
 
       if (val.size() < 2) {
-        spdlog::error("map value {} should have 2 digits. Failed to load map.", val);
+        spdlog::error("map value {} should have 2 digits. Failed to load map.",
+                      val);
         return;
       }
 
@@ -49,14 +51,15 @@ void MapBuilder::build(std::unique_ptr<WorldManager> &wm) { // NOLINT
   mapFile.close();
 }
 void MapBuilder::loadTile(std::unique_ptr<WorldManager> &wm, // NOLINT
-
                           const std::string &value, glm::vec2 position) const {
 
   auto [cropY, okY] = Numbers::fromChar<int32_t>(value[0]);
   auto [cropX, okX] = Numbers::fromChar<int32_t>(value[1]);
 
   if (!okX || !okY) {
-    spdlog::error( "Unable converted map values '{},{}' to integer. Failed to build map.", value[0], value[1]);
+    spdlog::error(
+        "Unable converted map values '{},{}' to integer. Failed to build map.",
+        value[0], value[1]);
     return;
   }
 
@@ -64,6 +67,7 @@ void MapBuilder::loadTile(std::unique_ptr<WorldManager> &wm, // NOLINT
   glm::vec2 scale(m_tile.scale, m_tile.scale);
 
   mapTile.addComponent<TransformComponent>(position * scale, scale, 0.0);
-  mapTile.addComponent<SpriteComponent>( m_storeKey, glm::vec2(m_tile.width, m_tile.height),
+  mapTile.addComponent<SpriteComponent>(
+      m_storeKey, glm::vec2(m_tile.width, m_tile.height),
       SpriteComponent::makeCrop(m_tile.width * cropX, m_tile.height * cropY, m_tile.width, m_tile.height), 0);
 }
