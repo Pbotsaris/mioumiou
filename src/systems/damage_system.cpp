@@ -6,7 +6,7 @@ auto DamageSystem::name()const->std::string { return "DamageSystem"; }
 void DamageSystem::onCollision(CollisionEvent &event){
   spdlog::debug("damage system receive onCollision of '{}' and '{}'", event.a().id(), event.b().id());
 
-  event.a().remove();
-  event.b().remove();
+ // event.a().remove();
+ // event.b().remove();
 }
 

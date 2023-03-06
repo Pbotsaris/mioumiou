@@ -7,8 +7,10 @@ GameObject::GameObject(uint32_t id, WorldManager *wm) : m_id(id), m_wm(wm) {} //
 
 auto GameObject::id() const -> uint32_t { return m_id; }
 
-void GameObject::remove(){
-  m_wm->removeGameObject(*this);
+void GameObject::remove(){ m_wm->removeGameObject(*this); }
+
+auto GameObject::worldManager() const -> WorldManager* {
+  return  m_wm;
 }
 
 /* NOTE: these operator overloads are also required 

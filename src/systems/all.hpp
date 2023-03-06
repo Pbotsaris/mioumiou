@@ -9,4 +9,6 @@
 #include "systems/keyboard_control_system.hpp"
 #include "systems/camera_movement_system.hpp"
 #include "systems/projectile_emit_system.hpp"
+#include "systems/projectile_lifecycle_system.hpp"
+#include "systems/projectile_control_system.hpp"
 #endif

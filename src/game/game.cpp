@@ -54,7 +54,7 @@ void Game::loadLevel(uint32_t level) {
   tank.addComponent<RigidBodyComponent>(glm::vec2(0, 0.0)); // NOLINT
   tank.addComponent<BoxColliderComponent>(glm::vec2(TILE_SIZE.width, TILE_SIZE.height));
   tank.addComponent<DebugComponent>();
-  tank.addComponent<ProjectileEmiterComponent>("bullet", glm::vec2(4, 4), glm::vec2(40, 40)); // NOLINT
+  tank.addComponent<ProjectileEmiterComponent>("bullet", glm::vec2(4, 4), glm::vec2(40, 40), 500, 1000); // NOLINT
   tank.addComponent<HealthComponent>();                                                                                             
 
   auto truck = m_wm->createGameObject();
@@ -65,8 +65,8 @@ void Game::loadLevel(uint32_t level) {
   truck.addComponent<DebugComponent>();
   truck.addComponent<HealthComponent>();
   // ** //
-
   auto chopper = m_wm->createGameObject();
+
   chopper.addComponent<SpriteComponent>( "chopper", glm::vec2(TILE_SIZE.width, TILE_SIZE.height), 5); //NOLINT
   chopper.addComponent<TransformComponent>(glm::vec2(200, 200), glm::vec2(1, 1));     // NOLINT
   chopper.addComponent<RigidBodyComponent>(glm::vec2(0.0, 0.0)); // NOLINT
@@ -74,6 +74,8 @@ void Game::loadLevel(uint32_t level) {
   chopper.addComponent<KeyboardControlComponent>(80, 80, 80, 80); // NOLINT
   chopper.addComponent<CameraFollowerComponent>();
   chopper.addComponent<HealthComponent>(); 
+  chopper.addComponent<ProjectileEmiterComponent>("bullet", glm::vec2(4, 4), glm::vec2(40, 40), 0, 5000); // NOLINT
+  chopper.addComponent<ProjectileControlComponent>();
 
   // ** //
   auto radar = m_wm->createGameObject();
@@ -97,17 +99,18 @@ void Game::setup() {
   m_wm->createSystem<KeyboardControlSystem>();
   m_wm->createSystem<CameraMovementSystem>();
   m_wm->createSystem<ProjectileEmitSystem>();
+  m_wm->createSystem<ProjectileControlSystem>();
+  m_wm->createSystem<ProjectileLifeCycleSystem>();
 }
 
 /** **/
 
 void Game::update() {
-
   /* removing this fuction will allow the game to run as fast as it can! */
   capFrameRate();
 
   /* subscribe event listeners */
-  handleEvents();
+  addEventListeners();
 
   /* add newly created GameObjects to system */
   m_wm->update();
@@ -117,7 +120,8 @@ void Game::update() {
   m_wm->getSystem<MovementSystem>().update(delta);
   m_wm->getSystem<AnimationSystem>().update();
   m_wm->getSystem<CollisionSystem>().update(m_eventBus);
-  m_wm->getSystem<ProjectileEmitSystem>(). update(m_wm);
+  m_wm->getSystem<ProjectileEmitSystem>().update();
+  m_wm->getSystem<ProjectileLifeCycleSystem>(). update();
 
   m_prevFrameTime = SDL_GetTicks();
 }
@@ -131,7 +135,7 @@ void Game::processInput() {
       m_isRunning = false;
 
     case SDL_KEYDOWN:
-      m_eventBus->dispatchEvent<KeyPressEvent>(event.key.keysym.sym, event.key.keysym.mod);
+      m_eventBus->dispatchEvent<KeyDownEvent>(event.key.keysym.sym, event.key.keysym.mod);
 
       if (event.key.keysym.sym == SDLK_ESCAPE) {
         m_isRunning = false;
@@ -175,7 +179,7 @@ void Game::run() {
 
 /* Private */
 
-void Game::handleEvents(){
+void Game::addEventListeners(){
 
   //TODO: Do we need to subscribe & clear bus at every frame?
   // We could improve this with a smarter data structure.
@@ -185,6 +189,7 @@ void Game::handleEvents(){
   m_eventBus->clear();
   m_wm->getSystem<DamageSystem>().addEventListeners(m_eventBus);
   m_wm->getSystem<KeyboardControlSystem>().addEventListeners(m_eventBus);
+  m_wm->getSystem<ProjectileControlSystem>().addEventListeners(m_eventBus);
 }
 
 void Game::capFrameRate() const {

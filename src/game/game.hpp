@@ -70,7 +70,7 @@ private:
 
   Camera m_camera;
 
-  void handleEvents();
+  void addEventListeners();
 
   void capFrameRate() const;
   [[nodiscard]] auto deltatime() const -> double;

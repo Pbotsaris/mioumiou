@@ -1,5 +1,5 @@
-#ifndef KEYPRESS_EVENT_H
-#define KEYPRESS_EVENT_H
+#ifndef KEYDOWN_EVENT_H
+#define KEYDOWN_EVENT_H
 
 #include <SDL2/SDL.h>
 
@@ -7,10 +7,10 @@
 #include "event_system/event.hpp"
 
 
-class KeyPressEvent : public Event{
+class KeyDownEvent : public Event{
 
   public:
-    explicit KeyPressEvent(SDL_Keycode key, std::uint16_t modifier) : m_key(key), m_modifier(modifier) {} //NOLINT
+    explicit KeyDownEvent(SDL_Keycode key, std::uint16_t modifier) : m_key(key), m_modifier(modifier) {} //NOLINT
 
     [[nodiscard]] auto key() const -> SDL_Keycode { return m_key; }
     [[nodiscard]] auto keyChar() const -> char { return static_cast<char>(m_key); }

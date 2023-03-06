@@ -15,6 +15,7 @@ public:
   explicit GameObject(uint32_t id, WorldManager *wm); // NOLINT
 
   [[nodiscard]] auto id() const -> uint32_t;
+  [[nodiscard]] auto worldManager() const ->  WorldManager*;
 
   void remove();
 
