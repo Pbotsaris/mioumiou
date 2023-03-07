@@ -41,7 +41,6 @@ exec:
 exec_debug:
 	./$(TARGET) -log=debug
 
-
 testing:
 	./$(TARGET) -test
 
