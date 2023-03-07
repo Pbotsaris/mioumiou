@@ -7,23 +7,30 @@
 #include <utility>
 
 struct SpriteComponent {
+  enum Orientation {Up, Right, Down, Left};
+
   std::string key;
-  glm::vec2 dimensions;
-  int32_t zPosition;
-  bool isFixed;
-  SDL_Rect crop;
+  glm::vec2   dimensions; // Pixels
+  int32_t     zPosition; // xIndex
+  bool        isFixed; 
+  SDL_Rect    crop; // pixels
+  Orientation orientation; // enum
 
   explicit SpriteComponent(
       std::string key            = "",
       glm::vec2 spriteDimensions = {0, 0},
       int32_t zPosition          = 0,
       bool isFixed               = false,
-      SDL_Rect rect              = {0, 0, 0, 0})
+      SDL_Rect rect              = {0, 0, 0, 0},
+      Orientation orientation    = Right
+      )
       : key(std::move(key)),
         dimensions(spriteDimensions),
         zPosition(zPosition),
         isFixed(isFixed),
-        crop(rect) {
+        crop(rect),
+        orientation(orientation)
+  {
 
     if (crop.w == 0) {
       crop.w = dimensions.x; // NOLINT

@@ -14,22 +14,20 @@ auto ProjectileEmitSystem::isReadyToEmit(ProjectileEmiterComponent &projectileEm
  return ((SDL_GetTicks() - projectileEmiter.lastEmitTime) > projectileEmiter.frequency);
 }
 
-auto ProjectileEmitSystem::getEmissionDirection(const RigidBodyComponent &rigidBody)-> glm::vec2 {
-  if(rigidBody.velocity.x > 0 && rigidBody.velocity.y > 0){ // NOLINT
-    return {1, 1};
-  }
+auto ProjectileEmitSystem::getEmissionDirection(SpriteComponent::Orientation orientation)-> glm::vec2 {
 
-  if(rigidBody.velocity.x < 0 && rigidBody.velocity.y < 0){ // NOLINT
-    return {-1, -1};
-  }
+  switch(orientation){
 
-if(rigidBody.velocity.x > 0 && rigidBody.velocity.y < 0){ // NOLINT
-    return { 1, -1};
-  }
+    case SpriteComponent::Up:
+    return {0, -1};
 
-if(rigidBody.velocity.x < 0 && rigidBody.velocity.y > 0){ // NOLINT
-    return { -1, 1};
-  }
+    case SpriteComponent::Right:
+    return {1, 0};
 
-  return {1, 1};
+    case SpriteComponent::Down:
+    return {0, 1};
+
+    case SpriteComponent::Left:
+    return {-1, 0};
+  }
 }

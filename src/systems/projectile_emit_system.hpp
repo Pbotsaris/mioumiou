@@ -40,21 +40,28 @@ const auto transform = gameObject.getComponent<TransformComponent>();
 
       /* can add an offset to initial position */
       glm::vec2 pos = transform.position + projectileEmiter.offset;
+      auto velocity = projectileEmiter.velocity;
 
         /* in the middle for sprites, please */
       if(gameObject.hasComponent<SpriteComponent>()){
-        const auto sprite = gameObject.getComponent<SpriteComponent>();
-        pos += (sprite.dimensions * transform.scale) / glm::vec2(2, 2);
+         const auto sprite = gameObject.getComponent<SpriteComponent>();
+         pos += (sprite.dimensions * transform.scale) / glm::vec2(2, 2);
+
+         // keyboard controlled objects will change emission direction
+         if(gameObject.hasComponent<KeyboardControlComponent>()){
+           // TODO: If KeyboardControlComponent Strategy is rotation we need to update this logic
+          velocity = projectileEmiter.velocity * getEmissionDirection(sprite.orientation);
+          pos += getEmissionDirection(sprite.orientation) * glm::vec2(8, 8); //NOLINT
+        }
       }
 
-      auto velocity = projectileEmiter.velocity;
-
-      if(gameObject.hasComponent<RigidBodyComponent>()){
-        const auto rigidBody = gameObject.getComponent<RigidBodyComponent>();
-        velocity = projectileEmiter.velocity * getEmissionDirection(rigidBody);
+      // projectile velocity always relative to object velocity
+     if(gameObject.hasComponent<RigidBodyComponent>()){
+         const auto rigidBody = gameObject.getComponent<RigidBodyComponent>();
+         velocity += rigidBody.velocity;
       }
 
-      /* use the reference to the word manager within every gameObject */
+      /* use the reference to the world manager within every gameObject */
       auto projectile = gameObject.worldManager()->createGameObject();
       projectile.addComponent<TransformComponent>(pos, glm::vec2(1, 1));
       projectile.addComponent<RigidBodyComponent>(velocity);
@@ -71,7 +78,8 @@ const auto transform = gameObject.getComponent<TransformComponent>();
 
 private:
 static auto isReadyToEmit(ProjectileEmiterComponent &projectileEmiter) -> bool;
-static auto getEmissionDirection(const RigidBodyComponent &rigidBody) -> glm::vec2;
+static auto getEmissionDirection(SpriteComponent::Orientation orientation) -> glm::vec2;
+
 };
 
 #endif
