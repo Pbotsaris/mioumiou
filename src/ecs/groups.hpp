@@ -18,6 +18,7 @@ public:
   void remove(GameObject gameObject, const GroupName &group);
 
 private:
+  // TODO: May want to implement this without string
   std::unordered_map<GroupName, std::set<GameObject>> m_gameObjectsByGroup;
   std::unordered_map<GameObjectId, std::set<GroupName>> m_groupsByGameObjectId;
 };

@@ -14,9 +14,9 @@ class Tags {
 
   private:
     /* GameObject may only have a single tag */
+    // TODO: May want to implement without strings
     std::unordered_map<GameObjectId, TagName> m_gameObjectTag;
     std::unordered_map<TagName, GameObject>   m_tagGameObject;
-
 };
 
 #endif

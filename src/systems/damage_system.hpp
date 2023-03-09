@@ -27,7 +27,7 @@ public:
   /* Event callbacks */
   void onCollision(CollisionEvent &event);
 private:
-  void damageOnPlayer(GameObject player, GameObject projectile); // NOLINT
+  void doProjectileDamage(GameObject player, GameObject projectile); // NOLINT
 };
 
 #endif
