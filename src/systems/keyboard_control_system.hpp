@@ -20,7 +20,7 @@ class KeyboardControlSystem : public System {
   }
 
   void addEventListeners(std::unique_ptr<EventBus> &eventBus){
-    eventBus->addEventListner<KeyboardControlSystem, KeyDownEvent>(this, &KeyboardControlSystem::onKeyDown);
+    eventBus->addEventListener<KeyboardControlSystem, KeyDownEvent>(this, &KeyboardControlSystem::onKeyDown);
   }
 
   [[nodiscard]] auto name() const -> std::string override;

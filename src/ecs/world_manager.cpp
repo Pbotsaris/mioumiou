@@ -53,21 +53,33 @@ void WorldManager::update() {
     removeGameObjectFromSystems(gameObject);
     m_gameObjectcomponentSignatures.at(gameObject.id()).reset();
     m_freedGameObjectIds.push_back(gameObject.id()); // avail for reuse
+
+    /* must remove from all groups & tags */
+    m_tags.remove(gameObject);
+    m_groups.removeFromAllGroups(gameObject);
+    m_alliances.removeFromAllGroups(gameObject);
   }
 
   m_gameObjectAddQueue.clear();
   m_gameObjectRemoveQueue.clear();
 }
 
-/**
- *  Get the current number of GameObjects in the world.
- *  @return uint32_t
- *
- */
+auto WorldManager::groups() -> Groups&{
+  return m_groups;
+}
+
+auto WorldManager::alliances() -> Groups&{
+  return m_alliances;
+}
+
+auto WorldManager::tags() -> Tags& {
+  return m_tags;
+}
 
 auto WorldManager::gameObjectCount() const -> std::uint32_t {
   return m_gameObjectCount;
 }
+
 
 /* PRIVATE */
 
@@ -100,8 +112,7 @@ void WorldManager::gameObjectToSystems(GameObject gameObject) {
     // sys->name());
 
     if (satisfied) {
-      spdlog::debug("GameObject id '{}' added to {}.", gameObject.id(),
-                   sys->name());
+      spdlog::debug("GameObject id '{}' added to {}.", gameObject.id(), sys->name());
       sys->addGameObject(gameObject);
     }
   }
@@ -128,6 +139,13 @@ void WorldManager::removeGameObjectFromSystems(GameObject gameObject) {
     }
   }
 }
+
+
+// NOTE: still implmenetion groups, alliances and tags.
+//  Alliences must allow for gameobjects to b e part of multiple alliances
+//  may need another data structure for that
+//  Tags we still need to think about it. feels useless maybe have a NameComponent for objects
+//  Groups -> may be different from alliances as gameobjects can only be part of one group? think about
 
 /**
  * Makes an ID from a newly created GameObject

@@ -5,7 +5,6 @@ auto ProjectileEmitSystem::name() const -> std::string {
   return "ProjectileEmitSystem";
 }
 
-
 auto ProjectileEmitSystem::isReadyToEmit(ProjectileEmiterComponent &projectileEmiter) -> bool {
   if(projectileEmiter.frequency == 0){
     return false;

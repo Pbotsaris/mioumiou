@@ -16,6 +16,8 @@
 #include "ecs/pool.hpp"
 #include "ecs/system.hpp"
 #include "component.hpp"
+#include "groups.hpp"
+#include "tags.hpp"
 
 class WorldManager {
 
@@ -46,8 +48,14 @@ class WorldManager {
     template<typename T> auto getSystem() const -> T&;
     /*  */
 
+    auto groups() -> Groups&;
+    auto alliances() -> Groups&;
+    auto tags() -> Tags&;
+
   private:
     std::uint32_t m_gameObjectCount = 0;
+
+    /* DATA STRUCTURES */
 
     /* Components pooled by type 
      * [vector index = Components<T>::id()], [pool index = GameObject::id()]
@@ -71,6 +79,13 @@ class WorldManager {
 
     /* destroyed objects ids availale for resuse */
     std::deque<uint32_t> m_freedGameObjectIds;
+
+    /* - */
+
+    /* GameObject may belong to multiple groups or alliances */
+    Groups m_groups;
+    Groups m_alliances;
+    Tags m_tags;
 
     void gameObjectToSystems(GameObject gameObject);
     void removeGameObjectFromSystems(GameObject gameObject);

@@ -5,17 +5,14 @@
 #include <SDL2/SDL.h>
 
 struct ProjectileComponent {
-  bool isFrieldy;
-  std::uint32_t percentDamage; // percentage
+  std::int32_t percentDamage; // percentage
   std::uint32_t duration;      // millis
-  std::uint32_t startTime;
+  std::uint32_t startTime;    // millies
 
   explicit ProjectileComponent(
-     bool         isFrieldy     = false,
-     std::uint32_t percentDamage = 0, // NOLINT
-     std::uint32_t duration      = 0
-      )
-    : isFrieldy(isFrieldy),
+     std::int32_t percentDamage = 0, // NOLINT
+     std::uint32_t duration     = 0
+      ) :
       percentDamage(percentDamage),
       duration(duration),
       startTime(SDL_GetTicks())

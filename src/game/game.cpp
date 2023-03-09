@@ -11,7 +11,9 @@
 #include "components/all.hpp"
 #include "game.hpp"
 #include "systems/all.hpp"
-#include "utils//numbers.hpp"
+#include "utils/numbers.hpp"
+#include "utils/configurables.hpp"
+
 
 Game::Game()
     : m_window(std::make_unique<Window>(WINDOW_WIDTH, WINDOW_HEIGHT)),
@@ -45,7 +47,7 @@ void Game::loadLevel(uint32_t level) {
   mapBuilder.build(m_wm);
 
   // possibly getting confused by the params order
-  // NOTE: potentially use the builder patterns to avoid passing a bunch of
+  // TODO: potentially use the builder patterns to avoid passing a bunch of
   // parameters at the same time and
 
   auto tank = m_wm->createGameObject();
@@ -54,8 +56,13 @@ void Game::loadLevel(uint32_t level) {
   tank.addComponent<RigidBodyComponent>(glm::vec2(0, 0.0)); // NOLINT
   tank.addComponent<BoxColliderComponent>(glm::vec2(TILE_SIZE.width, TILE_SIZE.height));
   tank.addComponent<DebugComponent>();
-  tank.addComponent<ProjectileEmiterComponent>("bullet", glm::vec2(4, 4), glm::vec2(40, 40), 500, 1000); // NOLINT
+  tank.addComponent<ProjectileEmiterComponent>("bullet", glm::vec2(4, 4), glm::vec2(40, 40), 1000, 1500, 40); // NOLINT
   tank.addComponent<HealthComponent>();                                                                                             
+  tank.joinAlliance(configurables::Alliances::ENEMIES);
+
+  auto comps = tank.getComponent<HealthComponent>();
+  spdlog::warn(comps.maxHealth);
+  spdlog::warn(tank.hasComponent<HealthComponent>());
 
   auto truck = m_wm->createGameObject();
   truck.addComponent<SpriteComponent>("truck-left", glm::vec2(TILE_SIZE.width, TILE_SIZE.height), 1); // NOLINT
@@ -64,18 +71,22 @@ void Game::loadLevel(uint32_t level) {
   truck.addComponent<BoxColliderComponent>(glm::vec2(TILE_SIZE.width, TILE_SIZE.height));
   truck.addComponent<DebugComponent>();
   truck.addComponent<HealthComponent>();
+  tank.joinAlliance(configurables::Alliances::ENEMIES);
+
   // ** //
   auto chopper = m_wm->createGameObject();
-
   chopper.addComponent<SpriteComponent>( "chopper", glm::vec2(TILE_SIZE.width, TILE_SIZE.height), 5); //NOLINT
   chopper.addComponent<TransformComponent>(glm::vec2(200, 200), glm::vec2(1, 1));     // NOLINT
   chopper.addComponent<RigidBodyComponent>(glm::vec2(0.0, 0.0)); // NOLINT
   chopper.addComponent<AnimationComponent>(2, 8); // NOLINT
   chopper.addComponent<KeyboardControlComponent>(80, 80, 80, 80); // NOLINT
   chopper.addComponent<CameraFollowerComponent>();
-  chopper.addComponent<HealthComponent>(); 
+  chopper.addComponent<BoxColliderComponent>(glm::vec2(TILE_SIZE.width, TILE_SIZE.height));
   chopper.addComponent<ProjectileEmiterComponent>("bullet", glm::vec2(4, 4), glm::vec2(40, 40), 0, 5000); // NOLINT
   chopper.addComponent<ProjectileControlComponent>();
+  chopper.addComponent<HealthComponent>(); 
+  chopper.joinAlliance(configurables::Alliances::PLAYER);
+  chopper.joinAlliance(configurables::Alliances::NEUTRAL);
 
   // ** //
   auto radar = m_wm->createGameObject();

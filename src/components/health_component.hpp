@@ -3,12 +3,16 @@
 
 #include <cstdint>
 
+#include"utils/configurables.hpp"
+
 struct HealthComponent {
-  std::uint8_t healthPercentage;
+  std::int32_t currentHealth; // TODO: in units of health
+  std::int32_t maxHealth;
 
-  HealthComponent(std::uint8_t healthPercentage = 100): healthPercentage(healthPercentage){} //NOLINT
+  explicit HealthComponent(std::int32_t health = configurables::Player::INITIAL_MAX_HEALTH)
+    : currentHealth(health), maxHealth(health){
+  }
 };
-
 
 
 #endif

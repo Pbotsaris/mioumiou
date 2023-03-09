@@ -9,9 +9,9 @@
 
 class KeyDownEvent : public Event{
 
+
   public:
     explicit KeyDownEvent(SDL_Keycode key, std::uint16_t modifier) : m_key(key), m_modifier(modifier) {} //NOLINT
-
     [[nodiscard]] auto key() const -> SDL_Keycode { return m_key; }
     [[nodiscard]] auto keyChar() const -> char { return static_cast<char>(m_key); }
     [[nodiscard]] auto modifier() const -> std::uint16_t { return m_modifier; }

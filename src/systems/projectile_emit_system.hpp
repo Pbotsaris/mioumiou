@@ -10,6 +10,7 @@
 #include "ecs/system.hpp"
 #include "event_system/event_bus.hpp"
 #include "events/keypress_event.hpp"
+#include "utils/configurables.hpp"
 
 class ProjectileEmitSystem : public System {
 public:
@@ -36,7 +37,7 @@ public:
 
 static void emitProjectile(GameObject &gameObject, const ProjectileEmiterComponent &projectileEmiter){
 
-const auto transform = gameObject.getComponent<TransformComponent>();
+      const auto transform = gameObject.getComponent<TransformComponent>();
 
       /* can add an offset to initial position */
       glm::vec2 pos = transform.position + projectileEmiter.offset;
@@ -67,10 +68,14 @@ const auto transform = gameObject.getComponent<TransformComponent>();
       projectile.addComponent<RigidBodyComponent>(velocity);
       projectile.addComponent<SpriteComponent>(projectileEmiter.spriteKey, projectileEmiter.dimension, 4);
       projectile.addComponent<BoxColliderComponent>(projectileEmiter.dimension);
+      projectile.toGroup(configurables::Groups::PROJECTILES);
 
-      projectile.addComponent<ProjectileComponent>(
-          projectileEmiter.isFriendly, projectileEmiter.percentDamage, projectileEmiter.longevity
-          );
+     // projectile joins the same alliances as emiter
+     for(const auto &alliance : gameObject.alliances()){
+       projectile.joinAlliance(alliance);
+     }
+    
+    projectile.addComponent<ProjectileComponent>(projectileEmiter.percentDamage, projectileEmiter.longevity);
 }
 
 

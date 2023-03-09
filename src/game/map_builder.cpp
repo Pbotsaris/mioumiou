@@ -74,4 +74,6 @@ void MapBuilder::loadTile(std::unique_ptr<WorldManager> &wm, // NOLINT
       0, // zPosition
       false, // isFixed
       SpriteComponent::makeCrop(m_tile.width * cropX, m_tile.height * cropY, m_tile.width, m_tile.height));
+
+  mapTile.toGroup("tiles");
 }

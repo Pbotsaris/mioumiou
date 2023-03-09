@@ -17,7 +17,7 @@ class ProjectileControlSystem : public System {
   }
 
   void addEventListeners(std::unique_ptr<EventBus> &eventBus){
-    eventBus->addEventListner<ProjectileControlSystem, KeyDownEvent>(this, &ProjectileControlSystem::onKeyDown);
+    eventBus->addEventListener<ProjectileControlSystem, KeyDownEvent>(this, &ProjectileControlSystem::onKeyDown);
   }
 
 

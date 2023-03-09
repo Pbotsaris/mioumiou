@@ -4,7 +4,7 @@
 #include "rigid_body_component.hpp"
 #include "animation_component.hpp"
 #include "boxcollider_component.hpp"
-#include "components/sprite_component.hpp"
+#include "sprite_component.hpp"
 #include "debug_component.hpp"
 #include "keyboard_control_component.hpp"
 #include "health_component.hpp"

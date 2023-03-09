@@ -22,7 +22,7 @@ public:
   }
 
   void addEventListeners(std::unique_ptr<EventBus> &eventBus){
-    eventBus->addEventListner<RenderDebugSystem, CollisionEvent>(this, &RenderDebugSystem::onCollision);
+    eventBus->addEventListener<RenderDebugSystem, CollisionEvent>(this, &RenderDebugSystem::onCollision);
   }
 
   void update(std::unique_ptr<Renderer> &renderer, Camera &camera) {

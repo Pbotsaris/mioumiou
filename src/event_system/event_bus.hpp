@@ -25,7 +25,7 @@ class EventBus {
     };
 
     template<typename TLISTENER, typename TEVENT>
-      void addEventListner(TLISTENER *listener, void(TLISTENER::*callback)(TEVENT&));
+      void addEventListener(TLISTENER *listener, void(TLISTENER::*callback)(TEVENT&));
 
     template<typename TEVENT, typename... TARGS> 
       void dispatchEvent(TARGS&&...args);
@@ -35,7 +35,7 @@ class EventBus {
 };
 
 template<typename TLISTENER, typename TEVENT> 
-void EventBus::addEventListner(TLISTENER *listener, void(TLISTENER::*callback)(TEVENT&)){
+void EventBus::addEventListener(TLISTENER *listener, void(TLISTENER::*callback)(TEVENT&)){
 
   if (m_listerners[typeid(TEVENT)].get() == nullptr){
     m_listerners[typeid(TEVENT)]  = std::make_unique<EventHandlerList>();

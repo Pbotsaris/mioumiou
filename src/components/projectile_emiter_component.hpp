@@ -11,8 +11,7 @@ struct ProjectileEmiterComponent {
   glm::vec2 velocity; // pixel per sec
   uint32_t frequency; // millis
   uint32_t longevity; // millis
-  uint32_t percentDamage;
-  bool isFriendly;
+  int32_t percentDamage;
   glm::vec2 offset; // pixels
   uint32_t lastEmitTime; // millis
 
@@ -22,8 +21,7 @@ struct ProjectileEmiterComponent {
         glm::vec2     velocity      = {0, 0},
         uint32_t      frequency     = 500, //NOLINT
         uint32_t      longevity     = 500, //NOLINT
-        uint32_t      percentDamage = 10, //NOLINT
-        bool          isFriendly    = false,
+        int32_t       percentDamage = 10, //NOLINT
         glm::vec2     offset        = {0, 0}
         )
       : spriteKey(std::move(spriteKey)),
@@ -32,7 +30,6 @@ struct ProjectileEmiterComponent {
         frequency(frequency),
         longevity(longevity),
         percentDamage(percentDamage),
-        isFriendly(isFriendly),
         offset(offset),
         lastEmitTime(SDL_GetTicks())
         {}
