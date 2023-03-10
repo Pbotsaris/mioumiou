@@ -18,6 +18,7 @@
 #include "component.hpp"
 #include "groups.hpp"
 #include "tags.hpp"
+#include "utils/typeInfo.hpp"
 
 class WorldManager {
 
@@ -88,7 +89,8 @@ class WorldManager {
     Tags m_tags;
 
     void gameObjectToSystems(GameObject gameObject);
-    void removeGameObjectFromSystems(GameObject gameObject);
+    void removeGameObjectFromSystems(const GameObject &gameObject);
+    void removeGameObjectFromPools(const GameObject &gameObject);
 
     auto makeId() -> uint32_t;
 };
@@ -118,18 +120,11 @@ void WorldManager::addComponent(GameObject gameObject, TARGS &&...args) {
 
 
   if (m_componentPools.at(componentId) == nullptr) {
-    m_componentPools[componentId] = std::make_shared<Pool<T>>();
+    m_componentPools[componentId] = std::make_shared<ComponentPool<T>>();
   }
 
-  std::shared_ptr<Pool<T>> pool =
-      std::static_pointer_cast<Pool<T>>(m_componentPools.at(componentId));
+  auto pool = std::static_pointer_cast<ComponentPool<T>>(m_componentPools.at(componentId));
 
-
-  // grow pool to the current total number of objects in the world
-  if (gameObject.id() >= pool->size()) {
-
-    pool->resize(m_gameObjectCount);
-  }
   T newComponent(std::forward<TARGS>(args)...);
   // or T newComponent = std::move(T(std::forward<TARGS>(args)...));
 
@@ -138,7 +133,10 @@ void WorldManager::addComponent(GameObject gameObject, TARGS &&...args) {
   // set the component signature for this gameObject with the added component
   m_gameObjectcomponentSignatures.at(gameObject.id()).set(componentId);
 
-  spdlog::debug("Component id '{}' was added to GameObject id '{}'",  componentId, gameObject.id());
+  spdlog::debug("Component id '{}' of type '{}' was added to GameObject id '{}'",
+      componentId,
+      TypeInfo::typeToString<T>(),
+      gameObject.id());
 }
 
 /**
@@ -155,8 +153,18 @@ template <typename T>
 void WorldManager::removeComponent(GameObject gameObject) {
   const uint32_t componentId = Component<T>::id();
 
-  // set to 0
+  /* pack pool */
+  auto pool = m_componentPools.at(componentId);
+  pool->remove(gameObject.id());
+
+  /* Set bitset to zero */
   m_gameObjectcomponentSignatures.at(gameObject.id()).set(componentId, false);
+
+  spdlog::debug("Component id '{}' of type '{}' was removed to GameObject id '{}'",
+      componentId,
+      TypeInfo::typeToString<T>(),
+      gameObject.id());
+
 }
 
 /**
@@ -185,8 +193,8 @@ template <typename T>
 auto WorldManager::getComponent(GameObject gameObject) const -> T& {
   const uint32_t componentId = Component<T>::id();
 
-  std::shared_ptr<Pool<T>> pool =
-      std::static_pointer_cast<Pool<T>>(m_componentPools.at(componentId));
+  std::shared_ptr<ComponentPool<T>> pool =
+      std::static_pointer_cast<ComponentPool<T>>(m_componentPools.at(componentId));
 
     return pool->at(gameObject.id());
 }

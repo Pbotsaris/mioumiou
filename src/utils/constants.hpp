@@ -11,6 +11,11 @@ namespace constants {
   struct Percentage{
     constexpr static const std::int32_t DIVISOR = 100;
   };
+
+  struct Pool {
+    constexpr static const std::int32_t COMPONENT_POOL_SIZE = 100;
+
+  };
 };
 
 

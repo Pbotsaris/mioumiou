@@ -54,7 +54,7 @@ void WorldManager::update() {
     m_gameObjectcomponentSignatures.at(gameObject.id()).reset();
     m_freedGameObjectIds.push_back(gameObject.id()); // avail for reuse
 
-    /* must remove from all groups & tags */
+    /* remove from all groups & tags */
     m_tags.remove(gameObject);
     m_groups.removeFromAllGroups(gameObject);
     m_alliances.removeFromAllGroups(gameObject);
@@ -123,7 +123,7 @@ void WorldManager::gameObjectToSystems(GameObject gameObject) {
  * @param gameObject: A GameObject
  */
 
-void WorldManager::removeGameObjectFromSystems(GameObject gameObject) {
+void WorldManager::removeGameObjectFromSystems(const GameObject &gameObject) {
   const Signature &gameObjSig =
       m_gameObjectcomponentSignatures.at(gameObject.id());
 
@@ -141,11 +141,17 @@ void WorldManager::removeGameObjectFromSystems(GameObject gameObject) {
 }
 
 
-// NOTE: still implmenetion groups, alliances and tags.
-//  Alliences must allow for gameobjects to b e part of multiple alliances
-//  may need another data structure for that
-//  Tags we still need to think about it. feels useless maybe have a NameComponent for objects
-//  Groups -> may be different from alliances as gameobjects can only be part of one group? think about
+/**
+ * Removes a GameObject from all pools
+ * @param gameObject: A GameObject
+ */
+
+void WorldManager::removeGameObjectFromPools(const GameObject &gameObject){
+
+  for(auto &pool : m_componentPools){
+    pool->remove(gameObject.id()); 
+  }
+}
 
 /**
  * Makes an ID from a newly created GameObject
