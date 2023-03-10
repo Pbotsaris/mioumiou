@@ -155,7 +155,7 @@ void WorldManager::removeComponent(GameObject gameObject) {
 
   /* pack pool */
   auto pool = m_componentPools.at(componentId);
-  pool->remove(gameObject.id());
+  pool->remove(gameObject.id()); // method is virtual no need for ptr casting
 
   /* Set bitset to zero */
   m_gameObjectcomponentSignatures.at(gameObject.id()).set(componentId, false);

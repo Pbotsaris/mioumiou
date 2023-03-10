@@ -55,20 +55,15 @@ public:
 
     auto toRemoveIndex = m_indexByGameObjectId.find(gameObjectId);
 
+    /* remove will be called multiple times on the same obj so need this check */
     if (toRemoveIndex == m_indexByGameObjectId.end()) {
-      spdlog::critical( "The GameObject id '{}' does not have any Component in Pool type {}.", gameObjectId, TypeInfo::typeToString<T>());
+      spdlog::debug( "The GameObject id '{}' does not have any Component in Pool type {}.", gameObjectId, TypeInfo::typeToString<T>());
       return;
     }
 
     // swap last element with object to be removed
     auto safekeep = m_data[toRemoveIndex->second];
     auto lastElementIndex = m_size - 1;
-
-    // sanity check
-    if (!(m_size == m_data.size())) {
-      spdlog::critical("m_size = '{}' and m_data.size() = '{}' do not match. " "Cannot remove from pool.", m_size, m_data.size());
-      return;
-    }
 
     m_data[toRemoveIndex->second] = m_data[lastElementIndex];
 

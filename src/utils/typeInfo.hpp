@@ -12,7 +12,7 @@ struct TypeInfo {
     char *realname = abi::__cxa_demangle(typeid(T).name(), nullptr, nullptr, &status);
     std::string typeName(realname);
 
-    delete realname; //NOLINT
+    free(realname); //NOLINT
    
     return typeName;
   }

@@ -16,7 +16,9 @@ INCLUDES=-Ilibs/glm -Ilibs/imgui -Ilibs/lua -Ilibs/sol -Isrc -Ilibs/doctest
 
 CFLAGS= -Wall -Werror -Wextra -std=c++20 -Wno-unknown-warning-option 
 LIBFLAGS= $(SDL) $(LUA) $(SPDLOG)
-DEBUGFLAGS= -g3
+
+# -gdwarf-4 is necessary for valgrind
+DEBUGFLAGS= -g3 -gdwarf-4
 
 SRCS=$(wildcard $(SRC)/**/*.cpp) $(wildcard $(SRC)/*.cpp) 
 OBJS=$(patsubst $(SRC)%.cpp, $(OBJ)%.o, $(SRCS)) 

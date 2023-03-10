@@ -54,6 +54,8 @@ void WorldManager::update() {
     m_gameObjectcomponentSignatures.at(gameObject.id()).reset();
     m_freedGameObjectIds.push_back(gameObject.id()); // avail for reuse
 
+    removeGameObjectFromPools(gameObject);
+
     /* remove from all groups & tags */
     m_tags.remove(gameObject);
     m_groups.removeFromAllGroups(gameObject);
@@ -98,12 +100,12 @@ void WorldManager::gameObjectToSystems(GameObject gameObject) {
     std::shared_ptr<System> sys = keypair.second;
 
     /*
-     *  NOTE:
-     *  The bitwise &(AND) between the GameObject Signature and System Signature
-     * must be equals to System Signature otherwise the GameObject either don't
-     * have all components required by the System or has components that the
-     * System does not support.
+     *  NOTE: The bitwise &(AND) between the GameObject Signature and System Signature
+     *  must be equals to System Signature otherwise the GameObject either don't
+     *  have all components required by the System or has components that the
+     *  System does not support.
      */
+
 
     bool satisfied =
         (sys->componentSignature() & gameObjSig) == sys->componentSignature();
@@ -149,7 +151,9 @@ void WorldManager::removeGameObjectFromSystems(const GameObject &gameObject) {
 void WorldManager::removeGameObjectFromPools(const GameObject &gameObject){
 
   for(auto &pool : m_componentPools){
-    pool->remove(gameObject.id()); 
+    if (pool != nullptr){
+      pool->remove(gameObject.id()); 
+    }
   }
 }
 
