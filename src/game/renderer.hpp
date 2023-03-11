@@ -1,6 +1,7 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include <string>
 #include <memory>
 #include <glm.hpp>
@@ -12,7 +13,11 @@ struct ImageDimensions {
   const SDL_Rect *destDimension;
   const double rotation;
   ImageDimensions(const SDL_Rect *crop, const SDL_Rect *dimension, const double rotation);
+};
 
+struct TextDimensions {
+  const int32_t x;
+  const int32_t y;
 };
 
 class Renderer {
@@ -33,7 +38,9 @@ public:
   void clear();
   void present();
   void drawImage(SDL_Texture *tex, ImageDimensions &&dimensions);
-  auto createTexture(const std::string &path)-> SDL_Texture*;
+  void drawText(SDL_Texture *tex, TextDimensions &&dimensions);
+  [[nodiscard]] auto createTexture(const std::string &path) const -> SDL_Texture*;
+  [[nodiscard]] auto createTextureFromSurface(SDL_Surface *surface) const -> SDL_Texture*;
 
   [[nodiscard]] auto valid() const -> bool;
 

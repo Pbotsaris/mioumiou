@@ -8,7 +8,7 @@ SRC=src
 $(shell mkdir -p obj obj/game obj/components obj/ecs obj/systems bin)
 
 # Libs
-SDL=$(shell pkg-config --cflags --libs SDL2_image)
+SDL=$(shell pkg-config --cflags --libs SDL2_image SDL2_ttf)
 LUA=$(shell pkg-config --cflags --libs lua)
 SPDLOG=$(shell pkg-config --cflags --libs spdlog)
 

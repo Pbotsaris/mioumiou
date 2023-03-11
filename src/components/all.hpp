@@ -11,4 +11,6 @@
 #include "projectile_emiter_component.hpp"
 #include "projectile_component.hpp"
 #include "projectile_control_component.hpp"
+#include "text_component.hpp"
+#include  "healthbar_component.hpp"
 #endif

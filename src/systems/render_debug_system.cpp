@@ -1,4 +1,4 @@
-#include "renderdebug_system.hpp"
+#include "render_debug_system.hpp"
 
 auto RenderDebugSystem::name() const -> std::string { return "RenderDebugSystem"; }
 

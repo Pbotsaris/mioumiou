@@ -1,8 +1,8 @@
-#include "render_system.hpp"
+#include "render_sprite_system.hpp"
 #include <algorithm>
 
 // Render system is responsible for sorting on x:
-auto RenderSystem::sortedGameObjects() const -> std::vector<GameObject>{
+auto RenderSpriteSystem::sortedGameObjects() const -> std::vector<GameObject>{
   auto objs = gameObjects();
   std::sort(objs.begin(), objs.end(), [](const GameObject &left, const GameObject &right){
       const auto  leftSprite = left.getComponent<SpriteComponent>();
@@ -14,6 +14,6 @@ auto RenderSystem::sortedGameObjects() const -> std::vector<GameObject>{
 }
 
 
-auto RenderSystem::name() const -> std::string {
+auto RenderSpriteSystem::name() const -> std::string {
   return "RenderSystem";
 }

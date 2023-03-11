@@ -4,11 +4,11 @@
 
 #include "asset_store.hpp"
 
-void AssetStore::loadTexture(std::unique_ptr<Renderer> &renderer,
-                             std::string &&key, const std::string &path) {
+/* Textures */
+
+void AssetStore::loadTexture(std::unique_ptr<Renderer> &renderer, std::string &&key, const std::string &path) {
 
   SDL_Texture *tex = renderer->createTexture(path);
-  spdlog::debug("attempting to add textue key {} to AssetStore", key);
 
   if (tex == nullptr) {
     spdlog::error("Failed to load texture id '{}' from '{}'", key, path);
@@ -42,17 +42,75 @@ void AssetStore::removeTexture(const std::string &key) {
   spdlog::error("Failed to remove texture id '{}' to Textures map", key);
 }
 
-void AssetStore::clear() {
-  cleanup();
+void AssetStore::clearTextures() {
+  cleanupTextures();
   m_textures.clear();
 }
 
-AssetStore::~AssetStore() { cleanup(); }
+/* Fonts */
+
+
+void AssetStore::loadFont(std::string &&key, const std::string &path, Pixels fontSize){
+
+  TTF_Font *font = TTF_OpenFont(path.c_str(), fontSize);
+
+  if(font == nullptr){
+    spdlog::error("Failed to load Font '{}' from '{}'. Error: {}", key, path, TTF_GetError());
+    return;
+  }
+
+  bool ok = m_fonts.insert({key, font}).second; //NOLINT: short var
+
+  if(!ok){
+    spdlog::warn( "Failed insert Font '{}' to AssetStore. Font already exist", key);
+    TTF_CloseFont(font);
+  }
+}
+
+auto AssetStore::getFont(const std::string &key) const -> TTF_Font* {
+
+  if(m_fonts.contains(key)){
+    return m_fonts.at(key);
+  };
+
+  spdlog::error("Could not get Font '{}'. I does not exist in AssetStore.", key);
+  return nullptr;
+};
+
+
+void AssetStore::removeFont(const std::string &key){
+
+  if(m_fonts.contains(key)){
+    TTF_Font *font = m_fonts.at(key);
+    TTF_CloseFont(font);
+    m_fonts.erase(key);
+    return;
+  }
+
+  spdlog::error("Could not get Font '{}'. I does not exist in AssetStore.", key);
+}
+
+
+void AssetStore::clearFonts(){
+  cleanupFonts();
+  m_fonts.clear();
+}
+
+AssetStore::~AssetStore() {
+  cleanupTextures();
+  cleanupFonts();
+}
 
 /* Private */
 
-void AssetStore::cleanup() {
+void AssetStore::cleanupTextures() {
   for (auto &texture : m_textures) {
     SDL_DestroyTexture(texture.second);
+  }
+}
+
+void AssetStore::cleanupFonts(){
+for (auto &font : m_fonts) {
+    TTF_CloseFont(font.second);
   }
 }

@@ -1,5 +1,5 @@
-#ifndef RENDERDEBUG_SYSTEM_H
-#define RENDERDEBUG_SYSTEM_H
+#ifndef RENDER_DEBUG_SYSTEM_H
+#define RENDER_DEBUG_SYSTEM_H
 
 #include <SDL2/SDL.h>
 #include <memory>

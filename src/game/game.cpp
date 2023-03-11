@@ -22,13 +22,22 @@ Game::Game()
       m_wm(std::make_unique<WorldManager>()),
       m_store(std::make_unique<AssetStore>()),
       m_eventBus(std::make_unique<EventBus>()),
-      m_camera(Camera::Position(0, 0), Camera::Dimension(Resolution::WINDOW_WIDTH, Resolution::WINDOW_HEIGHT))
-{}
+      m_camera(Camera::Position(0, 0), Camera::Dimension(Resolution::WINDOW_WIDTH, Resolution::WINDOW_HEIGHT)) { 
+
+   if(SDL_Init(SDL_INIT_EVERYTHING) != 0){
+     spdlog::critical("Could not initialize SDL. Error: '{}'", SDL_GetError());
+   }
+  
+   if(TTF_Init() != 0){
+     spdlog::critical("Could not initialize TTF. Error: '{}'", TTF_GetError());
+   }
+}
 
 Game::~Game() {
   m_window->~Window(); // destroy window first
   m_renderer->~Renderer();
   SDL_Quit();
+  //TTF_Quit();
 }
 
 /** **/
@@ -43,6 +52,10 @@ void Game::loadLevel(uint32_t level) {
   m_store->loadTexture(m_renderer, "chopper", "./assets/images/chopper-spritesheet.png");
   m_store->loadTexture(m_renderer, "radar", "./assets/images/radar.png");
   m_store->loadTexture(m_renderer, "bullet", "./assets/images/bullet.png");
+
+  // TODO: Add fonts will all sizes and allow to easily query the store
+  m_store ->loadFont("charriot", "./assets/fonts/charriot.ttf", constants::Fonts::Size::TINY);
+
 
   TileDimension tileDim = { .width = Map::TileDimension::WIDTH,
       .height = Map::TileDimension::HEIGHT,
@@ -74,6 +87,7 @@ void Game::loadLevel(uint32_t level) {
   tank.addComponent<HealthComponent>();                                                                                             
   tank.joinAlliance(configurables::Alliances::ENEMIES);
 
+  // TODO: This is necessary to compile? why?
   auto comps = tank.getComponent<HealthComponent>();
   spdlog::warn(comps.maxHealth);
   spdlog::warn(tank.hasComponent<HealthComponent>());
@@ -85,6 +99,7 @@ void Game::loadLevel(uint32_t level) {
   truck.addComponent<BoxColliderComponent>(glm::vec2(tileSize.width, tileSize.height));
   truck.addComponent<DebugComponent>();
   truck.addComponent<HealthComponent>();
+  truck.addComponent<HealthBarComponent>();
   tank.joinAlliance(configurables::Alliances::ENEMIES);
 
   // ** //
@@ -99,6 +114,7 @@ void Game::loadLevel(uint32_t level) {
   chopper.addComponent<ProjectileEmiterComponent>("bullet", glm::vec2(4, 4), glm::vec2(40, 40), 0, 5000); // NOLINT
   chopper.addComponent<ProjectileControlComponent>();
   chopper.addComponent<HealthComponent>(); 
+  chopper.addComponent<HealthBarComponent>();
   chopper.joinAlliance(configurables::Alliances::PLAYER);
   chopper.joinAlliance(configurables::Alliances::NEUTRAL);
 
@@ -107,8 +123,11 @@ void Game::loadLevel(uint32_t level) {
   radar.addComponent<SpriteComponent>( "radar", glm::vec2(tileSize.width * 2, tileSize.height * 2), 1, true);
   radar.addComponent<TransformComponent>(glm::vec2(Resolution::WINDOW_WIDTH - 74, 10), glm::vec2(1, 1));     // NOLINT
   radar.addComponent<RigidBodyComponent>(glm::vec2(0.0, 0.0)); // NOLINT
-  // we only hav2 two frames, with a 5 fps
+  // we only hav2 two frame, with a 5 fps
   radar.addComponent<AnimationComponent>(8, 5); // NOLINT
+                                                
+  auto label = m_wm->createGameObject();
+  label.addComponent<TextComponent>("hello, world! How are you", "charriot", glm::vec2(100, 100), Red()); //NOLINT
 }
 
 /** **/
@@ -116,7 +135,7 @@ void Game::loadLevel(uint32_t level) {
 void Game::setup() {
   /* Registering systems in the world on setup */
   m_wm->createSystem<MovementSystem>();
-  m_wm->createSystem<RenderSystem>();
+  m_wm->createSystem<RenderSpriteSystem>();
   m_wm->createSystem<AnimationSystem>();
   m_wm->createSystem<CollisionSystem>();
   m_wm->createSystem<RenderDebugSystem>();
@@ -126,6 +145,8 @@ void Game::setup() {
   m_wm->createSystem<ProjectileEmitSystem>();
   m_wm->createSystem<ProjectileControlSystem>();
   m_wm->createSystem<ProjectileLifeCycleSystem>();
+  m_wm->createSystem<RenderTextSystem>();
+  m_wm->createSystem<RenderHealthBarSystem>();
 }
 
 /** **/
@@ -178,10 +199,12 @@ void Game::processInput() {
 }
 
 void Game::render() {
-  m_renderer->setDrawColor(Gray());
+ // m_renderer->setDrawColor(Gray());
   m_renderer->clear();
-  m_wm->getSystem<RenderSystem>().update(m_renderer, m_camera, m_store);
+  m_wm->getSystem<RenderSpriteSystem>().update(m_renderer, m_camera, m_store);
   m_wm->getSystem<RenderDebugSystem>().update(m_renderer, m_camera);
+  m_wm->getSystem<RenderTextSystem>().update(m_renderer, m_store, m_camera);
+  m_wm->getSystem<RenderHealthBarSystem>().update(m_renderer, m_store, m_camera);
   m_renderer->present();
 }
 

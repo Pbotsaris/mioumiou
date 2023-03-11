@@ -6,6 +6,8 @@
 #include <memory>
 #include <string>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
+#include "types/types.hpp"
 
 class AssetStore {
   public:
@@ -20,15 +22,24 @@ class AssetStore {
   AssetStore& operator=(AssetStore&&) = delete;
 
 
+  /* Textures */
   void loadTexture(std::unique_ptr<Renderer> &renderer, std::string &&key, const std::string &path);
   auto getTexture(const std::string &key) const -> SDL_Texture*;
   void removeTexture(const std::string &key);
-  void clear();
+  void clearTextures();
+
+  /* Fonts */
+  void loadFont(std::string &&key, const std::string &path, Pixels fontSize);
+  auto getFont(const std::string &key) const -> TTF_Font*;
+  void removeFont(const std::string &key);
+  void clearFonts();
 
   private:
     std::unordered_map<std::string, SDL_Texture*> m_textures;
+    std::unordered_map<std::string, TTF_Font*> m_fonts;
 
-  void cleanup();
+  void cleanupTextures();
+  void cleanupFonts();
 };
 
 

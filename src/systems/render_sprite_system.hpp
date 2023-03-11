@@ -1,5 +1,5 @@
-#ifndef RENDER_SYSTEM_H
-#define RENDER_SYSTEM_H
+#ifndef RENDER_SPRITE_SYSTEM_H
+#define RENDER_SPRITE_SYSTEM_H
 #include <memory>
 #include <spdlog/spdlog.h>
 
@@ -10,10 +10,10 @@
 #include "game/renderer.hpp"
 #include "game/camera.hpp"
 
-class RenderSystem : public System { // NOLINT
+class RenderSpriteSystem : public System { // NOLINT
 
 public:
-  RenderSystem() {
+  RenderSpriteSystem() {
     requiredComponent<TransformComponent>();
     requiredComponent<SpriteComponent>();
   }
