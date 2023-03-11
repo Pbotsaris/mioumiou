@@ -14,14 +14,15 @@
 #include "utils/numbers.hpp"
 #include "utils/configurables.hpp"
 
+using namespace configurables;
 
 Game::Game()
-    : m_window(std::make_unique<Window>(WINDOW_WIDTH, WINDOW_HEIGHT)),
+    : m_window(std::make_unique<Window>(Resolution::WINDOW_WIDTH, Resolution::WINDOW_HEIGHT)),
       m_renderer(std::make_unique<Renderer>(m_window)),
       m_wm(std::make_unique<WorldManager>()),
       m_store(std::make_unique<AssetStore>()),
       m_eventBus(std::make_unique<EventBus>()),
-      m_camera(Camera::Position(0, 0), Camera::Dimension(WINDOW_WIDTH, WINDOW_HEIGHT))
+      m_camera(Camera::Position(0, 0), Camera::Dimension(Resolution::WINDOW_WIDTH, Resolution::WINDOW_HEIGHT))
 {}
 
 Game::~Game() {
@@ -43,18 +44,31 @@ void Game::loadLevel(uint32_t level) {
   m_store->loadTexture(m_renderer, "radar", "./assets/images/radar.png");
   m_store->loadTexture(m_renderer, "bullet", "./assets/images/bullet.png");
 
-  MapBuilder mapBuilder("./assets/tilemaps/jungle.map", "map", TILE_SIZE);
+  TileDimension tileDim = { .width = Map::TileDimension::WIDTH,
+      .height = Map::TileDimension::HEIGHT,
+      .scale = Map::TileDimension::SCALE
+      };
+
+  MapBuilder mapBuilder("./assets/tilemaps/jungle.map", "map", tileDim);
+
   mapBuilder.build(m_wm);
 
   // possibly getting confused by the params order
   // TODO: potentially use the builder patterns to avoid passing a bunch of
   // parameters at the same time and
 
+  struct TileSize {
+    int32_t width = Map::TileDimension::WIDTH;
+    int32_t height = Map::TileDimension::WIDTH;
+  };
+
+  TileSize tileSize;
+
   auto tank = m_wm->createGameObject();
-  tank.addComponent<SpriteComponent>( "tank-right", glm::vec2(TILE_SIZE.width, TILE_SIZE.height), 2); // NOLINT
+  tank.addComponent<SpriteComponent>( "tank-right", glm::vec2(tileSize.width, tileSize.height), 2); // NOLINT
   tank.addComponent<TransformComponent>(glm::vec2(10, 10), glm::vec2(1, 1), 0.0);                 // NOLINT
   tank.addComponent<RigidBodyComponent>(glm::vec2(0, 0.0)); // NOLINT
-  tank.addComponent<BoxColliderComponent>(glm::vec2(TILE_SIZE.width, TILE_SIZE.height));
+  tank.addComponent<BoxColliderComponent>(glm::vec2(tileSize.width, tileSize.height));
   tank.addComponent<DebugComponent>();
   tank.addComponent<ProjectileEmiterComponent>("bullet", glm::vec2(4, 4), glm::vec2(40, 40), 1000, 1500, 40); // NOLINT
   tank.addComponent<HealthComponent>();                                                                                             
@@ -65,23 +79,23 @@ void Game::loadLevel(uint32_t level) {
   spdlog::warn(tank.hasComponent<HealthComponent>());
 
   auto truck = m_wm->createGameObject();
-  truck.addComponent<SpriteComponent>("truck-left", glm::vec2(TILE_SIZE.width, TILE_SIZE.height), 1); // NOLINT
+  truck.addComponent<SpriteComponent>("truck-left", glm::vec2(tileSize.width, tileSize.height), 1); // NOLINT
   truck.addComponent<TransformComponent>(glm::vec2(200, 0), glm::vec2(1, 1), 0.0); //NOLINT
   truck.addComponent<RigidBodyComponent>(glm::vec2(20, 0.0)); // NOLINT
-  truck.addComponent<BoxColliderComponent>(glm::vec2(TILE_SIZE.width, TILE_SIZE.height));
+  truck.addComponent<BoxColliderComponent>(glm::vec2(tileSize.width, tileSize.height));
   truck.addComponent<DebugComponent>();
   truck.addComponent<HealthComponent>();
   tank.joinAlliance(configurables::Alliances::ENEMIES);
 
   // ** //
   auto chopper = m_wm->createGameObject();
-  chopper.addComponent<SpriteComponent>( "chopper", glm::vec2(TILE_SIZE.width, TILE_SIZE.height), 5); //NOLINT
+  chopper.addComponent<SpriteComponent>( "chopper", glm::vec2(tileSize.width, tileSize.height), 5); //NOLINT
   chopper.addComponent<TransformComponent>(glm::vec2(200, 200), glm::vec2(1, 1));     // NOLINT
   chopper.addComponent<RigidBodyComponent>(glm::vec2(0.0, 0.0)); // NOLINT
   chopper.addComponent<AnimationComponent>(2, 8); // NOLINT
   chopper.addComponent<KeyboardControlComponent>(80, 80, 80, 80); // NOLINT
   chopper.addComponent<CameraFollowerComponent>();
-  chopper.addComponent<BoxColliderComponent>(glm::vec2(TILE_SIZE.width, TILE_SIZE.height));
+  chopper.addComponent<BoxColliderComponent>(glm::vec2(tileSize.width, tileSize.height));
   chopper.addComponent<ProjectileEmiterComponent>("bullet", glm::vec2(4, 4), glm::vec2(40, 40), 0, 5000); // NOLINT
   chopper.addComponent<ProjectileControlComponent>();
   chopper.addComponent<HealthComponent>(); 
@@ -90,8 +104,8 @@ void Game::loadLevel(uint32_t level) {
 
   // ** //
   auto radar = m_wm->createGameObject();
-  radar.addComponent<SpriteComponent>( "radar", glm::vec2(TILE_SIZE.width * 2, TILE_SIZE.height * 2), 1, true);
-  radar.addComponent<TransformComponent>(glm::vec2(WINDOW_WIDTH - 74, 10), glm::vec2(1, 1));     // NOLINT
+  radar.addComponent<SpriteComponent>( "radar", glm::vec2(tileSize.width * 2, tileSize.height * 2), 1, true);
+  radar.addComponent<TransformComponent>(glm::vec2(Resolution::WINDOW_WIDTH - 74, 10), glm::vec2(1, 1));     // NOLINT
   radar.addComponent<RigidBodyComponent>(glm::vec2(0.0, 0.0)); // NOLINT
   // we only hav2 two frames, with a 5 fps
   radar.addComponent<AnimationComponent>(8, 5); // NOLINT
@@ -212,5 +226,5 @@ void Game::capFrameRate() const {
 }
 
 auto Game::deltatime() const -> double {
-  return (SDL_GetTicks() - m_prevFrameTime) / MILLISECS;
+  return (SDL_GetTicks() - m_prevFrameTime) / constants::Time::MILLIS_IN_SEC;
 }

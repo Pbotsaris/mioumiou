@@ -8,7 +8,7 @@
 #include "components/transform_component.hpp"
 #include "ecs/system.hpp"
 #include "game/camera.hpp"
-#include "game/game.hpp"
+#include "utils/configurables.hpp"
 
 class CameraMovementSystem : public System {
 
@@ -19,18 +19,19 @@ public:
   }
 
   void update(Camera &camera) {
+    using namespace configurables;
 
     for (auto &gameObject : gameObjects()) {
 
       const auto transform = gameObject.getComponent<TransformComponent>();
 
-      if (transform.position.x + (camera.width() / 2) < Game::MAP_DIMENSION.width) { // NOLINT
-        camera.setX( static_cast<int32_t>(transform.position.x - (Game::WINDOW_WIDTH / 2))); // NOLINT
+      if (transform.position.x + (camera.width() / 2) < Map::Dimensions::WIDTH) { // NOLINT
+        camera.setX( static_cast<int32_t>(transform.position.x - (Resolution::WINDOW_WIDTH / 2))); // NOLINT
       }
 
 
-     if (transform.position.y + (camera.height() / 2) < Game::MAP_DIMENSION.height) { //NOLINT
-        camera.setY( static_cast<int32_t>(transform.position.y - (Game::WINDOW_HEIGHT / 2))); // NOLINT
+     if (transform.position.y + (camera.height() / 2) < Map::Dimensions::HEIGHT) { //NOLINT
+        camera.setY( static_cast<int32_t>(transform.position.y - (Resolution::WINDOW_HEIGHT / 2))); // NOLINT
       }
         /* keep camera within limits */
         camera.setX(camera.x()  < 0 ? 0 : camera.x());

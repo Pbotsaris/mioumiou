@@ -30,7 +30,7 @@ class AnimationSystem : public System { //NOLINT
       uint32_t delta_millis = SDL_GetTicks() - animation.startTime;
       
       /* frameRateSpeed determines now many frames per second the animation will update */
-      uint32_t frame = (delta_millis * animation.frameRateSpeed) / constants::Time::MILLI_TOSEC_MULT;
+      uint32_t frame = (delta_millis * animation.frameRateSpeed) / static_cast<uint32_t>(constants::Time::MILLIS_IN_SEC);
 
       /* ensures frame is always within nbFrames */
       animation.currentFrame = frame % animation.nbFrames; 

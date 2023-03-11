@@ -6,6 +6,8 @@
 #include "game/asset_store.hpp"
 #include "map_builder.hpp"
 #include "renderer.hpp"
+#include "utils/constants.hpp"
+#include "utils/configurables.hpp"
 #include <memory>
 
 struct MapTileCount {
@@ -39,25 +41,6 @@ public:
 
   [[nodiscard]] auto isValid() const -> bool;
 
-  constexpr static const size_t WINDOW_WIDTH = 800;
-  constexpr static const size_t WINDOW_HEIGHT = 640;
-
-  constexpr static const MapTileCount MAP_TILE_COUNT = {.xAxis = 25,
-                                                        .yAxis = 20};
-
-  /* the size of tiles are defined by resolution and number number of tiles
-   * in the map files (i.e. ./assets/tilemaps/jungle.map)
-   * */
-  constexpr static const TileDimension TILE_SIZE = {
-      .width = WINDOW_WIDTH / MAP_TILE_COUNT.xAxis,
-      .height = WINDOW_HEIGHT / MAP_TILE_COUNT.yAxis,
-      .scale = 2};
-
-  constexpr static const MapDimension MAP_DIMENSION = {
-      .width = MAP_TILE_COUNT.xAxis * TILE_SIZE.width * TILE_SIZE.scale,
-      .height = MAP_TILE_COUNT.yAxis * TILE_SIZE.height * TILE_SIZE.scale,
-  };
-
 private:
   bool m_isRunning = false;
   uint32_t m_prevFrameTime = 0;
@@ -75,9 +58,8 @@ private:
   void capFrameRate() const;
   [[nodiscard]] auto deltatime() const -> double;
 
-  constexpr static const int8_t FPS = 60;
-  constexpr static const double MILLISECS = 1000.0;
-  constexpr static const int8_t MSECS_PER_FRAME = MILLISECS / FPS; // NOLINT: narrowing to int8_t
+  constexpr static const int32_t MSECS_PER_FRAME =
+       static_cast<int32_t>(constants::Time::MILLIS_IN_SEC) / configurables::Resolution::FPS; 
 };
 
 #endif

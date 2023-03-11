@@ -5,7 +5,7 @@
 
 namespace constants {
   struct Time {
-    constexpr static const std::uint32_t MILLI_TOSEC_MULT = 1000;
+    constexpr static const double MILLIS_IN_SEC = 1000.0;
   };
 
   struct Percentage{
@@ -17,6 +17,5 @@ namespace constants {
 
   };
 };
-
 
 #endif
