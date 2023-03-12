@@ -39,6 +39,7 @@ void Renderer::drawImage(SDL_Texture *tex, ImageDimensions &&dimensions){
   if(res != 0){
     spdlog::warn("Could not render Image. Error: '{}'", SDL_GetError());
   }
+
 }
 
 auto Renderer::drawText(SDL_Texture *tex, TextDimensions &&dimensions) -> glm::vec2 {
@@ -61,6 +62,8 @@ auto Renderer::drawText(SDL_Texture *tex, TextDimensions &&dimensions) -> glm::v
     spdlog::warn("Could not render Text. Error: '{}'", SDL_GetError());
   }
 
+  // must clean up texture as we have the fonts in store not the actual textures.
+  SDL_DestroyTexture(tex);
   return {width, height};
 }
 
