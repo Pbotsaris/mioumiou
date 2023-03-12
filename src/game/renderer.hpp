@@ -38,7 +38,8 @@ public:
   void clear();
   void present();
   void drawImage(SDL_Texture *tex, ImageDimensions &&dimensions);
-  void drawText(SDL_Texture *tex, TextDimensions &&dimensions);
+  /* return the actual dimensions of rendered text */
+  auto drawText(SDL_Texture *tex, TextDimensions &&dimensions) -> glm::vec2;
   [[nodiscard]] auto createTexture(const std::string &path) const -> SDL_Texture*;
   [[nodiscard]] auto createTextureFromSurface(SDL_Surface *surface) const -> SDL_Texture*;
 

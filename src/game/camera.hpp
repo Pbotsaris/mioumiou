@@ -2,6 +2,7 @@
 #define CAMERA_H
 
 #include <cstdint>
+#include<glm.hpp>
 
 class Camera {
 
@@ -29,6 +30,7 @@ class Camera {
   [[nodiscard]] auto y() const -> std::int32_t;
   [[nodiscard]] auto width() const -> std::int32_t;
   [[nodiscard]] auto height() const -> std::int32_t;
+  [[nodiscard]] auto postion() const -> glm::vec2;
   
   private:
     Position m_position;

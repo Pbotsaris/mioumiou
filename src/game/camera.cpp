@@ -20,6 +20,9 @@ void Camera::setY(int32_t y){ //NOLINT
    return m_position.y;
  }
 
+auto Camera::postion() const -> glm::vec2 {
+  return {m_position.x, m_position.y};
+}
 
  auto Camera::width() const -> std::int32_t{
    return m_dimension.width;

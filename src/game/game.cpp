@@ -100,6 +100,7 @@ void Game::loadLevel(uint32_t level) {
   truck.addComponent<DebugComponent>();
   truck.addComponent<HealthComponent>();
   truck.addComponent<HealthBarComponent>();
+  truck.addComponent<HealthBarTextComponent>();
   tank.joinAlliance(configurables::Alliances::ENEMIES);
 
   // ** //
@@ -114,7 +115,8 @@ void Game::loadLevel(uint32_t level) {
   chopper.addComponent<ProjectileEmiterComponent>("bullet", glm::vec2(4, 4), glm::vec2(40, 40), 0, 5000); // NOLINT
   chopper.addComponent<ProjectileControlComponent>();
   chopper.addComponent<HealthComponent>(); 
-  chopper.addComponent<HealthBarComponent>();
+  chopper.addComponent<HealthBarComponent>(constants::Defaults::HealthBar::SIZE, glm::vec2(0,0), HealthBarComponent::BarAlign::Left);
+  chopper.addComponent<HealthBarTextComponent>();
   chopper.joinAlliance(configurables::Alliances::PLAYER);
   chopper.joinAlliance(configurables::Alliances::NEUTRAL);
 

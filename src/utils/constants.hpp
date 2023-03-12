@@ -2,6 +2,7 @@
 #define CONSTANTS_H
 
 #include <iostream>
+#include <glm.hpp>
 #include "types/types.hpp"
 
 namespace constants {
@@ -21,6 +22,7 @@ namespace constants {
    struct HealthBar {
     constexpr static const std::int32_t DEFAULT_WIDTH = 20;
     constexpr static const std::int32_t DEFAULT_HEIGHT = 5;
+    constexpr static const glm::vec2    SIZE = {DEFAULT_WIDTH, DEFAULT_HEIGHT};
     constexpr static const std::int32_t DEFAULT_FONT_SIZE = 12;
     constexpr static const std::string  DEFAULT_FONT = "charriot";
    };

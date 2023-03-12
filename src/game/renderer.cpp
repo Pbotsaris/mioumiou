@@ -41,8 +41,7 @@ void Renderer::drawImage(SDL_Texture *tex, ImageDimensions &&dimensions){
   }
 }
 
-void Renderer::drawText(SDL_Texture *tex, TextDimensions &&dimensions){
-
+auto Renderer::drawText(SDL_Texture *tex, TextDimensions &&dimensions) -> glm::vec2 {
   int32_t width = 0;
   int32_t height = 0;
 
@@ -61,6 +60,8 @@ void Renderer::drawText(SDL_Texture *tex, TextDimensions &&dimensions){
   if(SDL_RenderCopy(m_renderer, tex, nullptr, &destination) != 0){
     spdlog::warn("Could not render Text. Error: '{}'", SDL_GetError());
   }
+
+  return {width, height};
 }
 
 
