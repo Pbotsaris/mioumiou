@@ -2,17 +2,20 @@
 #define ASSET_STORE_H
 
 #include <unordered_map>
-#include "renderer.hpp"
 #include <memory>
 #include <string>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <array>
+
 #include "types/types.hpp"
+#include "renderer.hpp"
 
 class AssetStore {
   public:
   AssetStore() = default;
   ~AssetStore();
+
 
   // no copying or moving the asset store
   AssetStore(AssetStore &) = delete;
@@ -29,18 +32,20 @@ class AssetStore {
   void clearTextures();
 
   /* Fonts */
-  void loadFont(std::string &&key, const std::string &path, Pixels fontSize);
-  auto getFont(const std::string &key) const -> TTF_Font*;
+  void loadFont(std::string &&key, const std::string &path);
+  auto getFont(const std::string &key, const FontSize size) const -> TTF_Font*;
   void removeFont(const std::string &key);
   void clearFonts();
 
   private:
     std::unordered_map<std::string, SDL_Texture*> m_textures;
-    std::unordered_map<std::string, TTF_Font*> m_fonts;
+    std::unordered_map<std::string, std::array<TTF_Font*, constants::Fonts::NB_SIZES>> m_fonts;
 
   void cleanupTextures();
   void cleanupFonts();
 };
 
+// -> TTF_Fonts* pointers [0, 1, 2, 3, 4, 5]
+// -> 
 
 #endif

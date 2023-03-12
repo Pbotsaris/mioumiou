@@ -23,7 +23,7 @@ class RenderTextSystem : public System {
       for(auto &gameObject : gameObjects()){
 
         const auto text = gameObject.getComponent<TextComponent>();
-        TTF_Font *font = store->getFont(text.assetKey);
+        TTF_Font *font = store->getFont(text.assetKey, text.fontSize);
 
 
         SDL_Texture *texture = renderer->createTextureFromSurface(

@@ -54,7 +54,7 @@ void Game::loadLevel(uint32_t level) {
   m_store->loadTexture(m_renderer, "bullet", "./assets/images/bullet.png");
 
   // TODO: Add fonts will all sizes and allow to easily query the store
-  m_store ->loadFont("charriot", "./assets/fonts/charriot.ttf", constants::Fonts::Size::TINY);
+  m_store ->loadFont("charriot", "./assets/fonts/charriot.ttf");
 
 
   TileDimension tileDim = { .width = Map::TileDimension::WIDTH,
@@ -129,7 +129,7 @@ void Game::loadLevel(uint32_t level) {
   radar.addComponent<AnimationComponent>(8, 5); // NOLINT
                                                 
   auto label = m_wm->createGameObject();
-  label.addComponent<TextComponent>("hello, world! How are you", "charriot", glm::vec2(100, 100), Red()); //NOLINT
+  label.addComponent<TextComponent>("hello, world! How are you", "charriot", constants::Fonts::Small, glm::vec2(100, 100), Red()); //NOLINT
 }
 
 /** **/

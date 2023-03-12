@@ -39,6 +39,7 @@ void AssetStore::removeTexture(const std::string &key) {
     m_textures.erase(key);
     return;
   }
+
   spdlog::error("Failed to remove texture id '{}' to Textures map", key);
 }
 
@@ -49,40 +50,63 @@ void AssetStore::clearTextures() {
 
 /* Fonts */
 
+void AssetStore::loadFont(std::string &&key, const std::string &path) {
 
-void AssetStore::loadFont(std::string &&key, const std::string &path, Pixels fontSize){
+  /* Will include all font sizes defined in constants::Fonts::Sizes */
+  std::array<TTF_Font *, constants::Fonts::NB_SIZES> fonts{};
 
-  TTF_Font *font = TTF_OpenFont(path.c_str(), fontSize);
+  uint32_t index = 0;
 
-  if(font == nullptr){
-    spdlog::error("Failed to load Font '{}' from '{}'. Error: {}", key, path, TTF_GetError());
-    return;
+  for (const auto fontSize : constants::Fonts::SIZES) {
+
+    TTF_Font *font = TTF_OpenFont(path.c_str(), fontSize);
+
+    if (font == nullptr) {
+      spdlog::error("Failed to load Font '{}' from '{}'. Error: {}", key, path, TTF_GetError());
+
+    }
+
+    if (index < fonts.size()) {
+      fonts[index] = font; // NOLINT: checking bounds so warning in meaningless here
+
+    } else {
+      spdlog::critical( "Index out of bounds of Font array. Index '{}', Array Size '{}'.", index, fonts.size());
+
+    }
+
+    index++;
   }
 
-  bool ok = m_fonts.insert({key, font}).second; //NOLINT: short var
+  bool ok = m_fonts.insert({key, std::move(fonts)}).second; // NOLINT: short var
 
-  if(!ok){
-    spdlog::warn( "Failed insert Font '{}' to AssetStore. Font already exist", key);
-    TTF_CloseFont(font);
+  if (!ok) {
+    spdlog::warn("Failed insert Font '{}' to AssetStore. Font already exist", key);
+
+    /* clean up on error */
+    for (auto *font : fonts) {
+      TTF_CloseFont(font);
+    }
   }
 }
 
-auto AssetStore::getFont(const std::string &key) const -> TTF_Font* {
+auto AssetStore::getFont(const std::string &key, FontSize size) const -> TTF_Font * {
 
-  if(m_fonts.contains(key)){
-    return m_fonts.at(key);
+  if (m_fonts.contains(key)) {
+    return m_fonts.at(key)[size];
   };
 
-  spdlog::error("Could not get Font '{}'. I does not exist in AssetStore.", key);
+  spdlog::error("Could not get Font '{}'. I does not exist in AssetStore.",
+                key);
   return nullptr;
 };
 
+void AssetStore::removeFont(const std::string &key) {
+  if (m_fonts.contains(key)) {
 
-void AssetStore::removeFont(const std::string &key){
+    for (auto *font : m_fonts.at(key)) {
+      TTF_CloseFont(font);
+    }
 
-  if(m_fonts.contains(key)){
-    TTF_Font *font = m_fonts.at(key);
-    TTF_CloseFont(font);
     m_fonts.erase(key);
     return;
   }
@@ -90,8 +114,7 @@ void AssetStore::removeFont(const std::string &key){
   spdlog::error("Could not get Font '{}'. I does not exist in AssetStore.", key);
 }
 
-
-void AssetStore::clearFonts(){
+void AssetStore::clearFonts() {
   cleanupFonts();
   m_fonts.clear();
 }
@@ -109,8 +132,10 @@ void AssetStore::cleanupTextures() {
   }
 }
 
-void AssetStore::cleanupFonts(){
-for (auto &font : m_fonts) {
-    TTF_CloseFont(font.second);
+void AssetStore::cleanupFonts() {
+  for (auto &fontSizes : m_fonts) {
+    for(auto *font : fontSizes.second){
+       TTF_CloseFont(font);
+    }
   }
 }

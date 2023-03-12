@@ -63,7 +63,7 @@ public:
       auto percentage = std::to_string((health.currentHealth * constants::Percentage::DIVISOR)
           / health.maxHealth) + "%";
 
-      auto *font = store->getFont(barText.font);
+      auto *font = store->getFont(barText.font, barText.fontSize);
 
       SDL_Texture *texture = renderer->createTextureFromSurface(
           TTF_RenderText_Blended(font, percentage.c_str(), color));

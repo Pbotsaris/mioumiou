@@ -1,7 +1,6 @@
 #include "systems/render_healthbar_system.hpp"
 #include "game/colors.hpp"
 
-#include "utils/constants.hpp"
 auto RenderHealthBarSystem::name() const -> std::string {
   return "RenderHealthBarSystem";
 }
@@ -43,15 +42,15 @@ auto RenderHealthBarSystem::alignBar(const TransformComponent &transform,
 
   case HealthBarComponent::Right:
    /* Move bar to right of sprite width and center vertically */
-   return transform.position + bar.offset + glm::vec2(objWidth, topMargin) - camera.postion();
+   return transform.position + bar.offset + glm::vec2(objWidth, topMargin) - camera.postion(); //NO LINT
 
   case HealthBarComponent::Bottom:
    /* Move bar to bottom of sprite height and center horizontally */
-    return transform.position + bar.offset + glm::vec2(leftMargin, objHeight) - camera.postion();
+    return transform.position + bar.offset + glm::vec2(leftMargin, objHeight) - camera.postion(); //NOLINT
 
   case HealthBarComponent::Left:
  /* Move bar to left of sprite width and center vertically */
-   return transform.position + bar.offset + glm::vec2((bar.size.x * -1), topMargin) - camera.postion();
+   return transform.position + bar.offset + glm::vec2((bar.size.x * -1), topMargin) - camera.postion(); //NOLINT
 
   };
 }
@@ -63,10 +62,12 @@ auto RenderHealthBarSystem::alignBarText(const HealthBarComponent &bar,
 
    /* Text is aligned relative to bar depending on bar alignment to sprite */
 
+  int32_t fontSize = constants::Fonts::SIZES[barText.fontSize]; // NOLINT: safe to access
+
   switch (bar.alignment) {
   case HealthBarComponent::Top:
   /* Text to top, text margin to the bottom */
-  return barPos - glm::vec2(0, (bar.size.y + barText.fontSize)) - glm::vec2(0, barText.margin); // NOLINT
+  return barPos - glm::vec2(0, (bar.size.y + fontSize)) - glm::vec2(0, barText.margin); // NOLINT
 
   case HealthBarComponent::Right:
   /* Text to right, text margin to the left */
@@ -81,6 +82,4 @@ auto RenderHealthBarSystem::alignBarText(const HealthBarComponent &bar,
   return barPos - glm::vec2(bar.size.x, 0) - glm::vec2(barText.margin, 0); // NOLINT
 
   };
-
-
 }
