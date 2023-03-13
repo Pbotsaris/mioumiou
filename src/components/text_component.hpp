@@ -15,7 +15,6 @@ struct TextComponent {
   SDL_Color              color;
   bool isFixed;
   
-
   explicit TextComponent(
       std::string content = "",
       std::string assetKey ="",

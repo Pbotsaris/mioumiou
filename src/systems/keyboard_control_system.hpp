@@ -8,7 +8,7 @@
 #include "components/all.hpp"
 #include "event_system/event_bus.hpp"
 #include "events/keypress_event.hpp"
-#include "projectile_emit_system.hpp"
+#include "projectile/projectile_emit_system.hpp"
 
 class KeyboardControlSystem : public System {
 

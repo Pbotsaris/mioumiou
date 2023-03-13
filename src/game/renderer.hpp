@@ -32,12 +32,16 @@ public:
   Renderer& operator=(const Renderer&) = delete;
   Renderer& operator=(Renderer &&) = delete;
 
+
+  [[nodiscard]] auto sdlRenderer() const -> SDL_Renderer*;
+
   void setDrawColor(Colors &&color);
   void fillRect(SDL_Rect *rect);
   void drawRect(SDL_Rect *rect);
   void clear();
   void present();
   void drawImage(SDL_Texture *tex, ImageDimensions &&dimensions);
+
   /* return the actual dimensions of rendered text */
   auto drawText(SDL_Texture *tex, TextDimensions &&dimensions) -> glm::vec2;
   [[nodiscard]] auto createTexture(const std::string &path) const -> SDL_Texture*;

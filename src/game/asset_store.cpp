@@ -48,6 +48,18 @@ void AssetStore::clearTextures() {
   m_textures.clear();
 }
 
+auto AssetStore::getTextureNames() const -> std::vector<std::string>{
+
+  std::vector<std::string> keys;
+  keys.reserve(m_textures.size());
+
+  for(const auto &texture : m_textures){
+    keys.push_back(texture.first);
+  }
+
+  return keys;
+}
+
 /* Fonts */
 
 void AssetStore::loadFont(std::string &&key, const std::string &path) {

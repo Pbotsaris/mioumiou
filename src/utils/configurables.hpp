@@ -30,8 +30,8 @@ struct Player {
 };
 
 struct Resolution {
-  constexpr static size_t WINDOW_WIDTH = 800;
-  constexpr static size_t WINDOW_HEIGHT = 640;
+  constexpr static size_t WINDOW_WIDTH = 1280;
+  constexpr static size_t WINDOW_HEIGHT = 1024;
   constexpr static int32_t FPS = 60;
 };
 
@@ -43,8 +43,8 @@ struct Map {
 
   // tile grows with Resolution
   struct TileDimension {
-    constexpr static int32_t WIDTH = Resolution::WINDOW_WIDTH / TileCount::X_AXIS;
-    constexpr static int32_t HEIGHT = Resolution::WINDOW_HEIGHT / TileCount::Y_AXIS;;
+    constexpr static int32_t WIDTH =  32;
+    constexpr static int32_t HEIGHT = 32;
     constexpr static int32_t SCALE = 2;
   };
 

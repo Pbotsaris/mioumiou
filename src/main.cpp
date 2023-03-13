@@ -5,10 +5,10 @@
 #include "game/game.hpp"
 #include "utils/tester.hpp"
 
+
 int main(int argc, char *argv[]) {
   /* Tests with -test */
   int res = Tester::test(argc, argv);
-
 
   if (res > 0) {
     return res;

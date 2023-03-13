@@ -4,8 +4,10 @@ OBJ=obj
 BIN=bin
 TARGET=$(BIN)/mioumiou
 SRC=src
+LIBS=libs
+IMGUI_SRC=$(LIBS)/imgui
 
-$(shell mkdir -p obj obj/game obj/components obj/ecs obj/systems bin)
+$(shell mkdir -p obj obj/game  obj/backends obj/components obj/ecs obj/systems obj/systems/gui obj/systems/render obj/systems/projectile bin)
 
 # Libs
 SDL=$(shell pkg-config --cflags --libs SDL2_image SDL2_ttf)
@@ -20,7 +22,10 @@ LIBFLAGS= $(SDL) $(LUA) $(SPDLOG)
 # -gdwarf-4 is necessary for valgrind
 DEBUGFLAGS= -g3 -gdwarf-4
 
+# SRCS=$(wildcard $(SRC)/**/*.cpp) $(wildcard $(SRC)/*.cpp) 
 SRCS=$(wildcard $(SRC)/**/*.cpp) $(wildcard $(SRC)/*.cpp) 
+SRCS+=$(wildcard $(SRC)/**/**/*.cpp)
+SRCS+=$(wildcard $(IMGUI_SRC)/**/*.cpp) $(wildcard $(IMGUI_SRC)/*.cpp) 
 OBJS=$(patsubst $(SRC)%.cpp, $(OBJ)%.o, $(SRCS)) 
 
 all: $(TARGET)

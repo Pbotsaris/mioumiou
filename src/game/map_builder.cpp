@@ -16,8 +16,7 @@ void MapBuilder::build(std::unique_ptr<WorldManager> &wm) { // NOLINT
   std::ifstream mapFile(m_mapPath);
 
   if (!mapFile) {
-    spdlog::error("Failed to build map.Could not find provided path: '{}'.",
-                  m_mapPath);
+    spdlog::error("Failed to build map.Could not find provided path: '{}'.", m_mapPath);
     return;
   }
 
@@ -32,8 +31,7 @@ void MapBuilder::build(std::unique_ptr<WorldManager> &wm) { // NOLINT
       std::string val = line.substr(0, linePos);
 
       if (val.size() < 2) {
-        spdlog::error("map value {} should have 2 digits. Failed to load map.",
-                      val);
+        spdlog::error("map value {} should have 2 digits. Failed to load map.", val);
         return;
       }
 
@@ -57,9 +55,7 @@ void MapBuilder::loadTile(std::unique_ptr<WorldManager> &wm, // NOLINT
   auto [cropX, okX] = Numbers::fromChar<int32_t>(value[1]);
 
   if (!okX || !okY) {
-    spdlog::error(
-        "Unable converted map values '{},{}' to integer. Failed to build map.",
-        value[0], value[1]);
+    spdlog::error( "Unable converted map values '{},{}' to integer. Failed to build map.", value[0], value[1]);
     return;
   }
 

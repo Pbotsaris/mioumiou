@@ -7,6 +7,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <array>
+#include <vector>
 
 #include "types/types.hpp"
 #include "renderer.hpp"
@@ -30,6 +31,7 @@ class AssetStore {
   auto getTexture(const std::string &key) const -> SDL_Texture*;
   void removeTexture(const std::string &key);
   void clearTextures();
+  auto getTextureNames() const -> std::vector<std::string>;
 
   /* Fonts */
   void loadFont(std::string &&key, const std::string &path);

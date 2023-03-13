@@ -17,6 +17,10 @@ Renderer::~Renderer() { SDL_DestroyRenderer(m_renderer); }
 auto Renderer::valid() const -> bool { return m_valid; }
 
 
+auto Renderer::sdlRenderer() const -> SDL_Renderer*{
+  return m_renderer;
+}
+
 void Renderer::setDrawColor(Colors &&color) {
   auto rgba = color.getColor();
   SDL_SetRenderDrawColor(m_renderer, rgba.r, rgba.g, rgba.b, rgba.a); 

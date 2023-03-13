@@ -1,4 +1,4 @@
-#include "systems/render_healthbar_system.hpp"
+#include "systems/render/render_healthbar_system.hpp"
 #include "game/colors.hpp"
 
 auto RenderHealthBarSystem::name() const -> std::string {

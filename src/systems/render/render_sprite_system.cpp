@@ -1,4 +1,4 @@
-#include "render_sprite_system.hpp"
+#include "systems/render/render_sprite_system.hpp"
 #include <algorithm>
 
 // Render system is responsible for sorting on x:

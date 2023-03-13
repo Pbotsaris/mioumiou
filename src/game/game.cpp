@@ -6,6 +6,9 @@
 #include <iostream>
 #include <spdlog/spdlog.h>
 #include <string>
+#include <imgui.h>
+#include <backends/imgui_impl_sdl2.h>
+#include <backends/imgui_impl_sdlrenderer.h>
 
 #include "colors.hpp"
 #include "components/all.hpp"
@@ -13,6 +16,7 @@
 #include "systems/all.hpp"
 #include "utils/numbers.hpp"
 #include "utils/configurables.hpp"
+
 
 using namespace configurables;
 
@@ -24,6 +28,7 @@ Game::Game()
       m_eventBus(std::make_unique<EventBus>()),
       m_camera(Camera::Position(0, 0), Camera::Dimension(Resolution::WINDOW_WIDTH, Resolution::WINDOW_HEIGHT)) { 
 
+   /* SDL Init */
    if(SDL_Init(SDL_INIT_EVERYTHING) != 0){
      spdlog::critical("Could not initialize SDL. Error: '{}'", SDL_GetError());
    }
@@ -31,13 +36,33 @@ Game::Game()
    if(TTF_Init() != 0){
      spdlog::critical("Could not initialize TTF. Error: '{}'", TTF_GetError());
    }
+
+   /* Dear ImGui Init */
+   IMGUI_CHECKVERSION();
+   ImGui::CreateContext();
+   ImGui::StyleColorsDark();
+
+   /* NOTE: no key for now */
+   // ImGuiIO& io{ImGui::GetIO()}; //NOLINT
+   // io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // NOLINT
+   if(!ImGui_ImplSDL2_InitForSDLRenderer(m_window->sdlWindow(), m_renderer->sdlRenderer())){
+     spdlog::critical("Failed to initialize ImGui with SDL");
+   }
+
+   if(!ImGui_ImplSDLRenderer_Init(m_renderer->sdlRenderer())){
+     spdlog::critical("Failed to initialize ImGui with SDL Renderer.");
+   }
+
 }
 
 Game::~Game() {
-  m_window->~Window(); // destroy window first
+  m_window->~Window(); // IMPORTANT: destroy window first
   m_renderer->~Renderer();
   SDL_Quit();
-  //TTF_Quit();
+  ImGui_ImplSDLRenderer_Shutdown();
+  ImGui_ImplSDL2_Shutdown();
+  ImGui::DestroyContext();
+  //TTF_Quit(); -> NOTE: Why segfaults?
 }
 
 /** **/
@@ -57,7 +82,8 @@ void Game::loadLevel(uint32_t level) {
   m_store ->loadFont("charriot", "./assets/fonts/charriot.ttf");
 
 
-  TileDimension tileDim = { .width = Map::TileDimension::WIDTH,
+  TileDimension tileDim = {
+      .width = Map::TileDimension::WIDTH,
       .height = Map::TileDimension::HEIGHT,
       .scale = Map::TileDimension::SCALE
       };
@@ -72,7 +98,7 @@ void Game::loadLevel(uint32_t level) {
 
   struct TileSize {
     int32_t width = Map::TileDimension::WIDTH;
-    int32_t height = Map::TileDimension::WIDTH;
+    int32_t height = Map::TileDimension::HEIGHT;
   };
 
   TileSize tileSize;
@@ -88,9 +114,9 @@ void Game::loadLevel(uint32_t level) {
   tank.joinAlliance(configurables::Alliances::ENEMIES);
 
   // TODO: This is necessary to compile? why?
-  auto comps = tank.getComponent<HealthComponent>();
-  spdlog::warn(comps.maxHealth);
-  spdlog::warn(tank.hasComponent<HealthComponent>());
+ // auto comps = tank.getComponent<HealthComponent>();
+ // spdlog::warn(comps.maxHealth);
+ // spdlog::warn(tank.hasComponent<HealthComponent>());
 
   auto truck = m_wm->createGameObject();
   truck.addComponent<SpriteComponent>("truck-left", glm::vec2(tileSize.width, tileSize.height), 1); // NOLINT
@@ -149,6 +175,7 @@ void Game::setup() {
   m_wm->createSystem<ProjectileLifeCycleSystem>();
   m_wm->createSystem<RenderTextSystem>();
   m_wm->createSystem<RenderHealthBarSystem>();
+  m_wm->createSystem<RenderGuiSystem>();
 }
 
 /** **/
@@ -178,6 +205,18 @@ void Game::processInput() {
   SDL_Event event;
   while (SDL_PollEvent(&event) != 0) {
 
+    //TODO: Make a class for SDL_Events 
+     ImGui_ImplSDL2_ProcessEvent(&event);
+     ImGuiIO& io{ImGui::GetIO()}; //NOLINT
+
+     int32_t mouseX = 0;
+     int32_t mouseY = 0;
+
+     const uint32_t buttons = SDL_GetMouseState(&mouseX, &mouseY);
+     io.MousePos = ImVec2(static_cast<float>(mouseX), static_cast<float>(mouseY));
+     io.MouseDown[0] = static_cast<bool>(buttons & SDL_BUTTON(SDL_BUTTON_LEFT)); //NOLINT: Bad bitwise warning
+     io.MouseDown[1] = static_cast<bool>(buttons & SDL_BUTTON(SDL_BUTTON_RIGHT)); //NOLINT: Bad bitwise warning
+
     switch (event.type) {
     case SDL_QUIT:
       m_isRunning = false;
@@ -201,12 +240,15 @@ void Game::processInput() {
 }
 
 void Game::render() {
- // m_renderer->setDrawColor(Gray());
   m_renderer->clear();
+
+  /* NOTE: Order maters here */
   m_wm->getSystem<RenderSpriteSystem>().update(m_renderer, m_camera, m_store);
   m_wm->getSystem<RenderDebugSystem>().update(m_renderer, m_camera);
   m_wm->getSystem<RenderTextSystem>().update(m_renderer, m_store, m_camera);
   m_wm->getSystem<RenderHealthBarSystem>().update(m_renderer, m_store, m_camera);
+  m_wm->getSystem<RenderGuiSystem>().update(m_wm, m_store, m_camera);
+
   m_renderer->present();
 }
 
