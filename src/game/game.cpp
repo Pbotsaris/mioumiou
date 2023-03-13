@@ -181,6 +181,8 @@ void Game::setup() {
 /** **/
 
 void Game::update() {
+  /* NOTE: Maybe Render and update should run a separated threads? Must figure out game */
+
   /* removing this fuction will allow the game to run as fast as it can! */
   capFrameRate();
 
@@ -273,7 +275,7 @@ void Game::run() {
 
 void Game::addEventListeners(){
 
-  //TODO: Do we need to subscribe & clear bus at every frame?
+  //TODO: Do we need to subscribe & clear bus at every frame? Maybe run events on another thread?
   // We could improve this with a smarter data structure.
   // A buffer of subscriptions that are only added and removed at certain "events" or for a certain object ID.
   // For example, when an entity is removed, then we go ahead and remove all the events
