@@ -10,6 +10,7 @@
 #include "game/camera.hpp"
 #include "components/text_component.hpp"
 #include "components/camera_follower_component.hpp"
+#include "systems/render/render_sprite_system.hpp"
 
 
 class RenderTextSystem : public System {
@@ -23,8 +24,13 @@ class RenderTextSystem : public System {
       for(auto &gameObject : gameObjects()){
 
         const auto text = gameObject.getComponent<TextComponent>();
-        TTF_Font *font = store->getFont(text.assetKey, text.fontSize);
 
+        /* Text Rendering culling only when not fixed */
+        if(!text.isFixed && isTextOutsideCameraView(text, camera)){
+          continue;
+        }
+
+        TTF_Font *font = store->getFont(text.assetKey, text.fontSize);
 
         SDL_Texture *texture = renderer->createTextureFromSurface(
             TTF_RenderText_Blended(font, text.content.c_str(), text.color));
@@ -38,6 +44,10 @@ class RenderTextSystem : public System {
     }
 
   [[nodiscard]] auto name() const -> std::string override;
+
+  private:
+  [[nodiscard]] static auto isTextOutsideCameraView(const TextComponent &text, const Camera &camera) -> bool;
+
 };
 
 #endif

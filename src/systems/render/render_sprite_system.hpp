@@ -24,12 +24,16 @@ public:
       ) {
 
     for (auto &gameObject : sortedGameObjects()) {
+      const auto transform = gameObject.getComponent<TransformComponent>();
+      const auto sprite    = gameObject.getComponent<SpriteComponent>();
 
-      const auto transform       = gameObject.getComponent<TransformComponent>();
-      const auto sprite          = gameObject.getComponent<SpriteComponent>();
+      /* culling sprites */
+      if(isSpriteOutsideCameraView(transform, sprite, camera)){
+        continue;
+      }
+
       const glm::vec2 dimension  = sprite.dimensions * transform.scale;
       SDL_Texture *tex           = store->getTexture(sprite.key);
-
 
       if (tex == nullptr) {
         spdlog::warn("Failed to render GameObject id '{}' sprite path: '{}'. " "Texture does not exist.", gameObject.id(), sprite.key);
@@ -55,9 +59,12 @@ public:
   }
 
   [[nodiscard]] auto name() const -> std::string override;
+  [[nodiscard]] static auto isOutsideCameraView(const TransformComponent &transform, const Camera &camera) -> bool;
 
 private:
-  [[nodiscard]] auto sortedGameObjects() const -> std::vector<GameObject> ;
+  [[nodiscard]] auto sortedGameObjects() const -> std::vector<GameObject>;
+  [[nodiscard]] static auto isSpriteOutsideCameraView(const TransformComponent &transform, const SpriteComponent &sprite, const Camera &camera) -> bool;
+
 };
 
 #endif

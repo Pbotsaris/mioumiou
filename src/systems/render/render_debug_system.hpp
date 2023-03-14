@@ -11,6 +11,7 @@
 #include "events/collision_event.hpp"
 #include "event_system/event_bus.hpp"
 #include "game/camera.hpp"
+#include "systems/render/render_sprite_system.hpp"
 
 class RenderDebugSystem : public System { //NOLINT
 
@@ -35,8 +36,14 @@ public:
       }
 
       const auto transform = gameObject.getComponent<TransformComponent>();
-      const auto collider = gameObject.getComponent<BoxColliderComponent>();
 
+
+      /* culling as main RenderSpriteSystem */
+      if(RenderSpriteSystem::isOutsideCameraView(transform, camera)){
+        continue;
+      }
+
+      const auto collider = gameObject.getComponent<BoxColliderComponent>();
 
       SDL_Rect debugBorder{
           .x = static_cast<int>(transform.position.x + collider.offset.x - camera.x()), // NOLINT

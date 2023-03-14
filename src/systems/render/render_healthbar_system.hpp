@@ -12,6 +12,7 @@
 #include "game/asset_store.hpp"
 #include "game/camera.hpp"
 #include "game/renderer.hpp"
+#include "systems/render/render_sprite_system.hpp"
 
 class RenderHealthBarSystem : public System {
 public:
@@ -28,6 +29,12 @@ public:
     for (auto &gameObject : gameObjects()) {
 
       const auto transform = gameObject.getComponent<TransformComponent>();
+
+      /* culling as main RenderSpriteSystem */
+      if(RenderSpriteSystem::isOutsideCameraView(transform, camera)){
+        continue;
+      }
+
       const auto health    = gameObject.getComponent<HealthComponent>();
       const auto bar       = gameObject.getComponent<HealthBarComponent>();
       const auto sprite    = gameObject.getComponent<SpriteComponent>();
