@@ -27,8 +27,8 @@ public:
       const auto transform = gameObject.getComponent<TransformComponent>();
       const auto sprite    = gameObject.getComponent<SpriteComponent>();
 
-      /* culling sprites */
-      if(isSpriteOutsideCameraView(transform, sprite, camera)){
+      /* culling Sprites. Ignored fixed position */
+      if(!sprite.isFixed && isSpriteOutsideCameraView(transform, sprite, camera)){
         continue;
       }
 
