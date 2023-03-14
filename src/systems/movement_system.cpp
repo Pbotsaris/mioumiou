@@ -39,7 +39,6 @@ void MovementSystem::onEnemyHitsObstacle(GameObject bounderObject, GameObject ob
     if (bounderObject.hasComponent<SpriteComponent>()) {
       auto &sprite = bounderObject.getComponent<SpriteComponent>();
 
-
       /* must be flippable */
       if(!sprite.flippable){
         return;
@@ -104,3 +103,26 @@ void MovementSystem::doSheetHorizontal(SpriteComponent &sprite) {
   sprite.crop.y = sprite.getHeight() * constants::SpriteSheet::LOOK_RIGHT;
   sprite.orientation = SpriteComponent::Right;
 }
+
+auto MovementSystem::isOutBoundsX(const TransformComponent &transform) -> bool {
+  return transform.position.x < 0 ||  // NOLINT
+         transform.position.x > configurables::Map::Dimensions::WIDTH; // NOLINT
+};
+
+auto MovementSystem::isOutBoundsY(const TransformComponent &transform) -> bool{
+    return transform.position.y < 0 || // NOLINT
+    transform.position.y > configurables::Map::Dimensions::HEIGHT; // NOLINT
+}
+
+void MovementSystem::limitBounds(TransformComponent &transform){
+   float width = configurables::Map::Dimensions::WIDTH;
+   float height = configurables::Map::Dimensions::HEIGHT;
+   auto padding = configurables::Map::BoundsPadding::PADDING;
+
+   transform.position.x = transform.position.x < 0 + padding.left  ? 0 + padding.left : transform.position.x; //NOLINT
+   transform.position.y = transform.position.y < 0 + padding.top ? 0 + padding.top : transform.position.y; // NOLINT
+   transform.position.x = transform.position.x > width - padding.right ? width - padding.right : transform.position.x; // NOLINT
+   transform.position.y = transform.position.y > height - padding.bottom ? height - padding.bottom : transform.position.y; //NOLINT
+};
+
+

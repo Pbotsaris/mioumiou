@@ -35,17 +35,16 @@ void update(double deltatime){
     transform.position += (rigidBody.velocity * glm::vec2(deltatime, deltatime));
 
     /* checking map bounds  */
-    bool isOffMap = (
-                     transform.position.x < 0 ||  // NOLINT
-                     transform.position.x > configurables::Map::Dimensions::WIDTH || // NOLINT
-                     transform.position.y < 0 || // NOLINT
-                     transform.position.y > configurables::Map::Dimensions::HEIGHT // NOLINT
-        ); 
+    bool isOffMap = (isOutBoundsX(transform) || isOutBoundsY(transform)); 
 
-    if(isOffMap && !gameObject.hasTag(constants::Tags::MAIN_PLAYER)){
-      gameObject.remove();
+    if(gameObject.hasTag(constants::Tags::MAIN_PLAYER)){
+      limitBounds(transform);
+     continue;
     }
 
+    if(isOffMap && gameObject.hasTag(constants::Tags::MAIN_PLAYER)){
+      gameObject.remove();
+    }
   }
 }
   [[nodiscard]] auto name() const -> std::string override;
@@ -58,6 +57,10 @@ void update(double deltatime){
   static void handleSpriteSheetFlip(SpriteComponent &sprite, Direction direction);
   static void doSheetVertical(SpriteComponent &sprite);
   static void doSheetHorizontal(SpriteComponent &sprite);
+
+  static auto isOutBoundsX(const TransformComponent &transform) -> bool;
+  static auto isOutBoundsY(const TransformComponent &transform) -> bool;
+  static void limitBounds(TransformComponent &transform);
 };
 
 #endif

@@ -10,6 +10,7 @@
  * */
 
 namespace configurables {
+
 struct Tags {
   constexpr static std::string MAIN_PLAYER = "player";
 };
@@ -39,13 +40,21 @@ struct Resolution {
 };
 
 struct Map {
+
+  struct Padding {
+    float top = 0;
+    float right = 0;
+    float bottom = 0;
+    float left = 0;
+  };
+
   struct TileCount {
     constexpr static int32_t X_AXIS = 25;
     constexpr static int32_t Y_AXIS = 20;
   };
 
   struct TileDimension {
-    constexpr static int32_t WIDTH =  32;
+    constexpr static int32_t WIDTH = 32;
     constexpr static int32_t HEIGHT = 32;
     constexpr static int32_t SCALE = 2;
   };
@@ -54,6 +63,11 @@ struct Map {
   struct Dimensions {
     constexpr static int32_t WIDTH = TileCount::X_AXIS * TileDimension::WIDTH * TileDimension::SCALE;
     constexpr static int32_t HEIGHT = TileCount::Y_AXIS * TileDimension::HEIGHT * TileDimension::SCALE;
+  };
+
+  // map bounds padding preventing player from going out of bounds
+  struct BoundsPadding {
+    constexpr static Padding PADDING = { .top = 10, .right = 40, .bottom = 40, .left = 10};
   };
 };
 }; // namespace configurables
