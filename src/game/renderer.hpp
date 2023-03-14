@@ -12,7 +12,8 @@ struct ImageDimensions {
   const SDL_Rect *sourceCrop;
   const SDL_Rect *destDimension;
   const double rotation;
-  ImageDimensions(const SDL_Rect *crop, const SDL_Rect *dimension, const double rotation);
+  SDL_RendererFlip flip;
+  ImageDimensions(const SDL_Rect *crop, const SDL_Rect *dimension, const double rotation, const SDL_RendererFlip flip);
 };
 
 struct TextDimensions {

@@ -18,6 +18,17 @@ namespace constants {
     constexpr static const std::int32_t COMPONENT_POOL_SIZE = 100;
   };
 
+  struct Tags {
+    constexpr static const std::string MAIN_PLAYER = "player";
+  };
+
+  struct SpriteSheet {
+      constexpr static const std::int32_t LOOK_UP    = 0;
+      constexpr static const std::int32_t LOOK_RIGHT = 1;
+      constexpr static const std::int32_t LOOK_DOWN  = 2;
+      constexpr static const std::int32_t LOOK_LEFT  = 3;
+  };
+
   struct Fonts {
     constexpr static const size_t NB_SIZES = 7;
 

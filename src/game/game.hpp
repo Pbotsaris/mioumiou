@@ -10,16 +10,6 @@
 #include "utils/configurables.hpp"
 #include <memory>
 
-struct MapTileCount {
-  int32_t xAxis;
-  int32_t yAxis;
-};
-
-struct MapDimension {
-  int32_t width;
-  int32_t height;
-};
-
 class Game {
 
 public:

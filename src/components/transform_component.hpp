@@ -6,9 +6,9 @@
 
 struct TransformComponent {
 
-  glm::vec2      position;
-  glm::vec2      scale;
-  glm::float64_t rotation;
+  glm::vec2      position; // x, y in pixels
+  glm::vec2      scale; // multiplier
+  glm::float64_t rotation; // in radiants
 
   explicit TransformComponent(glm::vec2 pos      = {0, 0}, //NOLINT: args with similar types
                               glm::vec2 scl      = {1, 1},

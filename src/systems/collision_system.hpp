@@ -10,10 +10,11 @@
 
 class CollisionSystem : public System { //NOLINT
 
-  struct Position {
+  // 2 X x, y vectors representing the origin and the end of the side of a box collider
+  struct ObjectSide {
     glm::vec2 origin;
     glm::vec2 end;
-    Position(glm::vec2 origin, glm::vec2 size) : origin(origin), end(size){}; // NOLINT
+    ObjectSide(glm::vec2 origin, glm::vec2 size) : origin(origin), end(size){}; // NOLINT
   };
 
 
@@ -32,7 +33,7 @@ public:
       auto transform = current->getComponent<TransformComponent>();
       auto collider = current->getComponent<BoxColliderComponent>();
 
-      Position currentPos(transform.position + collider.offset,
+      ObjectSide currentPos(transform.position + collider.offset,
                           transform.position + collider.size + collider.offset);
 
       verifyCollision(eventBus, objs.end(), currentPos, current);
@@ -45,7 +46,7 @@ private:
   void verifyCollision(
                       std::unique_ptr<EventBus> &eventBus,
                       const std::vector<GameObject>::iterator end,
-                      Position &currentPos,
+                      ObjectSide &currentPos,
                        std::vector<GameObject>::iterator current) const {
 
     for (auto next = current + 1; next < end; next++) {
@@ -53,7 +54,7 @@ private:
       const auto transform = next->getComponent<TransformComponent>();
       const auto collider = next->getComponent<BoxColliderComponent>();
 
-      Position nextPos(transform.position + collider.offset,
+      ObjectSide nextPos(transform.position + collider.offset,
                        transform.position + collider.size + collider.offset);
 
       if (hasCollidedLeftBottom(currentPos, nextPos) ||
@@ -66,17 +67,17 @@ private:
     }
   }
 
-  [[nodiscard]] auto hasCollidedLeftBottom(const Position &current,
-                                           const Position &next) const -> bool;
+  [[nodiscard]] auto hasCollidedLeftBottom(const ObjectSide &current,
+                                           const ObjectSide &next) const -> bool;
 
-  [[nodiscard]] auto hasCollidedLeftTop(const Position &current,
-                                        const Position &next) const -> bool;
+  [[nodiscard]] auto hasCollidedLeftTop(const ObjectSide &current,
+                                        const ObjectSide &next) const -> bool;
 
-  [[nodiscard]] auto hasCollidedRightBottom(const Position &current,
-                                            const Position &next) const -> bool;
+  [[nodiscard]] auto hasCollidedRightBottom(const ObjectSide &current,
+                                            const ObjectSide &next) const -> bool;
 
-  [[nodiscard]] auto hasCollidedRightTop(const Position &current,
-                                         const Position &next) const -> bool;
+  [[nodiscard]] auto hasCollidedRightTop(const ObjectSide &current,
+                                         const ObjectSide &next) const -> bool;
 };
 
 #endif

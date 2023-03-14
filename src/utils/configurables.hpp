@@ -11,12 +11,15 @@
 
 namespace configurables {
 struct Tags {
-  constexpr static std::string PLAYER = "player";
+  constexpr static std::string MAIN_PLAYER = "player";
 };
 
 struct Groups {
   constexpr static std::string ENEMIES = "enemies";
   constexpr static std::string PROJECTILES = "projectiles";
+  constexpr static std::string OBSTACLES = "obstacles";
+  constexpr static std::string BOUNDER_OBJECTS = "bounder-objects";
+  constexpr static std::string FLIPPABLE = "flipable";
 };
 
 struct Alliances {
@@ -41,7 +44,6 @@ struct Map {
     constexpr static int32_t Y_AXIS = 20;
   };
 
-  // tile grows with Resolution
   struct TileDimension {
     constexpr static int32_t WIDTH =  32;
     constexpr static int32_t HEIGHT = 32;

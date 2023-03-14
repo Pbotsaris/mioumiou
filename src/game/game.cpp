@@ -73,6 +73,8 @@ void Game::loadLevel(uint32_t level) {
 
   m_store->loadTexture(m_renderer, "tank-right", "./assets/images/tank-panther-right.png");
   m_store->loadTexture(m_renderer, "truck-left", "./assets/images/truck-ford-left.png");
+  m_store->loadTexture(m_renderer, "truck-right", "./assets/images/truck-ford-right.png");
+  m_store->loadTexture(m_renderer, "tree", "./assets/images/tree.png");
   m_store->loadTexture(m_renderer, "map", "./assets/tilemaps/jungle.png");
   m_store->loadTexture(m_renderer, "chopper", "./assets/images/chopper-spritesheet.png");
   m_store->loadTexture(m_renderer, "radar", "./assets/images/radar.png");
@@ -104,14 +106,15 @@ void Game::loadLevel(uint32_t level) {
   TileSize tileSize;
 
   auto tank = m_wm->createGameObject();
+  tank.addComponent<TransformComponent>(glm::vec2(100, 500), glm::vec2(1, 1), 0.0);                 // NOLINT
   tank.addComponent<SpriteComponent>( "tank-right", glm::vec2(tileSize.width, tileSize.height), 2); // NOLINT
-  tank.addComponent<TransformComponent>(glm::vec2(10, 10), glm::vec2(1, 1), 0.0);                 // NOLINT
   tank.addComponent<RigidBodyComponent>(glm::vec2(0, 0.0)); // NOLINT
   tank.addComponent<BoxColliderComponent>(glm::vec2(tileSize.width, tileSize.height));
   tank.addComponent<DebugComponent>();
   tank.addComponent<ProjectileEmiterComponent>("bullet", glm::vec2(4, 4), glm::vec2(40, 40), 1000, 1500, 40); // NOLINT
   tank.addComponent<HealthComponent>();                                                                                             
   tank.joinAlliance(configurables::Alliances::ENEMIES);
+  tank.toGroup(configurables::Groups::BOUNDER_OBJECTS);
 
   // TODO: This is necessary to compile? why?
  // auto comps = tank.getComponent<HealthComponent>();
@@ -119,19 +122,20 @@ void Game::loadLevel(uint32_t level) {
  // spdlog::warn(tank.hasComponent<HealthComponent>());
 
   auto truck = m_wm->createGameObject();
-  truck.addComponent<SpriteComponent>("truck-left", glm::vec2(tileSize.width, tileSize.height), 1); // NOLINT
-  truck.addComponent<TransformComponent>(glm::vec2(200, 0), glm::vec2(1, 1), 0.0); //NOLINT
+  truck.addComponent<TransformComponent>(glm::vec2(200, 500), glm::vec2(1, 1), 0.0); //NOLINT
+  truck.addComponent<SpriteComponent>("truck-right", glm::vec2(tileSize.width, tileSize.height), 1); // NOLINT
   truck.addComponent<RigidBodyComponent>(glm::vec2(20, 0.0)); // NOLINT
   truck.addComponent<BoxColliderComponent>(glm::vec2(tileSize.width, tileSize.height));
   truck.addComponent<DebugComponent>();
   truck.addComponent<HealthComponent>();
   truck.addComponent<HealthBarComponent>();
   truck.addComponent<HealthBarTextComponent>();
-  tank.joinAlliance(configurables::Alliances::ENEMIES);
+  truck.joinAlliance(configurables::Alliances::ENEMIES);
+  truck.toGroup(configurables::Groups::BOUNDER_OBJECTS);
 
   // ** //
   auto chopper = m_wm->createGameObject();
-  chopper.addComponent<SpriteComponent>( "chopper", glm::vec2(tileSize.width, tileSize.height), 5); //NOLINT
+  chopper.addComponent<SpriteComponent>( "chopper", glm::vec2(tileSize.width, tileSize.height), 5, true); //NOLINT
   chopper.addComponent<TransformComponent>(glm::vec2(200, 200), glm::vec2(1, 1));     // NOLINT
   chopper.addComponent<RigidBodyComponent>(glm::vec2(0.0, 0.0)); // NOLINT
   chopper.addComponent<AnimationComponent>(2, 8); // NOLINT
@@ -145,10 +149,27 @@ void Game::loadLevel(uint32_t level) {
   chopper.addComponent<HealthBarTextComponent>();
   chopper.joinAlliance(configurables::Alliances::PLAYER);
   chopper.joinAlliance(configurables::Alliances::NEUTRAL);
+  chopper.tag(configurables::Tags::MAIN_PLAYER);
+
+
+  // ** //
+  auto treeA = m_wm->createGameObject();
+  treeA.addComponent<TransformComponent>(glm::vec2(600, 495), glm::vec2(1, 1), 0.0); // NOLINT
+  treeA.addComponent<SpriteComponent>("tree", glm::vec2(16, 32), 3);   //NOLINT                                                                                
+  treeA.addComponent<BoxColliderComponent>(glm::vec2(16, 32)); // NOLINT
+  treeA.addComponent<DebugComponent>();
+  treeA.toGroup(configurables::Groups::OBSTACLES);
+                                                               
+  auto treeB = m_wm->createGameObject();
+  treeB.addComponent<TransformComponent>(glm::vec2(400, 495), glm::vec2(1, 1), 0.0); // NOLINT
+  treeB.addComponent<SpriteComponent>("tree", glm::vec2(16, 32), 3);   //NOLINT                                                                                
+  treeB.addComponent<BoxColliderComponent>(glm::vec2(16, 32)); // NOLINT
+  treeB.addComponent<DebugComponent>();
+  treeB.toGroup(configurables::Groups::OBSTACLES);
 
   // ** //
   auto radar = m_wm->createGameObject();
-  radar.addComponent<SpriteComponent>( "radar", glm::vec2(tileSize.width * 2, tileSize.height * 2), 1, true);
+  radar.addComponent<SpriteComponent>( "radar", glm::vec2(tileSize.width * 2, tileSize.height * 2), 1, false, false ,true);
   radar.addComponent<TransformComponent>(glm::vec2(Resolution::WINDOW_WIDTH - 74, 10), glm::vec2(1, 1));     // NOLINT
   radar.addComponent<RigidBodyComponent>(glm::vec2(0.0, 0.0)); // NOLINT
   // we only hav2 two frame, with a 5 fps
@@ -284,6 +305,7 @@ void Game::addEventListeners(){
   m_wm->getSystem<DamageSystem>().addEventListeners(m_eventBus);
   m_wm->getSystem<KeyboardControlSystem>().addEventListeners(m_eventBus);
   m_wm->getSystem<ProjectileControlSystem>().addEventListeners(m_eventBus);
+  m_wm->getSystem<MovementSystem>().addEventListeners(m_eventBus);
 }
 
 void Game::capFrameRate() const {

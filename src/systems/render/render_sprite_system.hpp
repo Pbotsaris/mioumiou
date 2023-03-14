@@ -50,7 +50,7 @@ public:
              .h = static_cast<int>(dimension.y), // NOLINT
           };
 
-      renderer->drawImage(tex, ImageDimensions(&sprite.crop, &destDimensions, transform.rotation));
+      renderer->drawImage(tex, ImageDimensions(&sprite.crop, &destDimensions, transform.rotation, sprite.flip));
     }
   }
 

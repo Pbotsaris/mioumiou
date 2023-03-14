@@ -5,8 +5,9 @@
 #include "event_system/event.hpp"
 
 class CollisionEvent : public Event {
-
   public:
+   
+
     CollisionEvent(GameObject a, GameObject b) : m_a(a), m_b(b) {} //NOLINT
 
     [[nodiscard]] auto a() const -> GameObject { return m_a; }

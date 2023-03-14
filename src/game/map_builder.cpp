@@ -68,7 +68,9 @@ void MapBuilder::loadTile(std::unique_ptr<WorldManager> &wm, // NOLINT
       m_storeKey,
       glm::vec2(m_tile.width, m_tile.height),
       0, // zPosition
-      false, // isFixed
+      true, // isSheet
+      false, // flippable
+      false, // isFlixed
       SpriteComponent::makeCrop(m_tile.width * cropX, m_tile.height * cropY, m_tile.width, m_tile.height));
 
   mapTile.toGroup("tiles");

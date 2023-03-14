@@ -4,8 +4,13 @@
 #include <SDL2/SDL_render.h>
 #include <spdlog/spdlog.h>
 
-ImageDimensions::ImageDimensions(const SDL_Rect *crop, const SDL_Rect *dimension, const double rotation) //NOLINT
-  : sourceCrop(crop), destDimension(dimension), rotation(rotation){}; //NOLINT
+ImageDimensions::ImageDimensions(
+    const SDL_Rect *crop, // NOLINT
+    const SDL_Rect *dimension, 
+    const double rotation,
+    SDL_RendererFlip flip
+    ) 
+  : sourceCrop(crop), destDimension(dimension), rotation(rotation), flip(flip){}; //NOLINT
 
 Renderer::Renderer(std::unique_ptr<Window> &window)
     : m_valid(true),
@@ -38,7 +43,7 @@ void Renderer::drawImage(SDL_Texture *tex, ImageDimensions &&dimensions){
                                 dimensions.destDimension,
                                 dimensions.rotation,
                                 nullptr,
-                                SDL_FLIP_NONE);
+                                dimensions.flip);
 
   if(res != 0){
     spdlog::warn("Could not render Image. Error: '{}'", SDL_GetError());
