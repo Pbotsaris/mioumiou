@@ -7,7 +7,7 @@
 
 struct ProjectileEmiterComponent {
   std::string spriteKey; 
-  glm::vec2 dimension; // pixels
+  glm::vec2 size; // pixels
   glm::vec2 velocity; // pixel per sec
   uint32_t frequency; // millis
   uint32_t longevity; // millis
@@ -25,7 +25,7 @@ struct ProjectileEmiterComponent {
         glm::vec2     offset        = {0, 0}
         )
       : spriteKey(std::move(spriteKey)),
-        dimension(dimension),
+        size(dimension),
         velocity(velocity),
         frequency(frequency),
         longevity(longevity),

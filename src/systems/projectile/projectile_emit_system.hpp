@@ -46,7 +46,7 @@ static void emitProjectile(GameObject &gameObject, const ProjectileEmiterCompone
         /* in the middle for sprites, please */
       if(gameObject.hasComponent<SpriteComponent>()){
          const auto sprite = gameObject.getComponent<SpriteComponent>();
-         pos += (sprite.dimensions * transform.scale) / glm::vec2(2, 2);
+         pos += (sprite.size * transform.scale) / glm::vec2(2, 2);
 
          // keyboard controlled objects will change emission direction
          if(gameObject.hasComponent<KeyboardControlComponent>()){
@@ -66,8 +66,8 @@ static void emitProjectile(GameObject &gameObject, const ProjectileEmiterCompone
       auto projectile = gameObject.worldManager()->createGameObject();
       projectile.addComponent<TransformComponent>(pos, glm::vec2(1, 1));
       projectile.addComponent<RigidBodyComponent>(velocity);
-      projectile.addComponent<SpriteComponent>(projectileEmiter.spriteKey, projectileEmiter.dimension, 4);
-      projectile.addComponent<BoxColliderComponent>(projectileEmiter.dimension);
+      projectile.addComponent<SpriteComponent>(projectileEmiter.spriteKey, projectileEmiter.size, 4);
+      projectile.addComponent<BoxColliderComponent>(projectileEmiter.size);
       projectile.toGroup(configurables::Groups::PROJECTILES);
 
      // projectile joins the same alliances as emiter

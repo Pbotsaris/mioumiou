@@ -55,6 +55,11 @@ void RenderGuiSystem::update(std::unique_ptr<WorldManager> &worldManager, std::u
     ImGui::Spacing();
 
     auto textures = store->getTextureNames();
+    
+    if(textures.empty()){
+      textures.emplace_back("empty");
+    }
+
     std::string previewValue = textures[selectedSprite];
 
     if (ImGui::BeginCombo("Textures", previewValue.c_str(), 0)) {
@@ -87,8 +92,8 @@ void RenderGuiSystem::update(std::unique_ptr<WorldManager> &worldManager, std::u
 
     if (ImGui::Button("Spawn!")) {
       struct TileSize {
-        int32_t width = Map::TileDimension::WIDTH;
-        int32_t height = Map::TileDimension::HEIGHT;
+        int32_t width = 35;
+        int32_t height = 32;
       };
 
       TileSize tileSize;

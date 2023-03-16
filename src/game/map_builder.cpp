@@ -5,9 +5,9 @@
 #include "systems/all.hpp"
 #include "utils/numbers.hpp"
 
-MapBuilder::MapBuilder(std::string mapPath, std::string imageStoreKey,
+MapBuilder::MapBuilder(std::string mapPath, std::string storeTileName,
                        const TileDimension &tile, std::string delim)
-    : m_mapPath(std::move(mapPath)), m_storeKey(std::move(imageStoreKey)),
+    : m_mapPath(std::move(mapPath)), m_storeKey(std::move(storeTileName)),
       m_tile(tile), m_delim(std::move(delim)) {}
 
 void MapBuilder::build(std::unique_ptr<WorldManager> &wm) { // NOLINT
@@ -29,6 +29,7 @@ void MapBuilder::build(std::unique_ptr<WorldManager> &wm) { // NOLINT
 
     while ((linePos = line.find(m_delim)) != std::string::npos) {
       std::string val = line.substr(0, linePos);
+
 
       if (val.size() < 2) {
         spdlog::error("map value {} should have 2 digits. Failed to load map.", val);
@@ -73,5 +74,5 @@ void MapBuilder::loadTile(std::unique_ptr<WorldManager> &wm, // NOLINT
       false, // isFlixed
       SpriteComponent::makeCrop(m_tile.width * cropX, m_tile.height * cropY, m_tile.width, m_tile.height));
 
-  mapTile.toGroup("tiles");
+  mapTile.toGroup(configurables::Groups::TILES);
 }

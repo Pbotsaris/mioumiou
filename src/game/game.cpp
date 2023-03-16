@@ -16,6 +16,7 @@
 #include "systems/all.hpp"
 #include "utils/numbers.hpp"
 #include "utils/configurables.hpp"
+#include "level_manager.hpp"
 
 
 using namespace configurables;
@@ -53,6 +54,8 @@ Game::Game()
      spdlog::critical("Failed to initialize ImGui with SDL Renderer.");
    }
 
+   /* Lua Init */
+   m_lua.open_libraries(sol::lib::base, sol::lib::math);
 }
 
 Game::~Game() {
@@ -65,123 +68,13 @@ Game::~Game() {
   //TTF_Quit(); -> NOTE: Why segfaults?
 }
 
-/** **/
-
-void Game::loadLevel(uint32_t level) {
-
-  spdlog::info("loading level {}", level);
-
-  m_store->loadTexture(m_renderer, "tank-right", "./assets/images/tank-panther-right.png");
-  m_store->loadTexture(m_renderer, "truck-left", "./assets/images/truck-ford-left.png");
-  m_store->loadTexture(m_renderer, "truck-right", "./assets/images/truck-ford-right.png");
-  m_store->loadTexture(m_renderer, "tree", "./assets/images/tree.png");
-  m_store->loadTexture(m_renderer, "map", "./assets/tilemaps/jungle.png");
-  m_store->loadTexture(m_renderer, "chopper", "./assets/images/chopper-spritesheet.png");
-  m_store->loadTexture(m_renderer, "radar", "./assets/images/radar.png");
-  m_store->loadTexture(m_renderer, "bullet", "./assets/images/bullet.png");
-
-  // TODO: Add fonts will all sizes and allow to easily query the store
-  m_store ->loadFont("charriot", "./assets/fonts/charriot.ttf");
-
-
-  TileDimension tileDim = {
-      .width = Map::TileDimension::WIDTH,
-      .height = Map::TileDimension::HEIGHT,
-      .scale = Map::TileDimension::SCALE
-      };
-
-  MapBuilder mapBuilder("./assets/tilemaps/jungle.map", "map", tileDim);
-
-  mapBuilder.build(m_wm);
-
-  // possibly getting confused by the params order
-  // TODO: potentially use the builder patterns to avoid passing a bunch of
-  // parameters at the same time and
-
-  struct TileSize {
-    int32_t width = Map::TileDimension::WIDTH;
-    int32_t height = Map::TileDimension::HEIGHT;
-  };
-
-  TileSize tileSize;
-
-  auto tank = m_wm->createGameObject();
-  tank.addComponent<TransformComponent>(glm::vec2(100, 500), glm::vec2(1, 1), 0.0);                 // NOLINT
-  tank.addComponent<SpriteComponent>( "tank-right", glm::vec2(tileSize.width, tileSize.height), 2); // NOLINT
-  tank.addComponent<RigidBodyComponent>(glm::vec2(0, 0.0)); // NOLINT
-  tank.addComponent<BoxColliderComponent>(glm::vec2(tileSize.width, tileSize.height));
-  tank.addComponent<DebugComponent>();
-  tank.addComponent<ProjectileEmiterComponent>("bullet", glm::vec2(4, 4), glm::vec2(40, 40), 1000, 1500, 40); // NOLINT
-  tank.addComponent<HealthComponent>();                                                                                             
-  tank.joinAlliance(configurables::Alliances::ENEMIES);
-  tank.toGroup(configurables::Groups::BOUNDER_OBJECTS);
-
-  // TODO: This is necessary to compile? why?
- // auto comps = tank.getComponent<HealthComponent>();
- // spdlog::warn(comps.maxHealth);
- // spdlog::warn(tank.hasComponent<HealthComponent>());
-
-  auto truck = m_wm->createGameObject();
-  truck.addComponent<TransformComponent>(glm::vec2(200, 500), glm::vec2(1, 1), 0.0); //NOLINT
-  truck.addComponent<SpriteComponent>("truck-right", glm::vec2(tileSize.width, tileSize.height), 1); // NOLINT
-  truck.addComponent<RigidBodyComponent>(glm::vec2(20, 0.0)); // NOLINT
-  truck.addComponent<BoxColliderComponent>(glm::vec2(tileSize.width, tileSize.height));
-  truck.addComponent<DebugComponent>();
-  truck.addComponent<HealthComponent>();
-  truck.addComponent<HealthBarComponent>();
-  truck.addComponent<HealthBarTextComponent>();
-  truck.joinAlliance(configurables::Alliances::ENEMIES);
-  truck.toGroup(configurables::Groups::BOUNDER_OBJECTS);
-
-  // ** //
-  auto chopper = m_wm->createGameObject();
-  chopper.addComponent<SpriteComponent>( "chopper", glm::vec2(tileSize.width, tileSize.height), 5, true); //NOLINT
-  chopper.addComponent<TransformComponent>(glm::vec2(200, 200), glm::vec2(1, 1));     // NOLINT
-  chopper.addComponent<RigidBodyComponent>(glm::vec2(0.0, 0.0)); // NOLINT
-  chopper.addComponent<AnimationComponent>(2, 8); // NOLINT
-  chopper.addComponent<KeyboardControlComponent>(80, 80, 80, 80); // NOLINT
-  chopper.addComponent<CameraFollowerComponent>();
-  chopper.addComponent<BoxColliderComponent>(glm::vec2(tileSize.width, tileSize.height));
-  chopper.addComponent<ProjectileEmiterComponent>("bullet", glm::vec2(4, 4), glm::vec2(40, 40), 0, 5000); // NOLINT
-  chopper.addComponent<ProjectileControlComponent>();
-  chopper.addComponent<HealthComponent>(); 
-  chopper.addComponent<HealthBarComponent>(constants::Defaults::HealthBar::SIZE, glm::vec2(0,0), HealthBarComponent::BarAlign::Left);
-  chopper.addComponent<HealthBarTextComponent>();
-  chopper.joinAlliance(configurables::Alliances::PLAYER);
-  chopper.joinAlliance(configurables::Alliances::NEUTRAL);
-  chopper.tag(configurables::Tags::MAIN_PLAYER);
-
-
-  // ** //
-  auto treeA = m_wm->createGameObject();
-  treeA.addComponent<TransformComponent>(glm::vec2(600, 495), glm::vec2(1, 1), 0.0); // NOLINT
-  treeA.addComponent<SpriteComponent>("tree", glm::vec2(16, 32), 3);   //NOLINT                                                                                
-  treeA.addComponent<BoxColliderComponent>(glm::vec2(16, 32)); // NOLINT
-  treeA.addComponent<DebugComponent>();
-  treeA.toGroup(configurables::Groups::OBSTACLES);
-                                                               
-  auto treeB = m_wm->createGameObject();
-  treeB.addComponent<TransformComponent>(glm::vec2(400, 495), glm::vec2(1, 1), 0.0); // NOLINT
-  treeB.addComponent<SpriteComponent>("tree", glm::vec2(16, 32), 3);   //NOLINT                                                                                
-  treeB.addComponent<BoxColliderComponent>(glm::vec2(16, 32)); // NOLINT
-  treeB.addComponent<DebugComponent>();
-  treeB.toGroup(configurables::Groups::OBSTACLES);
-
-  // ** //
-  auto radar = m_wm->createGameObject();
-  radar.addComponent<SpriteComponent>( "radar", glm::vec2(tileSize.width * 2, tileSize.height * 2), 1, false, false ,true);
-  radar.addComponent<TransformComponent>(glm::vec2(Resolution::WINDOW_WIDTH - 74, 10), glm::vec2(1, 1));     // NOLINT
-  radar.addComponent<RigidBodyComponent>(glm::vec2(0.0, 0.0)); // NOLINT
-  // we only hav2 two frame, with a 5 fps
-  radar.addComponent<AnimationComponent>(8, 5); // NOLINT
-                                                
-  auto label = m_wm->createGameObject();
-  label.addComponent<TextComponent>("hello, world! How are you", "charriot", constants::Fonts::Small, glm::vec2(100, 100), Red()); //NOLINT
-}
 
 /** **/
 
 void Game::setup() {
+
+  // m_window->setFullScreen();
+
   /* Registering systems in the world on setup */
   m_wm->createSystem<MovementSystem>();
   m_wm->createSystem<RenderSpriteSystem>();
@@ -197,6 +90,11 @@ void Game::setup() {
   m_wm->createSystem<RenderTextSystem>();
   m_wm->createSystem<RenderHealthBarSystem>();
   m_wm->createSystem<RenderGuiSystem>();
+
+  LevelManager level;
+  level.setLevel(m_lua, "./assets/scripts/level_1.lua", 1);
+  level.loadAssets(m_store, m_renderer);
+  level.loadMap(m_wm);
 }
 
 /** **/
@@ -276,13 +174,12 @@ void Game::render() {
 }
 
 void Game::run() {
+
   if (!m_renderer->valid()) {
     return;
   }
 
-  // m_window->setFullScreen();
   setup();
-  loadLevel(1);
   m_isRunning = true;
 
   while (m_isRunning) {

@@ -10,7 +10,7 @@
 
 class CollisionSystem : public System { //NOLINT
 
-  // 2 X x, y vectors representing the origin and the end of the side of a box collider
+  /* 2 X x, y vectors representing the origin and the end of the side of a box collider */
   struct ObjectSide {
     glm::vec2 origin;
     glm::vec2 end;

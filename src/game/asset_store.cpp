@@ -6,6 +6,11 @@
 
 /* Textures */
 
+void AssetStore::loadTexture(std::unique_ptr<Renderer> &renderer, const std::string &key, const std::string &path) { //NOLINT
+  std::string keyCopy(key);
+  loadTexture(renderer, std::move(keyCopy), path);
+}
+
 void AssetStore::loadTexture(std::unique_ptr<Renderer> &renderer, std::string &&key, const std::string &path) {
 
   SDL_Texture *tex = renderer->createTexture(path);
@@ -48,6 +53,10 @@ void AssetStore::clearTextures() {
   m_textures.clear();
 }
 
+auto AssetStore::texturesEmpty() const -> bool {
+  return m_textures.empty();
+}
+
 auto AssetStore::getTextureNames() const -> std::vector<std::string>{
 
   std::vector<std::string> keys;
@@ -61,6 +70,11 @@ auto AssetStore::getTextureNames() const -> std::vector<std::string>{
 }
 
 /* Fonts */
+
+void AssetStore::loadFont(const std::string &key, const std::string &path) { //NOLINT
+  std::string keyCopy(key);
+  loadFont(std::move(keyCopy), path);
+}
 
 void AssetStore::loadFont(std::string &&key, const std::string &path) {
 
@@ -131,10 +145,15 @@ void AssetStore::clearFonts() {
   m_fonts.clear();
 }
 
+auto AssetStore::fontsEmpty() const -> bool {
+  return m_fonts.empty();
+}
+
 AssetStore::~AssetStore() {
   cleanupTextures();
   cleanupFonts();
 }
+
 
 /* Private */
 

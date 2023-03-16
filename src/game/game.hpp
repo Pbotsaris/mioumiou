@@ -8,7 +8,9 @@
 #include "renderer.hpp"
 #include "utils/constants.hpp"
 #include "utils/configurables.hpp"
+#include "level.hpp"
 #include <memory>
+#include <sol.hpp>
 
 class Game {
 
@@ -27,9 +29,10 @@ public:
   void update();
   void render();
   void processInput();
-  void loadLevel(uint32_t level);
 
   [[nodiscard]] auto isValid() const -> bool;
+
+  static Level Level; // NOLINT: bad but necessary. only going to be written when loading level.
 
 private:
   bool m_isRunning = false;
@@ -41,6 +44,7 @@ private:
   std::unique_ptr<AssetStore> m_store;
   std::unique_ptr<EventBus> m_eventBus;
 
+  sol::state m_lua;
   Camera m_camera;
 
   void addEventListeners();

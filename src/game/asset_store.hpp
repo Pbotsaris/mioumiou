@@ -27,17 +27,21 @@ class AssetStore {
 
 
   /* Textures */
-  void loadTexture(std::unique_ptr<Renderer> &renderer, std::string &&key, const std::string &path);
+  void loadTexture(std::unique_ptr<Renderer> &renderer, const std::string &key, const std::string &path);
+  void loadTexture(std::unique_ptr<Renderer> &renderer,std::string &&key, const std::string &path);
   auto getTexture(const std::string &key) const -> SDL_Texture*;
   void removeTexture(const std::string &key);
   void clearTextures();
   auto getTextureNames() const -> std::vector<std::string>;
+  auto texturesEmpty() const -> bool;
 
   /* Fonts */
+  void loadFont(const std::string &key, const std::string &path);
   void loadFont(std::string &&key, const std::string &path);
   auto getFont(const std::string &key, const FontSize size) const -> TTF_Font*;
   void removeFont(const std::string &key);
   void clearFonts();
+  auto fontsEmpty() const -> bool;
 
   private:
     std::unordered_map<std::string, SDL_Texture*> m_textures;

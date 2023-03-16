@@ -32,7 +32,7 @@ public:
         continue;
       }
 
-      const glm::vec2 dimension  = sprite.dimensions * transform.scale;
+      const glm::vec2 dimension  = sprite.size * transform.scale;
       SDL_Texture *tex           = store->getTexture(sprite.key);
 
       if (tex == nullptr) {

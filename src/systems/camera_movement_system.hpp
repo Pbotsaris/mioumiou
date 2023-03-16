@@ -9,6 +9,7 @@
 #include "ecs/system.hpp"
 #include "game/camera.hpp"
 #include "utils/configurables.hpp"
+#include "game/level.hpp"
 
 class CameraMovementSystem : public System {
 
@@ -21,16 +22,18 @@ public:
   void update(Camera &camera) {
     using namespace configurables;
 
+    Level *level = Level::getInstance();
+
     for (auto &gameObject : gameObjects()) {
 
       const auto transform = gameObject.getComponent<TransformComponent>();
 
-      if (transform.position.x + (camera.width() / 2) < Map::Dimensions::WIDTH) { // NOLINT
+      if (transform.position.x + (camera.width() / 2) < level->getMap().width) { // NOLINT
         camera.setX( static_cast<int32_t>(transform.position.x - (Resolution::WINDOW_WIDTH / 2))); // NOLINT
       }
 
 
-     if (transform.position.y + (camera.height() / 2) < Map::Dimensions::HEIGHT) { //NOLINT
+     if (transform.position.y + (camera.height() / 2) < level->getMap().height) { //NOLINT
         camera.setY( static_cast<int32_t>(transform.position.y - (Resolution::WINDOW_HEIGHT / 2))); // NOLINT
       }
         /* keep camera within limits */

@@ -4,19 +4,22 @@
 
 #include <cstdint>
 #include <string>
+#include "utils/constants.hpp"
 
-constexpr const static uint32_t DEFAULT_TILE_SIZE = 32;
 
 struct TileDimension {
-   int32_t width = DEFAULT_TILE_SIZE;
-   int32_t height = DEFAULT_TILE_SIZE;
-   int32_t scale = 1;
+   int32_t width = constants::Defaults::Map::Tile::WIDTH;
+   int32_t height = constants::Defaults::Map::Tile::HEIGHT;
+   float scale = 1.0;
 };
 
 class MapBuilder {
 
 public:
-  explicit MapBuilder(std::string path, std::string storeKey, const TileDimension &tile, std::string delim = ",");
+  explicit MapBuilder(std::string path, std::string storetileName,
+      const TileDimension &tile,
+      std::string delim = constants::Defaults::Map::MAP_DELIM);
+
   void build(std::unique_ptr<WorldManager> &wm); //NOLINT
 
 private:

@@ -10,7 +10,7 @@ struct SpriteComponent {
   enum Orientation {Up, Right, Down, Left};
 
   std::string key;
-  glm::vec2   dimensions; // Pixels
+  glm::vec2   size; // Pixels
   int32_t     zPosition; // xIndex
   bool        isSheet; // if sprite is a spritesheet
   bool        flippable;
@@ -31,7 +31,7 @@ struct SpriteComponent {
       Orientation orientation    = Right
       )
       : key(std::move(key)),
-        dimensions(spriteDimensions),
+        size(spriteDimensions),
         zPosition(zPosition),
         isSheet(isSheet),
         flippable(flippable),
@@ -42,20 +42,20 @@ struct SpriteComponent {
   {
 
     if (crop.w == 0) {
-      crop.w = dimensions.x; // NOLINT
+      crop.w = size.x; // NOLINT
     }
 
     if (crop.h == 0) {
-      crop.h = dimensions.y; // NOLINT
+      crop.h = size.y; // NOLINT
     }
   }
 
   [[nodiscard]] auto getWidth() const -> int32_t {
-    return static_cast<int32_t>(dimensions.x); // NOLINT
+    return static_cast<int32_t>(size.x); // NOLINT
   }
 
   [[nodiscard]] auto getHeight() const -> int32_t {
-    return static_cast<int32_t>(dimensions.y); // NOLINT
+    return static_cast<int32_t>(size.y); // NOLINT
   }
 
   static auto makeCrop(int32_t x, int32_t y, int32_t w, int32_t h) { // NOLINT: short args

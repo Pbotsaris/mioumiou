@@ -1,5 +1,6 @@
 #include "systems/movement_system.hpp"
 #include "utils/configurables.hpp"
+#include "game/level.hpp"
 
 auto MovementSystem::name() const -> std::string { return "MovementSystem"; }
 
@@ -105,19 +106,26 @@ void MovementSystem::doSheetHorizontal(SpriteComponent &sprite) {
 }
 
 auto MovementSystem::isOutBoundsX(const TransformComponent &transform) -> bool {
+  
+  Level *level = Level::getInstance();
+
   return transform.position.x < 0 ||  // NOLINT
-         transform.position.x > configurables::Map::Dimensions::WIDTH; // NOLINT
+         transform.position.x > level->getMap().width; // NOLINT
 };
 
 auto MovementSystem::isOutBoundsY(const TransformComponent &transform) -> bool{
+    Level *level = Level::getInstance();
+
     return transform.position.y < 0 || // NOLINT
-    transform.position.y > configurables::Map::Dimensions::HEIGHT; // NOLINT
+    transform.position.y > level->getMap().height; // NOLINT
 }
 
 void MovementSystem::limitBounds(TransformComponent &transform){
-   float width = configurables::Map::Dimensions::WIDTH;
-   float height = configurables::Map::Dimensions::HEIGHT;
-   auto padding = configurables::Map::BoundsPadding::PADDING;
+   Level *level = Level::getInstance();
+
+   float width = static_cast<float>(level->getMap().width);
+   float height = static_cast<float>(level->getMap().height);
+   auto padding = level->getMap().padding;
 
    transform.position.x = transform.position.x < 0 + padding.left  ? 0 + padding.left : transform.position.x; //NOLINT
    transform.position.y = transform.position.y < 0 + padding.top ? 0 + padding.top : transform.position.y; // NOLINT
