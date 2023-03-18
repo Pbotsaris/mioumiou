@@ -3,12 +3,13 @@
 
 #include <SDL2/SDL.h>
 #include <glm.hpp>
+#include "utils/constants.hpp"
 
 struct ProjectileControlComponent {
   SDL_Keycode keycode;
 
   explicit ProjectileControlComponent(
-      SDL_Keycode keycode = SDLK_SPACE
+      SDL_Keycode keycode = constants::Defaults::ProjectileEmitter::CONTROL_KEY
       ) : keycode(keycode) {};
 };
 

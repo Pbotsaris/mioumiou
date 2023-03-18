@@ -12,24 +12,30 @@ void DamageSystem::onCollision(CollisionEvent &event) { // NOLINT
   spdlog::debug("damage system receive onCollision of '{}' and '{}'", event.a().id(), event.b().id());
 
   // projectiles will damage non allied GameObjects
-  if(event.b().belongsTo(Groups::PROJECTILES) && !event.b().isAllied(event.a())){
+  if(event.b().belongsTo(configurables::Groups::PROJECTILES) && !event.b().isAllied(event.a())){
     doProjectileDamage(event.a(), event.b());
   }
-  if(event.a().belongsTo(Groups::PROJECTILES) && !event.a().isAllied(event.b())){
+  if(event.a().belongsTo(configurables::Groups::PROJECTILES) && !event.a().isAllied(event.b())){
     doProjectileDamage(event.b(), event.a());
   }
 }
 
-void DamageSystem::doProjectileDamage(GameObject player, GameObject projectile) { //NOLINT
+void DamageSystem::doProjectileDamage(GameObject gameObject, GameObject projectile) { //NOLINT
+                                                                                  
+  /* object must have a health component */
+  if(!gameObject.hasComponent<HealthComponent>()){
+    return;
+  };
 
   const auto projectileComponent = projectile.getComponent<ProjectileComponent>();
-  auto &playerHealth = player.getComponent<HealthComponent>();
+
+  auto &playerHealth = gameObject.getComponent<HealthComponent>();
 
   /* calculate percentage in players health */
   playerHealth.currentHealth -= (playerHealth.maxHealth * projectileComponent.percentDamage) / Percentage::DIVISOR;
 
   if (playerHealth.currentHealth <= 0) {
-    player.remove();
+    gameObject.remove();
   };
 
   projectile.remove();

@@ -4,6 +4,7 @@
 
 #include "components/projectile_component.hpp"
 #include <SDL2/SDL.h>
+#include <spdlog/spdlog.h>
 
 class ProjectileLifeCycleSystem : public System {
 public:

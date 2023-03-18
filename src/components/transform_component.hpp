@@ -3,6 +3,7 @@
 
 #include <fwd.hpp>
 #include <glm.hpp>
+#include "utils/constants.hpp"
 
 struct TransformComponent {
 
@@ -10,9 +11,9 @@ struct TransformComponent {
   glm::vec2      scale; // multiplier
   glm::float64_t rotation; // in radiants
 
-  explicit TransformComponent(glm::vec2 pos      = {0, 0}, //NOLINT: args with similar types
-                              glm::vec2 scl      = {1, 1},
-                              glm::float64_t rot = 0.0
+  explicit TransformComponent(glm::vec2 pos      = constants::Defaults::Transform::POSITION, //NOLINT: args with similar types
+                              glm::vec2 scl      = constants::Defaults::Transform::SCALE,
+                              glm::float64_t rot = constants::Defaults::Transform::ROTATION
                               )
       : position(pos), scale(scl), rotation(rot) {}
 };

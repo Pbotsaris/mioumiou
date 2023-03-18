@@ -2,6 +2,7 @@
 #define ANIMATION_COMPONENT_H
 #include <cstdint>
 #include <SDL2/SDL.h>
+#include "utils/constants.hpp"
 
 struct AnimationComponent {
   uint32_t  nbFrames;
@@ -10,9 +11,9 @@ struct AnimationComponent {
   bool     loopable;
   uint32_t startTime;
 
-explicit AnimationComponent(uint32_t nbFrames          = 1, //NOLINT
-                            uint32_t frameRateSpeed    = 1,
-                            bool loopable              = true
+explicit AnimationComponent(uint32_t nbFrames          = constants::Defaults::Animation::NB_FRAMES, //NOLINT
+                            uint32_t frameRateSpeed    = constants::Defaults::Animation::FRAME_RATE_SPEED,
+                            bool loopable              = constants::Defaults::Animation::LOOPABLE
     ) : nbFrames(nbFrames), frameRateSpeed(frameRateSpeed), loopable(loopable), startTime(SDL_GetTicks()) {}
 };
 

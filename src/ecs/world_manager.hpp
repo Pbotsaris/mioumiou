@@ -193,6 +193,15 @@ template <typename T>
 auto WorldManager::getComponent(GameObject gameObject) const -> T& {
   const uint32_t componentId = Component<T>::id();
 
+  // TODO:  accessing non existing 
+ 
+  if(m_componentPools.size() <= componentId){
+    spdlog::critical("The program attempted to the ComponentPool type '{}' that does not exist."
+        "This is an unrecoverable error.", TypeInfo::typeToString<T>()
+        );
+    throw;
+  }
+
   std::shared_ptr<ComponentPool<T>> pool =
       std::static_pointer_cast<ComponentPool<T>>(m_componentPools.at(componentId));
 

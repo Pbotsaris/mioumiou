@@ -91,10 +91,10 @@ void Game::setup() {
   m_wm->createSystem<RenderHealthBarSystem>();
   m_wm->createSystem<RenderGuiSystem>();
 
-  LevelManager level;
-  level.setLevel(m_lua, "./assets/scripts/level_1.lua", 1);
-  level.loadAssets(m_store, m_renderer);
-  level.loadMap(m_wm);
+  LevelManager levelManager(m_lua, "./assets/scripts/level_1.lua", 1);
+  levelManager.loadAssets(m_store, m_renderer);
+  levelManager.loadMap(m_wm);
+  levelManager.loadGameObjects(m_wm);
 }
 
 /** **/

@@ -5,10 +5,15 @@
 #include "systems/all.hpp"
 #include "utils/numbers.hpp"
 
-MapBuilder::MapBuilder(std::string mapPath, std::string storeTileName,
-                       const TileDimension &tile, std::string delim)
-    : m_mapPath(std::move(mapPath)), m_storeKey(std::move(storeTileName)),
-      m_tile(tile), m_delim(std::move(delim)) {}
+MapBuilder::MapBuilder(
+                        std::string mapPath,
+                        std::string storeTileName,
+                        TileDimension &&tile,
+                        std::string delim)
+    : m_mapPath(std::move(mapPath)),
+      m_storeKey(std::move(storeTileName)),
+      m_tile(tile),
+      m_delim(std::move(delim)) {}
 
 void MapBuilder::build(std::unique_ptr<WorldManager> &wm) { // NOLINT
 
@@ -68,7 +73,7 @@ void MapBuilder::loadTile(std::unique_ptr<WorldManager> &wm, // NOLINT
   mapTile.addComponent<SpriteComponent>(
       m_storeKey,
       glm::vec2(m_tile.width, m_tile.height),
-      0, // zPosition
+      constants::Position::Z_MIN, //  sits right at the bottom
       true, // isSheet
       false, // flippable
       false, // isFlixed

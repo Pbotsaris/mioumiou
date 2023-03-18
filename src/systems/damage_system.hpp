@@ -5,6 +5,7 @@
 
 #include "components/all.hpp"
 #include "ecs/system.hpp"
+#include "ecs/world_manager.hpp"
 #include "event_system/event_bus.hpp"
 #include "events/collision_event.hpp"
 #include "components/health_component.hpp"
@@ -27,7 +28,7 @@ public:
   /* Event callbacks */
   void onCollision(CollisionEvent &event);
 private:
-  void doProjectileDamage(GameObject player, GameObject projectile); // NOLINT
+  void doProjectileDamage(GameObject gameObject, GameObject projectile); // NOLINT
 };
 
 #endif

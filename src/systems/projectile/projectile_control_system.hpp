@@ -10,7 +10,7 @@
 class ProjectileControlSystem : public System {
   public:
   ProjectileControlSystem() {
-    requiredComponent<ProjectileEmiterComponent>();
+    requiredComponent<ProjectileEmitterComponent>();
     requiredComponent<ProjectileControlComponent>();
     requiredComponent<TransformComponent>();
 
@@ -33,7 +33,7 @@ class ProjectileControlSystem : public System {
         continue;
       }
 
-      const auto projectileEmiter = gameObject.getComponent<ProjectileEmiterComponent>();
+      const auto projectileEmiter = gameObject.getComponent<ProjectileEmitterComponent>();
       ProjectileEmitSystem::emitProjectile(gameObject, projectileEmiter);
 
     }

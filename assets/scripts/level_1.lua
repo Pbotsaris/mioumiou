@@ -8,12 +8,17 @@ local assets = {
 
 local font_sizes = {
   tiny = "tiny",
-  extraSmall = "extraSmall",
+  extraSmall = "extra-small",
   medium = "medium",
   large = "large",
-  extraLarge = "extraLarge",
+  extraLarge = "extra-large",
   huge = "huge",
 }
+
+local keyboard_control_stategy = {
+  spritesheet = "spritesheet",
+  rotation = "rotation",
+};
 
 Level = {
   ----------------------------------------------------
@@ -22,7 +27,7 @@ Level = {
   assets = {
     [0] =
     { type = "texture", name = assets.tile, file = "./assets/tilemaps/jungle.png" },
-    { type = "texture", name = assets.chopper, file = "./assets/images/chopper-green-spritesheet.png" },
+    { type = "texture", name = assets.chopper, file = "./assets/images/chopper-spritesheet.png" },
     { type = "texture", name = assets.tank, file = "./assets/images/tank-tiger-up.png" },
     { type = "texture", name = assets.bullet, file = "./assets/images/bullet.png" },
     { type = "font", name = assets.font, file = "./assets/fonts/pico8.ttf" },
@@ -39,13 +44,13 @@ Level = {
     tile_width = 32,
     tile_height = 32,
     scale = 2.0,
-    padding = {top = 10.0, right = 40.0, bottom = 40.0, left = 10},
+    padding = { top = 10, right = 40, bottom = 40, left = 10 },
   },
 
   ----------------------------------------------------
   -- table to define GameObjects and their components
   ----------------------------------------------------
-  --
+
   game_objects = {
     [0] =
     {
@@ -58,11 +63,11 @@ Level = {
           scale = { x = 1.0, y = 1.0 },
           rotation = 0.0, -- degrees
         },
-        rigidbody = {
+        rigid_body = {
           velocity = { x = 0.0, y = 0.0 }
         },
         sprite = {
-          key = assets.chopper,
+          asset_name = assets.chopper,
           size = { width = 32, height = 32 },
           z_position = 4,
           sheet = true,
@@ -77,8 +82,6 @@ Level = {
         },
         boxcollider = {
           size = { width = 32, height = 25 },
-          width = 32,
-          height = 25,
           offset = { x = 0, y = 5 }
         },
         health = {
@@ -88,30 +91,39 @@ Level = {
         health_bar = {
           visible = true,
           size = { width = 20, height = 5 },
+          offset = { x = 0, y = 0 },
+          aligment = "bottom",
           text = {
             visible = true,
             font = assets.font,
             font_size = font_sizes.tiny,
+            margin = 6, --between healthbar and text, in pixels
           },
-          aligment = "bottom",
         },
-
         projectile_emitter = {
           sprite = assets.bullet,
           size = { width = 4, height = 4 },
           velocity = { x = 200, y = 200 },
-          frequency = 0, -- seconds
-          longevity = 10, -- seconds
+          frequency = 0, -- millis
+          longevity = 1000, -- millis
           percent_damage = 10,
-          controlable = true,
+          origin_offset = { x = 0, y = 0 },
+          control = {
+            controllable = true,
+            key = ' ',
+          }
         },
 
-        keyboard_controller = {
-          up_velocity = { x = 0, y = -50 },
-          right_velocity = { x = 50, y = 0 },
-          down_velocity = { x = 0, y = 50 },
-          left_velocity = { x = -50, y = 0 }
+        keyboard_control = {
+          up_velocity    = 100.0,
+          right_velocity = 100.0,
+          down_velocity  = 100.0,
+          left_velocity  = 100.0,
+          -- spritesheet will update direction using a spritesheet
+          -- the rotation strategy will just rotate the sprite using SDL
+          strategy       = keyboard_control_stategy.spritesheet,
         },
+
         camera_follow = {
           follow = true
         },
@@ -128,7 +140,7 @@ Level = {
           rotation = 0.0, -- degrees
         },
         sprite = {
-          texture_asset_id = assets.tank,
+          asset_name = assets.tank,
           size = { width = 32, height = 32 },
           z_position = 2,
           sheet = false,
@@ -137,23 +149,33 @@ Level = {
           crop = { x = 0, y = 0, width = 32, height = 32 }
         },
         boxcollider = {
-          width = 25,
-          height = 18,
+          size = { width = 32, height = 25 },
           offset = { x = 0, y = 7 }
         },
         health = {
           current = 100,
           max = 100,
         },
+        health_bar = {
+          visible = true,
+          size = { width = 20, height = 5 },
+          offset = { x = 0, y = -20 },
+          aligment = "top",
+          text = {
+            visible = true,
+            font = assets.font,
+            font_size = font_sizes.tiny,
+            margin = 6, --between healthbar and text, in pixels
+          },
+        },
         projectile_emitter = {
-
           sprite = assets.bullet,
           size = { width = 4, height = 4 },
           velocity = { x = 100, y = 0 },
-          frequency = 1, -- seconds
-          longevity = 2, -- seconds
+          frequency = 500, -- seconds
+          longevity = 2000, -- seconds
           percent_damage = 20,
-          controlable = false,
+          origin_offset = { x = 0, y = 0 },
         }
       }
     }

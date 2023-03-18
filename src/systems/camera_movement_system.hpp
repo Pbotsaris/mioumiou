@@ -28,10 +28,10 @@ public:
 
       const auto transform = gameObject.getComponent<TransformComponent>();
 
-      if (transform.position.x + (camera.width() / 2) < level->getMap().width) { // NOLINT
-        camera.setX( static_cast<int32_t>(transform.position.x - (Resolution::WINDOW_WIDTH / 2))); // NOLINT
-      }
 
+      if (transform.position.x + (camera.width() / 2) < level->getMap().width) { // NOLINT
+        camera.setX(static_cast<int32_t>(transform.position.x - (Resolution::WINDOW_WIDTH / 2))); // NOLINT
+      }
 
      if (transform.position.y + (camera.height() / 2) < level->getMap().height) { //NOLINT
         camera.setY( static_cast<int32_t>(transform.position.y - (Resolution::WINDOW_HEIGHT / 2))); // NOLINT

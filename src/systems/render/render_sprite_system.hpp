@@ -5,6 +5,7 @@
 
 #include "components/sprite_component.hpp"
 #include "components/transform_component.hpp"
+#include "components/projectile_component.hpp"
 #include "ecs/system.hpp"
 #include "game/asset_store.hpp"
 #include "game/renderer.hpp"

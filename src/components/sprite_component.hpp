@@ -5,9 +5,10 @@
 #include <iostream>
 #include <string>
 #include <utility>
+#include "utils/constants.hpp"
 
 struct SpriteComponent {
-  enum Orientation {Up, Right, Down, Left};
+  enum Orientation {Up = 0, Right = 1, Down = 2, Left = 3};
 
   std::string key;
   glm::vec2   size; // Pixels
@@ -21,22 +22,22 @@ struct SpriteComponent {
 
   explicit SpriteComponent(
       std::string key            = "",
-      glm::vec2 spriteDimensions = {0, 0},
-      int32_t zPosition          = 0,
-      bool isSheet               = false,
-      bool flippable             = true,
-      bool isFixed               = false,
-      SDL_Rect rect              = {0, 0, 0, 0},
-      SDL_RendererFlip flip      = SDL_FLIP_NONE,
-      Orientation orientation    = Right
+      glm::vec2 size             = constants::Defaults::Sprite::SIZE,
+      int32_t zPosition          = constants::Defaults::Sprite::Z_POSITION,
+      bool isSheet               = constants::Defaults::Sprite::IS_SHEET,
+      bool flippable             = constants::Defaults::Sprite::FLIPABLE,
+      bool isFixed               = constants::Defaults::Sprite::IS_FIXED,
+      SDL_Rect crop              = constants::Defaults::Sprite::CROP,
+      SDL_RendererFlip flip      =constants::Defaults::Sprite::FLIP, 
+      Orientation orientation    = static_cast<Orientation>(constants::Defaults::Sprite::ORIENTATION)
       )
       : key(std::move(key)),
-        size(spriteDimensions),
+        size(size),
         zPosition(zPosition),
         isSheet(isSheet),
         flippable(flippable),
         isFixed(isFixed),
-        crop(rect),
+        crop(crop),
         flip(flip),
         orientation(orientation)
   {

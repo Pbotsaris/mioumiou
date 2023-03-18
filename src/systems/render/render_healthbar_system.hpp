@@ -42,6 +42,7 @@ public:
       SDL_Color color  = setColor(renderer, health);
       glm::vec2 barPos = alignBar(transform, sprite, bar, camera);
 
+
       SDL_Rect healthbar = {
           .x = static_cast<int32_t>(barPos.x),   // NOLINT
           .y = static_cast<int32_t>(barPos.y),   // NOLINT

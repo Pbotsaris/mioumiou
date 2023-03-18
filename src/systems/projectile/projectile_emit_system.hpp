@@ -15,7 +15,7 @@
 class ProjectileEmitSystem : public System {
 public:
   ProjectileEmitSystem() {
-    requiredComponent<ProjectileEmiterComponent>();
+    requiredComponent<ProjectileEmitterComponent>();
     requiredComponent<TransformComponent>();
   }
 
@@ -23,7 +23,7 @@ public:
   void update() {
     for (auto &gameObject : gameObjects()) {
 
-      auto &projectileEmiter = gameObject.getComponent<ProjectileEmiterComponent>();
+      auto &projectileEmiter = gameObject.getComponent<ProjectileEmitterComponent>();
 
       if(!isReadyToEmit(projectileEmiter)){
         continue;
@@ -35,7 +35,7 @@ public:
   }
 
 
-static void emitProjectile(GameObject &gameObject, const ProjectileEmiterComponent &projectileEmiter){
+static void emitProjectile(GameObject &gameObject, const ProjectileEmitterComponent &projectileEmiter){
 
       const auto transform = gameObject.getComponent<TransformComponent>();
 
@@ -43,11 +43,17 @@ static void emitProjectile(GameObject &gameObject, const ProjectileEmiterCompone
       glm::vec2 pos = transform.position + projectileEmiter.offset;
       auto velocity = projectileEmiter.velocity;
 
+       /* in case projectileEmitter does not have sprite, the projectile will have the z pos just
+        *  above the map level. Otherwise projectile takes the z position of the emitter sprite.
+        */
+
+       int32_t zPos = constants::Position::Z_NOTMAP; 
+
         /* in the middle for sprites, please */
       if(gameObject.hasComponent<SpriteComponent>()){
          const auto sprite = gameObject.getComponent<SpriteComponent>();
          pos += (sprite.size * transform.scale) / glm::vec2(2, 2);
-
+         zPos = sprite.zPosition;
          // keyboard controlled objects will change emission direction
          if(gameObject.hasComponent<KeyboardControlComponent>()){
            // TODO: If KeyboardControlComponent Strategy is rotation we need to update this logic
@@ -66,7 +72,18 @@ static void emitProjectile(GameObject &gameObject, const ProjectileEmiterCompone
       auto projectile = gameObject.worldManager()->createGameObject();
       projectile.addComponent<TransformComponent>(pos, glm::vec2(1, 1));
       projectile.addComponent<RigidBodyComponent>(velocity);
-      projectile.addComponent<SpriteComponent>(projectileEmiter.spriteKey, projectileEmiter.size, 4);
+      projectile.addComponent<SpriteComponent>(
+          projectileEmiter.spriteKey,
+          projectileEmiter.size,
+          zPos,
+          false, // sheet
+          false, // flippable
+          false, // fixed,
+          SpriteComponent::makeCrop(0, 0,
+            static_cast<int32_t>(projectileEmiter.size.x) , // NOLINT
+            static_cast<int32_t>(projectileEmiter.size.y) // NOLINT
+            )
+          );
       projectile.addComponent<BoxColliderComponent>(projectileEmiter.size);
       projectile.toGroup(configurables::Groups::PROJECTILES);
 
@@ -82,7 +99,7 @@ static void emitProjectile(GameObject &gameObject, const ProjectileEmiterCompone
   [[nodiscard]] auto name() const -> std::string override;
 
 private:
-static auto isReadyToEmit(ProjectileEmiterComponent &projectileEmiter) -> bool;
+static auto isReadyToEmit(ProjectileEmitterComponent &projectileEmiter) -> bool;
 static auto getEmissionDirection(SpriteComponent::Orientation orientation) -> glm::vec2;
 
 };

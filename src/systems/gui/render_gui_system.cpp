@@ -107,7 +107,7 @@ void RenderGuiSystem::update(std::unique_ptr<WorldManager> &worldManager, std::u
       tank.addComponent<TransformComponent>( glm::vec2(posX, posY), glm::vec2(1, 1), rotation);        // NOLINT
       tank.addComponent<RigidBodyComponent>(objVel); // NOLINT
       tank.addComponent<BoxColliderComponent>( glm::vec2(tileSize.width, tileSize.height));
-      tank.addComponent<ProjectileEmiterComponent>("bullet", glm::vec2(4, 4), projVel, 1000, 1500, 40); // NOLINT
+      tank.addComponent<ProjectileEmitterComponent>("bullet", glm::vec2(4, 4), projVel, 1000, 1500, 40); // NOLINT
       tank.addComponent<HealthComponent>();
       tank.joinAlliance(configurables::Alliances::ENEMIES);
     }

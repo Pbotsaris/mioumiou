@@ -31,8 +31,6 @@ class KeyboardControlSystem : public System {
   private:
   void onKeyDown(KeyDownEvent &event){ //NOLINT
   
-      spdlog::debug("keypress dispatched:  key [{}]->'{}' with modifier {}", event.key(), event.keyChar(), event.modifier());
-  
       for(auto &gameObject : gameObjects()) {
   
         const auto keyboardControl = gameObject.getComponent<KeyboardControlComponent>();

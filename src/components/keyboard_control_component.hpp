@@ -2,11 +2,12 @@
 #define KEYBOARD_CONTROLLER_COMPONENT_H
 
 #include <glm.hpp>
+#include "utils/constants.hpp"
 
 struct KeyboardControlComponent {
 
   enum Strategy { 
-    Rotation,      // Rotates the game object
+    Rotation,      //  Rotates the game object
     SpriteSheet,   //  Cycles through a sprite sheet
   };
 
@@ -17,26 +18,27 @@ struct KeyboardControlComponent {
     glm::vec2 left;
 
     explicit Velocity(
-        glm::vec2 up =    {0, 0}, //NOLINT  Adjancent params similar type
-        glm::vec2 right = {0, 0}, 
-        glm::vec2 down  =  {0, 0},
-        glm::vec2 left  =  {0, 0}) //NOLINT
+        glm::vec2 up ,  //NOLINT
+        glm::vec2 right, 
+        glm::vec2 down ,
+        glm::vec2 left
+        )
         : up(up),
       right(right),
       down(down),
       left(left) {}
   };
 
-  Velocity velocity;
 
+  Velocity velocity;
   /* this defines how an object will be controlled by keyboard control system */
   Strategy strategy; 
 
   explicit KeyboardControlComponent(
-      double up = 0.0, //NOLINT
-      double right = 0.0,
-      double down = 0.0,
-      double left = 0.0,
+      double up    = constants::Defaults::KeyboardControl::UP_VELOCITY,  //NOLINT
+      double right = constants::Defaults::KeyboardControl::RIGHT_VELOCITY,
+      double down  = constants::Defaults::KeyboardControl::DOWN_VELOCITY, 
+      double left  = constants::Defaults::KeyboardControl::LEFT_VELOCITY, 
       Strategy strategy = SpriteSheet
       ) 
       : velocity({0.0, up * -1},
