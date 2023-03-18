@@ -26,7 +26,7 @@ LevelManager::LevelManager(sol::state &lua,
 
   if (!res.valid()) {
     sol::error err = res;
-    spdlog::error("There's been an error loading lua file '{}'. Error: \n", m_path, err.what());
+    spdlog::error("There's been an error loading lua file '{}'. Error:\n{}", m_path, err.what());
     return;
   }
 
