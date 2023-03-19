@@ -12,7 +12,7 @@
 
 #include "colors.hpp"
 #include "components/all.hpp"
-#include "game.hpp"
+#include "game_engine.hpp"
 #include "systems/all.hpp"
 #include "utils/numbers.hpp"
 #include "utils/configurables.hpp"
@@ -21,20 +21,22 @@
 
 using namespace configurables;
 
-Game::Game()
-    : m_window(std::make_unique<Window>(Resolution::WINDOW_WIDTH, Resolution::WINDOW_HEIGHT)),
+GameEngine::GameEngine(ProjectConfig *project)
+    : m_window(std::make_unique<Window>(project->windowWidth(), project->windowHeight())),
       m_renderer(std::make_unique<Renderer>(m_window)),
       m_wm(std::make_unique<WorldManager>()),
       m_store(std::make_unique<AssetStore>()),
       m_eventBus(std::make_unique<EventBus>()),
-      m_camera(Camera::Position(0, 0), Camera::Dimension(Resolution::WINDOW_WIDTH, Resolution::WINDOW_HEIGHT)) { 
+      m_camera(Camera::Position(0, 0), Camera::Dimension(project->windowWidth(), project->windowHeight())) { 
 
    /* SDL Init */
    if(SDL_Init(SDL_INIT_EVERYTHING) != 0){
+     m_valid = false;
      spdlog::critical("Could not initialize SDL. Error: '{}'", SDL_GetError());
    }
   
    if(TTF_Init() != 0){
+     m_valid = false;
      spdlog::critical("Could not initialize TTF. Error: '{}'", TTF_GetError());
    }
 
@@ -47,31 +49,32 @@ Game::Game()
    // ImGuiIO& io{ImGui::GetIO()}; //NOLINT
    // io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // NOLINT
    if(!ImGui_ImplSDL2_InitForSDLRenderer(m_window->sdlWindow(), m_renderer->sdlRenderer())){
+     m_valid = false;
      spdlog::critical("Failed to initialize ImGui with SDL");
    }
 
    if(!ImGui_ImplSDLRenderer_Init(m_renderer->sdlRenderer())){
+     m_valid = false;
      spdlog::critical("Failed to initialize ImGui with SDL Renderer.");
    }
-
-   /* Lua Init */
-   m_lua.open_libraries(sol::lib::base, sol::lib::math);
 }
 
-Game::~Game() {
+/** **/
+
+GameEngine::~GameEngine() {
   m_window->~Window(); // IMPORTANT: destroy window first
   m_renderer->~Renderer();
   SDL_Quit();
   ImGui_ImplSDLRenderer_Shutdown();
   ImGui_ImplSDL2_Shutdown();
-  ImGui::DestroyContext();
   //TTF_Quit(); -> NOTE: Why segfaults?
+  ImGui::DestroyContext();
+  Level::cleanup();
 }
-
 
 /** **/
 
-void Game::setup() {
+void GameEngine::setup(sol::state &lua) {
 
   // m_window->setFullScreen();
 
@@ -91,38 +94,38 @@ void Game::setup() {
   m_wm->createSystem<RenderHealthBarSystem>();
   m_wm->createSystem<RenderGuiSystem>();
 
-  LevelManager levelManager(m_lua, "./assets/scripts/level_1.lua", 1);
+  LevelManager levelManager("./sandbox_project/script/levels/level_1.lua", 1);
   levelManager.loadAssets(m_store, m_renderer);
   levelManager.loadMap(m_wm);
-  levelManager.loadGameObjects(m_wm);
+  /* we pass on our main lua state bind lua callback funcs if any scriptable objects */
+  levelManager.loadGameObjects(m_wm, lua);
 }
 
-/** **/
+/**** Engine Loop ***/
 
-void Game::update() {
-  /* NOTE: Maybe Render and update should run a separated threads? Must figure out game */
+void GameEngine::run() {
 
-  /* removing this fuction will allow the game to run as fast as it can! */
-  capFrameRate();
+  if (!m_renderer->valid()) {
+    return;
+  }
 
-  /* subscribe event listeners */
-  addEventListeners();
+  m_isRunning = true;
 
-  /* add newly created GameObjects to system */
-  m_wm->update();
-
-  double delta = deltatime();
-  m_wm->getSystem<CameraMovementSystem>().update(m_camera);
-  m_wm->getSystem<MovementSystem>().update(delta);
-  m_wm->getSystem<AnimationSystem>().update();
-  m_wm->getSystem<CollisionSystem>().update(m_eventBus);
-  m_wm->getSystem<ProjectileEmitSystem>().update();
-  m_wm->getSystem<ProjectileLifeCycleSystem>(). update();
-
-  m_prevFrameTime = SDL_GetTicks();
+  while (m_isRunning) {
+    processInput();
+    update();
+    render();
+  }
 }
 
-void Game::processInput() {
+/* */
+
+auto GameEngine::valid() const -> bool { return m_valid ;}
+
+
+/* Engine Methods */
+
+void GameEngine::processInput() {
   SDL_Event event;
   while (SDL_PollEvent(&event) != 0) {
 
@@ -160,7 +163,34 @@ void Game::processInput() {
   }
 }
 
-void Game::render() {
+/* */
+
+void GameEngine::update() {
+  /* NOTE: Maybe Render and update should run a separated threads? Must figure out game */
+
+  /* removing this fuction will allow the game to run as fast as it can! */
+  capFrameRate();
+
+  /* subscribe event listeners */
+  addEventListeners();
+
+  /* add newly created GameObjects to system */
+  m_wm->update();
+
+  double delta = deltatime();
+  m_wm->getSystem<CameraMovementSystem>().update(m_camera);
+  m_wm->getSystem<MovementSystem>().update(delta);
+  m_wm->getSystem<AnimationSystem>().update();
+  m_wm->getSystem<CollisionSystem>().update(m_eventBus);
+  m_wm->getSystem<ProjectileEmitSystem>().update();
+  m_wm->getSystem<ProjectileLifeCycleSystem>(). update();
+
+  m_prevFrameTime = SDL_GetTicks();
+}
+
+/* */
+
+void GameEngine::render() {
   m_renderer->clear();
 
   /* NOTE: Order maters here */
@@ -173,25 +203,9 @@ void Game::render() {
   m_renderer->present();
 }
 
-void Game::run() {
+/* */
 
-  if (!m_renderer->valid()) {
-    return;
-  }
-
-  setup();
-  m_isRunning = true;
-
-  while (m_isRunning) {
-    processInput();
-    update();
-    render();
-  }
-}
-
-/* Private */
-
-void Game::addEventListeners(){
+void GameEngine::addEventListeners(){
 
   //TODO: Do we need to subscribe & clear bus at every frame? Maybe run events on another thread?
   // We could improve this with a smarter data structure.
@@ -205,7 +219,9 @@ void Game::addEventListeners(){
   m_wm->getSystem<MovementSystem>().addEventListeners(m_eventBus);
 }
 
-void Game::capFrameRate() const {
+/* Helper */
+
+void GameEngine::capFrameRate() const {
   uint32_t waitTime = MSECS_PER_FRAME - (m_prevFrameTime - SDL_GetTicks());
 
   if (waitTime > 0 && waitTime < MSECS_PER_FRAME) {
@@ -213,6 +229,8 @@ void Game::capFrameRate() const {
   }
 }
 
-auto Game::deltatime() const -> double {
+/* */
+
+auto GameEngine::deltatime() const -> double {
   return (SDL_GetTicks() - m_prevFrameTime) / constants::Time::MILLIS_IN_SEC;
 }

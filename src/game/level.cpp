@@ -1,6 +1,19 @@
 #include "level.hpp"
 
-Level *Level::instance = nullptr; // NOLINT
+Level *Level::m_instance = nullptr; // NOLINT
+                                  
+
+auto Level::getInstance() -> Level* {
+   if (m_instance == nullptr) {
+      m_instance = new Level(); // NOLINT
+    }
+    return m_instance;
+}
+
+void Level::cleanup(){
+  delete m_instance; // NOLINT
+
+}
 
 void Level::setMap(Map &&map) { m_map = map; }
 

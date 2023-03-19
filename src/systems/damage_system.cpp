@@ -9,9 +9,9 @@ using namespace configurables;
 auto DamageSystem::name()const->std::string { return "DamageSystem"; }
 
 void DamageSystem::onCollision(CollisionEvent &event) { // NOLINT
+                                                        // projectiles will damage non allied GameObjects
   spdlog::debug("damage system receive onCollision of '{}' and '{}'", event.a().id(), event.b().id());
 
-  // projectiles will damage non allied GameObjects
   if(event.b().belongsTo(configurables::Groups::PROJECTILES) && !event.b().isAllied(event.a())){
     doProjectileDamage(event.a(), event.b());
   }

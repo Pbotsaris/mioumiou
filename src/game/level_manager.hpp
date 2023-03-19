@@ -16,23 +16,30 @@
 class LevelManager {
 
 public:
-   explicit LevelManager(sol::state &lua, const std::string path, int32_t levelNumber);
+   explicit LevelManager(const std::string path, int32_t levelNumber);
+
    ~LevelManager();
 
   void loadAssets(std::unique_ptr<AssetStore> &store, std::unique_ptr<Renderer> &renderer);
   void loadMap(std::unique_ptr<WorldManager> &wm); //NOLINT
-  void loadGameObjects(std::unique_ptr<WorldManager> &wm); //NOLINT
+  void loadGameObjects(std::unique_ptr<WorldManager> &wm, sol::state &lua); //NOLINT
 
 private:
+  /* this class will hold to lua state just just to important a level, then throw it away */
+  sol::state m_lua;
   sol::optional<sol::table> m_luaLevel;
   int32_t m_levelNumber = 0;
   std::string m_path;
+
 
   /* Lua tables */
   void doGroups(sol::table &groupTable, GameObject gameObject) const;
   void doAlliances(sol::table &allianceTable, GameObject gameObject) const;
   void doComponents(sol::table &componentsTable, GameObject gameObject) const;
-  auto doPadding(sol::optional<sol::table> &paddingOpt) const -> Padding;
+
+  /* script */
+  void doScript(sol::state &lua, sol::table &scriptTable, GameObject gameObject) const;
+  static void bindScriptFunc(const std::string &path, sol::state &lua, GameObject gameObject);
 
   /* Components */
   void doTransform(sol::table &transformTable, GameObject gameObject) const;
@@ -47,11 +54,12 @@ private:
   void doProjectileEmitterControl(sol::table &ProjEmitterControlTable, GameObject gameObject) const;
   void doKeyboardControl(sol::table &keyControlTable, GameObject gameObject) const;
   void doCameraFollow(sol::table &camFollowTable, GameObject gameObject) const;
-
   /* helpers */
 
+  auto doPadding(sol::optional<sol::table> &paddingOpt) const -> Padding;
   auto doWidthHeight(sol::table &widthHeightTable, glm::vec2 defaultValue, const char *tableKey) const -> glm::vec2;
   auto doCrop(sol::table &cropTable, SDL_Rect defaultValue, const char *tableKey) const -> SDL_Rect;
+
 
   /* Templated helpers */
 

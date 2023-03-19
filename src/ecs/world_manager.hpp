@@ -31,6 +31,7 @@ class WorldManager {
 
     /* GameObject Management */
     auto createGameObject() -> GameObject;
+    auto createGameObject(std::string name) -> GameObject;
     void removeGameObject(GameObject gameObject);
     /* */
 
@@ -218,8 +219,8 @@ auto WorldManager::getComponent(GameObject gameObject) const -> T& {
 
 template <typename T, typename... TARGS>
 void WorldManager::createSystem(TARGS &&...args) {
-
   std::shared_ptr<T> sys = std::make_shared<T>(std::forward<TARGS>(args)...);
+
   // TODO: check if std::type_index(*sys) would also work to simplify the syntax
   bool ok = m_systems.insert(std::make_pair(std::type_index(typeid(T)), sys)).second;//NOLINT: short var
 

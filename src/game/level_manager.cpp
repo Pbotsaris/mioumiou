@@ -10,9 +10,7 @@
 using namespace constants;
 using namespace configurables;
 
-LevelManager::LevelManager(sol::state &lua,
-                            std::string path,
-                           int32_t levelNumber)
+LevelManager::LevelManager(std::string path, int32_t levelNumber)
   : m_luaLevel(sol::nullopt), m_levelNumber(levelNumber), m_path(std::move(path)){
 
   if (!PathUtils::pathExists(m_path)) {
@@ -21,8 +19,7 @@ LevelManager::LevelManager(sol::state &lua,
     return;
   }
 
-  
-  sol::load_result res = lua.load_file(m_path);
+  sol::load_result res = m_lua.load_file(m_path);
 
   if (!res.valid()) {
     sol::error err = res;
@@ -30,8 +27,8 @@ LevelManager::LevelManager(sol::state &lua,
     return;
   }
 
-  lua.script_file(m_path);
-  sol::optional<sol::table> levelOpt = lua[Lua::LEVEL];
+  m_lua.script_file(m_path);
+  sol::optional<sol::table> levelOpt = m_lua[Lua::LEVEL];
 
   if (levelOpt == sol::nullopt) {
     spdlog::error( "Could not load '{}' file. Missing '{}' table. ", m_path, Lua::LEVEL);
@@ -42,7 +39,6 @@ LevelManager::LevelManager(sol::state &lua,
   m_luaLevel   = levelOpt;
 
   level->setLevel(levelNumber);
-
 };
 
 LevelManager::~LevelManager() {}
@@ -169,7 +165,7 @@ void LevelManager::loadMap(std::unique_ptr<WorldManager> &wm){ // NOLINT
        });
 }
 
-void LevelManager::loadGameObjects(std::unique_ptr<WorldManager> &wm){ // NOLINT
+void LevelManager::loadGameObjects(std::unique_ptr<WorldManager> &wm, sol::state &lua){ // NOLINT
   
  if (m_luaLevel == sol::nullopt) {
     spdlog::error("Cannot load level '{}' GameObjects. Invalid Lua state.", m_levelNumber);
@@ -186,17 +182,17 @@ void LevelManager::loadGameObjects(std::unique_ptr<WorldManager> &wm){ // NOLINT
   for(const auto &keyPair :  objectsOpt.value()){
 
     if(!keyPair.first.is<int>() || !keyPair.second.is<sol::table>()){
-      spdlog::warn("In file '{}': Each GameObject should a Lua table within another 0 indexed table.");
+      spdlog::error("In file '{}': Each GameObject entry must contain Lua table. Skipping...");
       break;
     }
 
-    GameObject gameObject                     = wm->createGameObject();
     sol::table gameObjectTable                = keyPair.second.as<sol::table>();
-
+    sol::optional<std::string> nameOpt        = gameObjectTable[Lua::Level::GameObject::NAME];
     sol::optional<std::string> tagOpt         = gameObjectTable[Lua::Level::GameObject::TAG];
     sol::optional<sol::table> groupOpt        = gameObjectTable[Lua::Level::GameObject::GROUPS];
     sol::optional<sol::table> alliancesOpt    = gameObjectTable[Lua::Level::GameObject::ALLIANCES];
     sol::optional<sol::table> componentsOpt   = gameObjectTable[Lua::Level::GameObject::COMPONENTS];
+    GameObject gameObject                     = wm->createGameObject(nameOpt.value_or(Defaults::Info::NAME));
 
     if(tagOpt != sol::nullopt){
       gameObject.tag(tagOpt.value());
@@ -213,11 +209,90 @@ void LevelManager::loadGameObjects(std::unique_ptr<WorldManager> &wm){ // NOLINT
 
     if(componentsOpt != sol::nullopt){
       doComponents(componentsOpt.value(), gameObject);
+
+      /* Script component must be done here as we need lua state to read script files */
+      const char* scriptField             = Lua::Level::GameObject::Components::SCRIPT;
+      sol::optional<sol::table> scriptOpt = componentsOpt.value()[scriptField];
+
+      /* using the GameEngine lua state here to bind callbacks */
+      if(scriptOpt != sol::nullopt){
+         doScript(lua, scriptOpt.value(), gameObject);
+      }
     }
-  }
+  } // loop
 };
 
 /* Private */
+
+void LevelManager::doScript(sol::state &lua, sol::table &scriptTable, GameObject gameObject) const{
+
+  const char *pathField = Lua::Level::GameObject::Components::Script::PATH;
+  sol::optional<std::string> pathOpt = scriptTable[pathField];
+
+  if(pathOpt != std::nullopt){
+     if(PathUtils::pathExists(pathOpt.value())) {
+        gameObject.addComponent<ScriptComponent>();
+        bindScriptFunc(pathOpt.value(), lua, gameObject);
+
+      } else {
+        spdlog::warn("In File: '{}': The path to script '{}' does not exist. Failed to bind callbacks for GameObject id '{}' ",
+            m_path, pathOpt.value(), gameObject.id());
+      }
+  } else{
+     spdlog::warn("In File: '{}': '{}' field not present. Loading default for GameObject id '{}'.", m_path, pathField, gameObject.id());
+     sol::optional<sol::table> dummy = lua["Level"];
+  }
+}
+
+void LevelManager::bindScriptFunc(const std::string &path, sol::state &lua, GameObject gameObject){
+
+  auto &script = gameObject.getComponent<ScriptComponent>();
+  const auto info = gameObject.getComponent<InfoComponent>();
+  
+  sol::load_result res = lua.load_file(path);
+  
+    if (!res.valid()) {
+      sol::error err = res;
+      spdlog::error("There's been an error loading script lua file '{}'. Error:\n{}", path, err.what());
+      return;
+    }
+
+  lua.script_file(path);
+
+  /* table will have the name of the scriptable object. */
+  sol::optional<sol::table> objectTableOpt = lua[info.name]; 
+
+  if(objectTableOpt == sol::nullopt){
+    spdlog::warn("Behaviour callback must be within a table with the GameObject name '{}'. Failed to bind callbacks.", info.name);
+    return;
+  }
+
+  sol::optional<sol::function> onAttachOpt   = objectTableOpt.value()[Lua::Callbacks::ON_CREATE];
+  sol::optional<sol::function> onUpdateOpt   = objectTableOpt.value()[Lua::Callbacks::ON_UPDATE];
+  sol::optional<sol::function> onDestroyOpt  = objectTableOpt.value()[Lua::Callbacks::ON_DESTROY];
+  
+  if(onAttachOpt != sol::nullopt){
+    script.onCreate = onAttachOpt.value();
+  } else {
+    spdlog::warn("Could not bind onAttach function.");
+  }
+
+   if(onUpdateOpt != sol::nullopt){
+    script.onUpdate = onUpdateOpt.value();
+  } else {
+    spdlog::warn("Could not bind onUpdate function.");
+  }
+
+  if(onDestroyOpt != sol::nullopt){
+    script.onDestroy = onDestroyOpt.value();
+  } else {
+    spdlog::warn("Could not bind onDestroy function.");
+  }
+
+    spdlog::info("Binded callbacks for GameObject name '{}' successfully.", info.name);
+}
+
+/* */
 
 void LevelManager::doGroups(sol::table &groupTable, GameObject gameObject) const {
 
@@ -261,6 +336,7 @@ void LevelManager::doComponents(sol::table &componentsTable, GameObject gameObje
   sol::optional<sol::table> projEmitterOpt = componentsTable[Lua::Level::GameObject::Components::PROJECTILE_EMITTER];
   sol::optional<sol::table> keyControlOpt  = componentsTable[Lua::Level::GameObject::Components::KEYBOARD_CONTROL];
   sol::optional<sol::table> camFollowOpt   = componentsTable[Lua::Level::GameObject::Components::CAMERA_FOLLOW];
+  //sol::optional<sol::table> scriptOpt      = componentsTable[Lua::Level::GameObject::Components::SCRIPT];
 
   if(transformOpt != sol::nullopt){
     doTransform(transformOpt.value(), gameObject);
@@ -824,7 +900,6 @@ void LevelManager::doKeyboardControl(sol::table &keyControlTable, GameObject gam
          Lua::Level::GameObject::Components::KeyboardControl::STRATEGY_MESSAGE);
     }
 
-     // 
   } else {
     spdlog::warn("In File: '{}': '{}' field not present. Loading default for GameObject id '{}'.", m_path, strategyField, gameObject.id());
   }
@@ -832,8 +907,8 @@ void LevelManager::doKeyboardControl(sol::table &keyControlTable, GameObject gam
   gameObject.addComponent<KeyboardControlComponent>(up, right, down, left, strategy);
 }
 
-// TODO: CAMERA FOLLOW DOESNT SEEM TO BE WORKING IN THE X AXIS. also is not limiting to the size of the map.
-//  Rember that you changed how the map width hight work. that could be the thing causing the bug.
+/* */
+
 void LevelManager::doCameraFollow(sol::table &camFollowTable, GameObject gameObject) const {
     const char* followField = Lua::Level::GameObject::Components::CameraFollow::FOLLOW;
 
@@ -842,7 +917,7 @@ void LevelManager::doCameraFollow(sol::table &camFollowTable, GameObject gameObj
 
     if(followOpt != sol::nullopt){
         if(followOpt.value()){
-           gameObject.addComponent<CameraFollowerComponent>();
+           gameObject.addComponent<CameraFollowerComponent> ();
       }
     } else {
      spdlog::warn("In File: '{}': '{}' field not present. Loading default for GameObject id '{}'.", m_path, followField, gameObject.id());

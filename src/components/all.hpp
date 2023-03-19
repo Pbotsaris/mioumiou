@@ -13,6 +13,8 @@
 #include "projectile_component.hpp"
 #include "projectile_control_component.hpp"
 #include "text_component.hpp"
-#include  "healthbar_component.hpp"
+#include "healthbar_component.hpp"
 #include "healthbar_text_component.hpp"
+#include "script_component.hpp"
+#include "info_component.hpp"
 #endif

@@ -5,6 +5,7 @@
 
 struct PathUtils {
   static auto pathExists(const std::string &path)->bool;
+  static auto pathAppend(const std::string &left, const std::string &right) -> std::string;
 };
 
 

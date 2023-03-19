@@ -42,10 +42,19 @@ struct Fonts {
   };
 };
 
-
+struct ProjectPaths {
+  constexpr static const char *ASSETS = "assets";
+  constexpr static const char *SCRIPT = "script";
+  constexpr static const char *SCRIPT_LEVEL = "script/level";
+  constexpr static const char *SCRIPT_BEHAVIOUR = "script/behaviour";
+};
 
 struct Time {
   constexpr static const double MILLIS_IN_SEC = 1000.0;
+};
+
+struct Files {
+  constexpr static const char *CONFIG_FILE = "config.lua";
 };
 
 struct Position {
@@ -66,9 +75,7 @@ struct Tags {
   constexpr static const char *MAIN_PLAYER = "player";
 };
 
-
 struct Lua {
-  constexpr static const char *LEVEL = "Level";
 
   struct GenericTable {
     struct Size {
@@ -81,6 +88,25 @@ struct Lua {
       constexpr static const char *Y = "y"; // NOLINT
     };
   };
+
+
+  struct Callbacks{
+    constexpr static const char *ON_CREATE = "onCreate";
+    constexpr static const char *ON_UPDATE = "onUpdate";
+    constexpr static const char *ON_DESTROY = "onDestroy";
+
+  };
+
+  constexpr static const char *PROJECT = "Project";
+
+  struct Project {
+     constexpr static const char *NAME   = "name";
+     constexpr static const char *PATH   = "path";
+     constexpr static const char *WINDOW = "window";
+     constexpr static const char *FPS    = "fps";
+  };
+
+  constexpr static const char *LEVEL = "Level";
 
   struct Level {
 
@@ -109,6 +135,7 @@ struct Lua {
     constexpr static const char *GAME_OBJECTS = "game_objects";
 
     struct GameObject {
+      constexpr static const char *NAME = "name";
       constexpr static const char *TAG = "tag";
       constexpr static const char *GROUPS = "groups";
       constexpr static const char *ALLIANCES = "alliances";
@@ -179,13 +206,14 @@ struct Lua {
           constexpr static const char *OFFSET = "offset";
           constexpr static const char *ALIGMENT = "aligment";
 
-          constexpr static const std::array<const char*, 4> ALIGN_OPS = {
+          constexpr static const std::array<const char *, 4> ALIGN_OPS = {
               "top",
               "right",
               "bottom",
               "left",
           };
-          constexpr static const char *ALIGN_OPS_MSG = "'top', 'right', 'bottom' or 'left'";
+          constexpr static const char *ALIGN_OPS_MSG =
+              "'top', 'right', 'bottom' or 'left'";
 
           constexpr static const char *TEXT = "text";
 
@@ -193,17 +221,16 @@ struct Lua {
             constexpr static const char *VISIBLE = "visible";
             constexpr static const char *FONT = "font";
             constexpr static const char *MARGIN = "margin";
-            constexpr static const char *FONT_SIZE = "font_size"; 
-            constexpr static const std::array<const char*, Fonts::NB_SIZES> FONT_SIZE_OPS = {
-              "tiny",
-              "extra-small",
-              "medium",
-              "large",
-              "extra-large",
-              "huge",
+            constexpr static const char *FONT_SIZE = "font_size";
+            constexpr static const std::array<const char *, Fonts::NB_SIZES>
+                FONT_SIZE_OPS = {
+                    "tiny",  "extra-small", "medium",
+                    "large", "extra-large", "huge",
             }; // FONT_SIZE_OPTS
 
-            constexpr static const char *FONT_SIZE_MSG = "'tiny', 'extra-small', 'medium', 'large', 'extra-large' or 'huge'";
+            constexpr static const char *FONT_SIZE_MSG =
+                "'tiny', 'extra-small', 'medium', 'large', 'extra-large' or "
+                "'huge'";
           }; // Text
 
         }; // HealthBar
@@ -221,10 +248,9 @@ struct Lua {
           constexpr static const char *CONTROL = "control";
 
           struct Control {
-          constexpr static const char *CONTROLLABLE = "controllable";
-          constexpr static const char *KEY = "key";
+            constexpr static const char *CONTROLLABLE = "controllable";
+            constexpr static const char *KEY = "key";
           };
-
         };
 
         constexpr static const char *KEYBOARD_CONTROL = "keyboard_control";
@@ -236,12 +262,11 @@ struct Lua {
           constexpr static const char *LEFT_VELOCITY = "left_velocity";
           constexpr static const char *STRATEGY = "strategy";
 
-          constexpr static const std::array<const char*, 2> STRATEGY_OPS = { 
-            "spritesheet",
-            "rotation"
-          };
+          constexpr static const std::array<const char *, 2> STRATEGY_OPS = {
+              "spritesheet", "rotation"};
 
-        constexpr static const char *STRATEGY_MESSAGE = "'rotation' and 'spritesheet'";
+          constexpr static const char *STRATEGY_MESSAGE =
+              "'rotation' and 'spritesheet'";
         };
         constexpr static const char *CAMERA_FOLLOW = "camera_follow";
 
@@ -249,6 +274,11 @@ struct Lua {
           constexpr static const char *FOLLOW = "follow";
         };
 
+        constexpr static const char *SCRIPT = "script";
+
+        struct Script {
+          constexpr static const char *PATH = "path";
+        };
       };
     };
 
@@ -270,9 +300,23 @@ struct Lua {
 
 struct Defaults {
 
+  struct Resolution {
+    constexpr static size_t WINDOW_WIDTH = 1280;
+    constexpr static size_t WINDOW_HEIGHT = 1024;
+    constexpr static int32_t FPS = 60;
+  };
+
+  struct Project {
+    constexpr static const char* NAME = "untitled";
+  };
+
   struct Health {
     constexpr static const std::int32_t CURRENT_HEALTH = 100;
     constexpr static const std::int32_t MAX_HEALTH = 100;
+  };
+
+  struct Info {
+    constexpr static const char *NAME = "unnamed";
   };
 
   struct HealthBar {
@@ -283,11 +327,10 @@ struct Defaults {
     constexpr static const glm::vec2 OFFSET = {0, 0};
     constexpr static const int32_t ALIGNMENT = 3; // BOTTOM
                                                   //
-    constexpr static const bool TEXT_VISIBLE = true; 
+    constexpr static const bool TEXT_VISIBLE = true;
     constexpr static const Fonts::Size TEXT_FONT_SIZE = Fonts::Tiny;
     constexpr static const char *TEXT_FONT = "charriot";
     constexpr static const int32_t TEXT_MARGIN = 0;
-
   };
 
   struct Transform {
@@ -296,35 +339,33 @@ struct Defaults {
     constexpr static const double ROTATION = 0.0F;
   };
 
-
   struct Sprite {
     constexpr static const glm::vec2 SIZE = {0, 0};
     constexpr static const int32_t Z_POSITION = Position::Z_NOTMAP;
     constexpr static const bool IS_SHEET = false;
     constexpr static const bool FLIPABLE = true;
     constexpr static const bool IS_FIXED = false;
-    constexpr static const SDL_Rect CROP = {0, 0 , 0 , 0};
-    constexpr static const SDL_RendererFlip FLIP =  SDL_FLIP_NONE;
-    constexpr static const int32_t ORIENTATION =  0;
+    constexpr static const SDL_Rect CROP = {0, 0, 0, 0};
+    constexpr static const SDL_RendererFlip FLIP = SDL_FLIP_NONE;
+    constexpr static const int32_t ORIENTATION = 0;
   };
 
- struct RigidBody {
+  struct RigidBody {
     constexpr static const glm::vec2 VELOCITY = {0, 0};
   };
 
- struct Animation {
+  struct Animation {
     constexpr static const int32_t NB_FRAMES = 1;
     constexpr static const int32_t FRAME_RATE_SPEED = 1;
-    constexpr static const bool    LOOPABLE = true;
- };
+    constexpr static const bool LOOPABLE = true;
+  };
 
-
- struct BoxCollider{
+  struct BoxCollider {
     constexpr static const glm::vec2 SIZE = {0, 0};
     constexpr static const glm::vec2 OFFSET = {0, 0};
- };
+  };
 
- struct ProjectileEmitter{
+  struct ProjectileEmitter {
     constexpr static const glm::vec2 SIZE = {0, 0};
     constexpr static const glm::vec2 VELOCITY = {0.0, 0.0};
     constexpr static const uint32_t FREQUENCY = 500;
@@ -332,16 +373,15 @@ struct Defaults {
     constexpr static const int32_t PERCENT_DAMAGE = 10;
     constexpr static const glm::vec2 OFFSET = {0, 0};
     constexpr static const SDL_KeyCode CONTROL_KEY = SDLK_SPACE;
- };
+  };
 
- struct KeyboardControl {
-    constexpr static const double UP_VELOCITY    =  0.0F;
-    constexpr static const double RIGHT_VELOCITY =  0.0F;
-    constexpr static const double DOWN_VELOCITY  =  0.0F;
-    constexpr static const double LEFT_VELOCITY  =  0.0F;
-    constexpr static const int32_t STRATEGY      =  0;
- };
-
+  struct KeyboardControl {
+    constexpr static const double UP_VELOCITY = 0.0F;
+    constexpr static const double RIGHT_VELOCITY = 0.0F;
+    constexpr static const double DOWN_VELOCITY = 0.0F;
+    constexpr static const double LEFT_VELOCITY = 0.0F;
+    constexpr static const int32_t STRATEGY = 0;
+  };
 
   struct Map {
     constexpr static std::string MAP_DELIM = ",";

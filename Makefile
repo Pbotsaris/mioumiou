@@ -7,7 +7,7 @@ SRC=src
 LIBS=libs
 IMGUI_SRC=$(LIBS)/imgui
 
-$(shell mkdir -p obj obj/game obj/utils obj/backends obj/components obj/ecs obj/systems obj/systems/gui obj/systems/render obj/systems/projectile bin)
+$(shell mkdir -p obj obj/game obj/projects obj/utils obj/backends obj/components obj/ecs obj/systems obj/systems/gui obj/systems/render obj/systems/projectile bin)
 
 # Libs
 SDL=$(shell pkg-config --cflags --libs SDL2_image SDL2_ttf)

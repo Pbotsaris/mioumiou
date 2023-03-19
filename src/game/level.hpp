@@ -6,8 +6,8 @@
 #include "types/containers.hpp"
 
 /* NOTE: Not a fan of singletons but need access to map dimensions throughout systems 
- * This singleton is only written in one place (levelManager) so it should be safe
- * to be shared accross the app.
+ * This singleton is only written in once and in one place (levelManager) when level is
+ * loaded so it should be safe to be shared accross the app.
  *
  * */
 
@@ -21,7 +21,7 @@ public:
   };
 
 private:
-  static Level *instance; // NOLINT
+  static Level *m_instance; // NOLINT
   Map m_map;
   int32_t m_level;
   bool m_loaded;
@@ -35,12 +35,9 @@ private:
     m_loaded(false) {}
 
 public:
-  static Level *getInstance() {
-    if (instance == nullptr) {
-      instance = new Level(); // NOLINT
-    }
-    return instance;
-  }
+  static Level *getInstance();
+
+  static void cleanup();
 
   void setMap(Map &&map);
 

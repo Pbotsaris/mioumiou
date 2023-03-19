@@ -1,5 +1,5 @@
 #define DOCTEST_CONFIG_IMPLEMENT
-#include "game/game.hpp"
+#include "application.hpp"
 #include "utils/tester.hpp"
 #include <sol.hpp>
 #include <exception>
@@ -14,8 +14,8 @@ int main(int argc, char *argv[]) {
     return res;
   }
 
-  Game game;
-  game.run();
+  Application app;
+  app.run();
 
   return 0;
 }

@@ -24,13 +24,31 @@ auto WorldManager::createGameObject() -> GameObject {
   return gameObject;
 }
 
+
+/**
+ * Creates a new GameObject in the World as above 
+ * but attached a Info component to identify the object.
+ * 
+ * @return  The created GameObject 
+ */
+
+auto WorldManager::createGameObject(std::string name) -> GameObject {
+
+  GameObject gameObject = createGameObject();
+  spdlog::debug("GameObject id '{}' with name '{}' created and queued for insert.", gameObject.id(), name);
+
+  gameObject.addComponent<InfoComponent>(std::move(name));
+  return gameObject;
+};
+
+
 /**
  *  Removes a new GameObject in the World.
  *  This method only queues GameObject for removal
  *  GameObject will be removed upon calling the WordManager::update method by
  * the game loop ids of removed GameObjects are stored in m_freedGameObjectIds
  * for later reuse
- * @param  the Game object to remove
+ * @param  the GameObject to remove
  */
 
 void WorldManager::removeGameObject(GameObject gameObject) {
@@ -101,7 +119,7 @@ void WorldManager::gameObjectToSystems(GameObject gameObject) {
 
     /*
      *  NOTE: The bitwise &(AND) between the GameObject Signature and System Signature
-     *  must be equals to System Signature otherwise the GameObject either don't
+     *  must be equals to System Signature otherwise the GameObject either doesn't
      *  have all components required by the System or has components that the
      *  System does not support.
      */
@@ -109,9 +127,6 @@ void WorldManager::gameObjectToSystems(GameObject gameObject) {
 
     bool satisfied =
         (sys->componentSignature() & gameObjSig) == sys->componentSignature();
-
-    // spdlog::debug("GameObject id '{}' added to {}.", gameObject.id(),
-    // sys->name());
 
     if (satisfied) {
       spdlog::debug("GameObject id '{}' added to {}.", gameObject.id(), sys->name());

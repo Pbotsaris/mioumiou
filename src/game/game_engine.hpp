@@ -1,5 +1,8 @@
-#ifndef GAME_H
-#define GAME_H
+#ifndef GAME_ENGINE_H
+#define GAME_ENGINE_H
+#include <memory>
+#include <sol.hpp>
+
 #include "camera.hpp"
 #include "ecs/world_manager.hpp"
 #include "event_system/event_bus.hpp"
@@ -9,33 +12,30 @@
 #include "utils/constants.hpp"
 #include "utils/configurables.hpp"
 #include "level.hpp"
-#include <memory>
-#include <sol.hpp>
+#include "projects/project_config.hpp"
 
-class Game {
+class GameEngine {
 
 public:
-  Game();
-  ~Game();
+  explicit GameEngine(ProjectConfig *project);
+  ~GameEngine();
 
-  Game(Game &) = delete;
-  Game(Game &&) = delete;
+  GameEngine(GameEngine &) = delete;
+  GameEngine(GameEngine &&) = delete;
+  void operator=(GameEngine &) = delete;
+  void operator=(GameEngine &&) = delete;
 
-  void operator=(Game &) = delete;
-  void operator=(Game &&) = delete;
-
-  void setup();
+  /* Public */
+  void setup(sol::state &lua);
   void run();
-  void update();
-  void render();
-  void processInput();
-
-  [[nodiscard]] auto isValid() const -> bool;
+ 
+  [[nodiscard]] auto valid() const -> bool;
 
   static Level Level; // NOLINT: bad but necessary. only going to be written when loading level.
 
 private:
-  bool m_isRunning = false;
+  bool m_isRunning         = false;
+  bool m_valid             = true;
   uint32_t m_prevFrameTime = 0;
 
   std::unique_ptr<Window> m_window;
@@ -44,11 +44,15 @@ private:
   std::unique_ptr<AssetStore> m_store;
   std::unique_ptr<EventBus> m_eventBus;
 
-  sol::state m_lua;
   Camera m_camera;
 
+  /* Engine  Methods */
+  void processInput();
+  void update();
+  void render();
   void addEventListeners();
 
+  /* Helpers */
   void capFrameRate() const;
   [[nodiscard]] auto deltatime() const -> double;
 
