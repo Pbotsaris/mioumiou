@@ -93,12 +93,16 @@ void GameEngine::setup(sol::state &lua) {
   m_wm->createSystem<RenderTextSystem>();
   m_wm->createSystem<RenderHealthBarSystem>();
   m_wm->createSystem<RenderGuiSystem>();
+  m_wm->createSystem<ScriptSystem>();
 
+  ScriptSystem::createLuaBindings(lua);
+  
   LevelManager levelManager("./sandbox_project/script/levels/level_1.lua", 1);
   levelManager.loadAssets(m_store, m_renderer);
   levelManager.loadMap(m_wm);
   /* we pass on our main lua state bind lua callback funcs if any scriptable objects */
   levelManager.loadGameObjects(m_wm, lua);
+
 }
 
 /**** Engine Loop ***/
@@ -184,6 +188,7 @@ void GameEngine::update() {
   m_wm->getSystem<CollisionSystem>().update(m_eventBus);
   m_wm->getSystem<ProjectileEmitSystem>().update();
   m_wm->getSystem<ProjectileLifeCycleSystem>(). update();
+  m_wm->getSystem<ScriptSystem>().update(delta);
 
   m_prevFrameTime = SDL_GetTicks();
 }

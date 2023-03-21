@@ -8,6 +8,7 @@
 #include "systems/damage_system.hpp"
 #include "systems/keyboard_control_system.hpp"
 #include "systems/camera_movement_system.hpp"
+#include "systems/script_system.hpp"
 
 /* Projectile */
 #include "systems/projectile/projectile_emit_system.hpp"
