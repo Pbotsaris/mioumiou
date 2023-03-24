@@ -2,7 +2,7 @@
 CC=clang++
 OBJ=obj
 BIN=bin
-TARGET=$(BIN)/mioumiou
+TARGET=$(BIN)/miu
 SRC=src
 LIBS=libs
 IMGUI_SRC=$(LIBS)/imgui
